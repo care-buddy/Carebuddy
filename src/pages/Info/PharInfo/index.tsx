@@ -3,6 +3,13 @@ import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
+import {
+  Wrapper,
+  BorderWrapper,
+  Title,
+  SearchWrapper,
+  Text,
+} from '@/pages/Info/info-components';
 
 // UI확인용 임시데이터
 const SelectDummyCityOptions = [
@@ -25,45 +32,6 @@ const SelectDummyCityOptions = [
   { value: '전북특별자치도', label: '전북특별자치도' },
   { value: '제주특별자치도', label: '제주특별자치도' },
 ];
-
-const Wrapper = styled.div`
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  /* margin-top: 50px; */
-  align-items: center;
-`;
-
-const HospitalSearchWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 70%;
-  padding: 80px 10px;
-  border: 1px solid #cecece;
-  border-radius: 7px;
-  align-items: center;
-  justify-content: center;
-`;
-
-const SearchWrapper = styled.div`
-  width: 70%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-
-  > button {
-    margin-left: 20px;
-  }
-`;
-
-const Title = styled.p`
-  white-space: nowrap;
-  margin-right: 15px;
-  + select {
-    margin-right: 15px;
-  }
-`;
 
 const PharInfo: React.FC = () => {
   // 테이블에 표시할 데이터 예시 및 임시 상태
@@ -123,14 +91,15 @@ const PharInfo: React.FC = () => {
 
   return (
     <Wrapper>
-      <HospitalSearchWrapper>
+      <BorderWrapper>
+        <Title>동물 약국 검색</Title>
         <SearchWrapper>
-          <Title>지역: </Title>
+          <Text>지역: </Text>
           <Select options={SelectDummyCityOptions} />
           <Select options={SelectDummyCityOptions} />
           <Button buttonStyle="square-green">검색</Button>
         </SearchWrapper>
-      </HospitalSearchWrapper>
+      </BorderWrapper>
       <Table
         headers={headers}
         data={data}
