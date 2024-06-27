@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
+import TopBar from '@/components/common/TopBar';
 import {
   Wrapper,
   BorderWrapper,
@@ -90,27 +91,30 @@ const HosInfo: React.FC = () => {
   };
 
   return (
-    <Wrapper>
-      <BorderWrapper>
-        <Title>동물 병원 검색</Title>
-        <SearchWrapper>
-          <Text>지역: </Text>
-          <Select options={SelectDummyCityOptions} />
-          <Select options={SelectDummyCityOptions} />
-          <Button buttonStyle="square-green">검색</Button>
-        </SearchWrapper>
-      </BorderWrapper>
-      <Table
-        headers={headers}
-        data={data}
-        isLoading={isLoading}
-        isError={isError}
-        currentPage={currentPage}
-        totalPages={totalPages}
-        onPageChange={handlePageChange}
-        hasPagination // 페이지네이션을 표시할지 여부를 설정
-      />
-    </Wrapper>
+    <>
+      <TopBar category="정보" title="동물 병원 검색" />
+      <Wrapper>
+        <BorderWrapper>
+          <Title>동물 병원 검색</Title>
+          <SearchWrapper>
+            <Text>지역: </Text>
+            <Select options={SelectDummyCityOptions} />
+            <Select options={SelectDummyCityOptions} />
+            <Button buttonStyle="square-green">검색</Button>
+          </SearchWrapper>
+        </BorderWrapper>
+        <Table
+          headers={headers}
+          data={data}
+          isLoading={isLoading}
+          isError={isError}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={handlePageChange}
+          hasPagination // 페이지네이션을 표시할지 여부를 설정
+        />
+      </Wrapper>{' '}
+    </>
   );
 };
 
