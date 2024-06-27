@@ -9,3 +9,4 @@ export { default as TempPetEdit } from './Temp-PetEdit';
 export { default as Userpage } from './Userpage';
 export { default as HosInfo } from './Info/HosInfo';
 export { default as PharInfo } from './Info/PharInfo';
+export { default as SmallModal } from './Temp-SmallModal'
