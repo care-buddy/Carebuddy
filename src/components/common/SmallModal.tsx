@@ -44,7 +44,7 @@ const ModalBackground = styled.div`
 
 const ModalContent = styled.div`
   position: relative;
-  width: 24vw;
+  width: 30vw;
   max-height: 64vh;
   background-color: var(--color-white);
   border-radius: 7px;
@@ -56,4 +56,7 @@ const ModalContent = styled.div`
   z-index: 10000;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 28px 0;
+  box-sizing: border-box;
+  align-items: center;
 `;

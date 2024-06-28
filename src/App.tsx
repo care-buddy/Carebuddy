@@ -11,12 +11,9 @@ import {
   Community,
   Diary,
   Mypage,
-  TempPetRegister,
-  TempPetEdit,
   Userpage,
   HosInfo,
-  PharInfo,
-  SmallModal
+  PharInfo
 } from '@/pages';
 
 const router = createBrowserRouter([
@@ -38,10 +35,6 @@ const router = createBrowserRouter([
       { path: 'userpage', element: <Userpage /> },
       { path: 'hosInfo', element: <HosInfo /> },
       { path: 'pharInfo', element: <PharInfo /> },
-      // petRegister, petEdit, smallModal 모달용 임시 페이지
-      { path: 'pet-register', element: <TempPetRegister /> },
-      { path: 'pet-edit', element: <TempPetEdit /> },
-      { path: 'small-modal', element: <SmallModal /> },
     ],
   },
 ]);
@@ -97,6 +90,13 @@ const GlobalStyles = createGlobalStyle`
     src: url('https://cdn.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
     font-weight: 400;
     font-style: normal;
+  }
+
+    *, *::before, *::after { 
+    font-family: 'Pretendard-Regular', sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
 
   html, body, input, #root {

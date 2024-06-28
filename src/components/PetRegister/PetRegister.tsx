@@ -4,15 +4,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// 임시 데이터
-import { tempProfileSrc } from '@constants/tempData';
-
-// 컴포넌트
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
 
-// 아이콘
 import { LuCamera } from 'react-icons/lu';
+
+// 임시 데이터
+import { tempProfileSrc } from '@constants/tempData';
 
 // 인터페이스
 // import { FormData } from '@/pages/Temp-PetRegister';
