@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Input from '@/components/common/Input';
 import Radio from '@/components/common/Radio';
+import CheckBox from '@/components/common/CheckBox';
+import TextArea from '@/components/common/TextArea';
 
 const Component = styled.div`
   display: flex;
@@ -46,6 +48,9 @@ const ContentBody = styled.div`
   margin: 10px 0 10px 0;
   > input {
     margin-right: 10px;
+  }
+  > span {
+    margin-left: 4px;
   }
 `;
 
@@ -115,12 +120,15 @@ const HosRecords = ({ formData, setFormData }) => {
           <Content>
             <ContentTitle>진단 확인 여부</ContentTitle>
             <ContentBody>
-              <Checkbox
+              {/* <Checkbox
                 type="checkbox"
                 checked={checked}
                 onChange={handleCheckboxChange}
-              />
-              의료진에 진단 받은 기록이 있습니다.
+              /> */}
+              <CheckBox />
+              <span>
+                의료진에 진단 받은 기록이 없습니다. (체크 시 진단 비활성화 추가)
+              </span>
             </ContentBody>
           </Content>
           <Content>
@@ -153,13 +161,13 @@ const HosRecords = ({ formData, setFormData }) => {
             </ContentBody>
           </Content>
           <Content>
-            <ContentTitle>동물병원명</ContentTitle>
+            <ContentTitle>진료받은 병원을 입력해주세요.</ContentTitle>
             <ContentBody>
               <Input
                 name="address"
                 inputSize="sm"
                 value={formData.address || ''}
-                placeholder="동물병원명"
+                placeholder="병원명"
                 onChange={handleInputChange}
               />
             </ContentBody>
@@ -212,9 +220,8 @@ const HosRecords = ({ formData, setFormData }) => {
           <Content>
             <ContentTitle>증상</ContentTitle>
             <ContentBody>
-              <textarea
-                width="890px"
-                height="100px"
+              <TextArea
+                size="sm"
                 placeholder="입력하여주세요."
                 name="symptom"
                 value={formData.symptom || ''}
@@ -230,9 +237,8 @@ const HosRecords = ({ formData, setFormData }) => {
           <Content>
             <ContentTitle>처방</ContentTitle>
             <ContentBody>
-              <textarea
-                width="890px"
-                height="100px"
+              <TextArea
+                size="sm"
                 placeholder="입력하여주세요."
                 name="treatment"
                 value={formData.treatment || ''}
@@ -248,9 +254,7 @@ const HosRecords = ({ formData, setFormData }) => {
           <Content>
             <ContentTitle>메모</ContentTitle>
             <ContentBody>
-              <textarea
-                width="890px"
-                height="100px"
+              <TextArea
                 placeholder="입력하여주세요."
                 name="memo"
                 value={formData.memo || ''}

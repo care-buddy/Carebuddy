@@ -310,6 +310,7 @@ const Diary: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [petModalOpen, setPetModalOpen] = useState(false);
+  const [petEditModalOpen, setPetEditModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', phoneNumber: '' });
 
   // 모달 관련 함수
@@ -326,6 +327,10 @@ const Diary: React.FC = () => {
     setEditModalOpen(!editModalOpen);
   };
 
+  const handleOpenPetEditModal = () => {
+    setPetEditModalOpen(!petEditModalOpen);
+  };
+
   const handleCloseModal = () => {
     setModalOpen(false);
   };
@@ -335,6 +340,10 @@ const Diary: React.FC = () => {
   };
   const handleClosePetModal = () => {
     setPetModalOpen(false);
+  };
+
+  const handleClosePetEditModal = () => {
+    setPetEditModalOpen(false);
   };
 
   const handleFormSubmit = () => {
@@ -370,7 +379,7 @@ const Diary: React.FC = () => {
                     buttonBorder="border-none"
                     direction="vertical"
                     onDelete={() => {}}
-                    onEdit={() => {}}
+                    onEdit={handleOpenPetEditModal}
                   />
                   <Photo />
                   <Name>이름</Name>
@@ -393,6 +402,15 @@ const Diary: React.FC = () => {
               onClose={handleClosePetModal}
               title="동물 정보 등록"
               value="등록"
+              component={<PetRegister />}
+              onHandleClick={handleFormSubmit}
+            />
+          )}
+          {petEditModalOpen && (
+            <Modal
+              onClose={handleClosePetEditModal}
+              title="동물 정보 수정"
+              value="수정"
               component={<PetRegister />}
               onHandleClick={handleFormSubmit}
             />
