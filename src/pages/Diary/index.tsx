@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { Pagination } from 'swiper/modules';
+import { Pagination, Virtual } from 'swiper/modules';
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import { TbReportMedical, TbBuildingHospital } from 'react-icons/tb';
@@ -16,6 +16,7 @@ import {
 } from 'react-icons/lu';
 import ActionButton from '@/components/common/ActtionButton';
 import TopBar from '@/components/common/TopBar';
+import PetRegister from '@/components/PetRegister/PetRegister';
 import HosRecords from './HosRecords';
 
 const Wrapper = styled.div`
@@ -45,15 +46,17 @@ const ProfilesTitle = styled.div`
 /* 카드 */
 
 const CardsWrapper = styled.div`
+  position: relative;
   height: 300px;
   display: flex;
   width: 100%;
+  position: relative;
 `;
 
 const Cards = styled.div`
   width: 244px;
   height: 90%;
-  background: #ffffff;
+  /* background: #ffffff; */
   box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   display: flex;
@@ -61,11 +64,14 @@ const Cards = styled.div`
   justify-content: center;
   align-items: center;
   position: relative;
+
   > button {
     position: absolute;
-
     top: 15px;
     right: 15px;
+    > div {
+      position: absolute;
+    }
   }
   :hover {
     cursor: pointer;
@@ -282,15 +288,37 @@ const StyledSwiper = styled(Swiper)`
   }
 `;
 
+// 프로필이 없을 때
+const AddProfile = styled.div`
+  width: 100px;
+  height: 100px;
+  background: var(--color-grey-2);
+  border-radius: 50%;
+  border: 0;
+  overflow: hidden;
+`;
+
+const AddProfileMsg = styled.p`
+  margin-top: 26px;
+  font-size: 18px;
+  text-align: center;
+  color: #7d7d7d;
+`;
+
 const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
+  const [petModalOpen, setPetModalOpen] = useState(false);
   const [formData, setFormData] = useState({ name: '', phoneNumber: '' });
 
   // 모달 관련 함수
   const handleOpenModal = () => {
     setModalOpen(true);
+  };
+
+  const handleOpenPetModal = () => {
+    setPetModalOpen(true);
   };
 
   const handleOpenEditModal = () => {
@@ -304,6 +332,9 @@ const Diary: React.FC = () => {
 
   const handleCloseEditModal = () => {
     setEditModalOpen(false);
+  };
+  const handleClosePetModal = () => {
+    setPetModalOpen(false);
   };
 
   const handleFormSubmit = () => {
@@ -320,6 +351,7 @@ const Diary: React.FC = () => {
         <ProfilesWrapper>
           <ProfilesTitle>user 님의 반려동물</ProfilesTitle>
           <StyledSwiper
+            virtual
             slidesPerView={4}
             spaceBetween={0}
             // slidesOffsetBefore={20}
@@ -328,10 +360,10 @@ const Diary: React.FC = () => {
             pagination={{
               clickable: true,
             }}
-            modules={[Pagination]}
+            modules={[Pagination, Virtual]}
             className="mySwiper"
           >
-            <SwiperSlide>
+            <SwiperSlide key={0} virtualIndex={0}>
               <CardsWrapper>
                 <Cards>
                   <ActionButton
@@ -346,7 +378,25 @@ const Diary: React.FC = () => {
                 </Cards>
               </CardsWrapper>
             </SwiperSlide>
+            <SwiperSlide key={1} virtualIndex={1}>
+              <CardsWrapper>
+                <Cards>
+                  <AddProfile onClick={handleOpenPetModal} />
+
+                  <AddProfileMsg>프로필 추가</AddProfileMsg>
+                </Cards>
+              </CardsWrapper>
+            </SwiperSlide>
           </StyledSwiper>
+          {petModalOpen && (
+            <Modal
+              onClose={handleClosePetModal}
+              title="동물 정보 등록"
+              value="등록"
+              component={<PetRegister />}
+              onHandleClick={handleFormSubmit}
+            />
+          )}
         </ProfilesWrapper>
         <DiaryWrapper>
           <NameInTitle className="diaryTitle">

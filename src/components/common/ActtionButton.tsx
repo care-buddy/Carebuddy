@@ -45,12 +45,13 @@ const StyledIconVertical = styled(LuMoreVertical)`
 `;
 
 const OptionButtons = styled.div`
+  z-index: 999;
   position: absolute;
   top: 0;
   left: 100%;
   border: var(--color-grey-2) 1px solid;
   background-color: var(--color-white);
-  z-index: 2;
+
   p {
     color: var(--color-grey-1);
     display: inline-block;
@@ -110,6 +111,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   const handleClick = () => {
     setIsClicked((prevState) => !prevState);
+    setIsOpen((prevState) => !prevState);
   };
 
   const handleClickOutside = (event: MouseEvent) => {
