@@ -170,6 +170,7 @@ const Home: React.FC = () => {
   return (
     <>
       <TopBar category="반려동물 건강 관리 서비스" title="Carebuddy" />
+      <p>배포테스트</p>
       <h1>모달 테스트 구역시작</h1>
       {/* 로그인 */}
       <Button onClick={handleOpenModal1}>로그인 모달</Button>
