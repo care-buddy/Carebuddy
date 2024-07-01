@@ -28,10 +28,12 @@ const StyledTextArea = styled.textarea<StyledTextAreaProps>`
   border-radius: 4px;
   resize: none;
   outline: none;
-  ${(props) => props.size && textAreaSizes[props.size]} // 박스 크기 prop
+  ${(props) => props.size && textAreaSizes[props.size]}// 박스 크기 prop
 `;
 
-interface TextAreaProps extends StyledTextAreaProps {
+interface TextAreaProps
+  extends StyledTextAreaProps,
+    React.TextareaHTMLAttributes<HTMLTextAreaElement> {
   placeholder: string;
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLTextAreaElement>) => void;

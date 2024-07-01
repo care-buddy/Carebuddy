@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Input from '@/components/common/Input';
 import Radio from '@/components/common/Radio';
@@ -54,35 +54,49 @@ const ContentBody = styled.div`
   }
 `;
 
-const Checkbox = styled.input`
-  height: var(--font-size-md-1);
-  width: var(--font-size-md-1);
-`;
-
 const Label = styled.label`
   margin-right: 1rem;
 `;
 
-const HosRecords = ({ formData, setFormData }) => {
+// 임시
+interface FormData {
+  doctorName?: string;
+  consultationDate?: string;
+  address?: string;
+  disease?: string;
+  symptom?: string;
+  treatment?: string;
+  memo?: string;
+  hospitalizationStatus?: Date | null;
+}
+
+interface HosRecordsProps {
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+}
+
+const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const [checked, setChecked] = useState(false);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
 
   const [selectedOption, setSelectedOption] = useState<string>('아니오');
 
-  useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      consultationDate: `${date} ${time}`,
-      hospitalizationStatus: selectedOption === '네' ? new Date() : null,
-    }));
-  }, [date, time, selectedOption]);
+  // useEffect(() => {
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     consultationDate: `${date} ${time}`,
+  //     hospitalizationStatus: selectedOption === '네' ? new Date() : null,
+  //   }));
+  // }, [date, time, selectedOption]);
 
   const handleCheckboxChange = () => {
     setChecked(!checked);
   };
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
       ...prevData,
@@ -90,7 +104,7 @@ const HosRecords = ({ formData, setFormData }) => {
     }));
   };
 
-  const handleDateChange = (e) => {
+  const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setDate(value);
     setFormData((prevData) => ({
@@ -99,7 +113,7 @@ const HosRecords = ({ formData, setFormData }) => {
     }));
   };
 
-  const handleTimeChange = (e) => {
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
     setTime(value);
     setFormData((prevData) => ({
@@ -125,7 +139,12 @@ const HosRecords = ({ formData, setFormData }) => {
                 checked={checked}
                 onChange={handleCheckboxChange}
               /> */}
-              <CheckBox />
+              <CheckBox
+                value=""
+                checked={false}
+                text=""
+                onChange={handleCheckboxChange}
+              />
               <span>
                 의료진에 진단 받은 기록이 없습니다. (체크 시 진단 비활성화 추가)
               </span>

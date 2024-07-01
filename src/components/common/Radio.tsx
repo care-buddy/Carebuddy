@@ -38,10 +38,10 @@ const StyledRadio = styled.input`
   }
 `;
 
-interface RadioProps {
+interface RadioProps extends React.InputHTMLAttributes<HTMLInputElement> {
   value: string;
   checked: boolean;
-  onChange?: () => void;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const Radio: React.FC<RadioProps> = ({

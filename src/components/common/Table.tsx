@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Pagination from 'rc-pagination';
 import 'rc-pagination/assets/index.css';

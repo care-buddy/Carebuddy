@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
@@ -34,10 +33,17 @@ const SelectDummyCityOptions = [
   { value: '제주특별자치도', label: '제주특별자치도' },
 ];
 
+interface DataItem {
+  ID: string;
+  Name: string;
+  Age: string;
+  City: string;
+}
+
 const HosInfo: React.FC = () => {
   // 테이블에 표시할 데이터 예시 및 임시 상태
   const headers = ['ID', 'Name', 'Age', 'City'];
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<DataItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -73,7 +79,7 @@ const HosInfo: React.FC = () => {
     const itemsPerPage = 2; // 한 페이지당 보여줄 항목 수
     const startIndex = (page - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
-    const paginatedData = [
+    const paginatedData: DataItem[] = [
       { ID: '1', Name: 'John Doe', Age: '30', City: 'New York' },
       { ID: '2', Name: 'Jane Smith', Age: '25', City: 'Los Angeles' },
       { ID: '3', Name: 'Mike Johnson', Age: '40', City: 'Chicago' },
@@ -105,7 +111,13 @@ const HosInfo: React.FC = () => {
         </BorderWrapper>
         <Table
           headers={headers}
-          data={data}
+          // data={data} 이렇게 쓰는게 아니라 명시해줘야함
+          data={data.map((item) => ({
+            ID: item.ID,
+            Name: item.Name,
+            Age: item.Age,
+            City: item.City,
+          }))}
           isLoading={isLoading}
           isError={isError}
           currentPage={currentPage}

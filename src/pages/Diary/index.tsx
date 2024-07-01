@@ -305,13 +305,34 @@ const AddProfileMsg = styled.p`
   color: #7d7d7d;
 `;
 
+// 임시, 나중에 폼데이터 인터페이스 통합
+interface FormData {
+  doctorName?: string;
+  consultationDate?: string;
+  address?: string;
+  disease?: string;
+  symptom?: string;
+  treatment?: string;
+  memo?: string;
+  hospitalizationStatus?: Date | null;
+}
+
 const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [petModalOpen, setPetModalOpen] = useState(false);
   const [petEditModalOpen, setPetEditModalOpen] = useState(false);
-  const [formData, setFormData] = useState({ name: '', phoneNumber: '' });
+  const [formData, setFormData] = useState<FormData>({
+    doctorName: '',
+    consultationDate: '',
+    address: '',
+    disease: '',
+    symptom: '',
+    treatment: '',
+    memo: '',
+    hospitalizationStatus: null,
+  });
 
   // 모달 관련 함수
   const handleOpenModal = () => {

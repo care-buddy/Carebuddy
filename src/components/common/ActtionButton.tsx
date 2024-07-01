@@ -111,7 +111,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
   const handleClick = () => {
     setIsClicked((prevState) => !prevState);
-    setIsOpen((prevState) => !prevState);
+    // setIsOpen((prevState) => !prevState);
   };
 
   const handleClickOutside = (event: MouseEvent) => {

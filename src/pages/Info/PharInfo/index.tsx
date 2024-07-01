@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Button from '@/components/common/Button';
 import Table from '@/components/common/Table';
@@ -34,10 +33,17 @@ const SelectDummyCityOptions = [
   { value: '제주특별자치도', label: '제주특별자치도' },
 ];
 
+interface DataItem {
+  ID: string;
+  Name: string;
+  Age: string;
+  City: string;
+}
+
 const PharInfo: React.FC = () => {
   // 테이블에 표시할 데이터 예시 및 임시 상태
   const headers = ['ID', 'Name', 'Age', 'City'];
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<DataItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -105,7 +111,12 @@ const PharInfo: React.FC = () => {
         </BorderWrapper>
         <Table
           headers={headers}
-          data={data}
+          data={data.map((item) => ({
+            ID: item.ID,
+            Name: item.Name,
+            Age: item.Age,
+            City: item.City,
+          }))}
           isLoading={isLoading}
           isError={isError}
           currentPage={currentPage}
