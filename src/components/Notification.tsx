@@ -14,7 +14,7 @@ interface NotificationProps {
 }
 
 const NotificationContainer = styled.div<{ show: boolean }>`
-  width: 320px;
+  width: 400px;
   position: absolute;
   top: calc(100% + 0px);
   right: 0;
