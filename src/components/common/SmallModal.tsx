@@ -21,7 +21,6 @@ const SmallModal: React.FC<SmallModalProps> = ({ onClose, component }) => {
       <ModalContent onClick={(e) => e.stopPropagation()}>
         {component}
       </ModalContent>
-      <p>모달 테스트</p>
     </ModalBackground>
   );
 };
@@ -36,9 +35,8 @@ const ModalBackground = styled.div`
   height: 100%;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
+  align-items: center;
   justify-content: center;
-  align-items: flex-start; 
-  padding-top: 14vh; 
   z-index: 9999;
 `;
 
