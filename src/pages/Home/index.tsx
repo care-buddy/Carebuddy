@@ -34,10 +34,15 @@ import BasicRegistration from '@/components/Registration/BasicRegistration';
 // import SmallModal from '@/components/common/SmallModal';
 import KakaoRegistration from '@/components/Registration/KaKaoRegistration';
 
-// 카카오 회원가입 모달 테스트용
+// 아이디 찾기 모달 테스트용
 // import Button from '@components/common/Button';
 // import SmallModal from '@/components/common/SmallModal';
 import ForgotEmail from '@/components/Recovery/ForgotEmail';
+
+// 비밀번호 찾기 모달 테스트용
+// import Button from '@components/common/Button';
+// import SmallModal from '@/components/common/SmallModal';
+import ForgotPassword from '@/components/Recovery/ForgotPassword';
 
 // 임시 데이터
 import {
@@ -183,12 +188,39 @@ const Home: React.FC = () => {
   //   neutered: '',
   // });
 
+
   const handleOpenModal6 = () => {
     setModalOpen6(true);
   };
 
   const handleCloseModal6 = () => {
     setModalOpen6(false);
+  };
+
+  // const handleFormSubmit3 = () => {
+  //   // console.log('Form data:', formData);
+  //   // 모달 닫기
+  //   handleCloseModal();
+  // };
+
+
+  // 패스워드 찾기 모달 1
+  const [modalOpen7, setModalOpen7] = useState(false);
+  // const [formData, setFormData] = useState<FormData>({
+  //   name: '',
+  //   age: 0,
+  //   weight: 0,
+  //   gender: '',
+  //   species: '',
+  //   neutered: '',
+  // });
+
+  const handleOpenModal7 = () => {
+    setModalOpen7(true);
+  };
+
+  const handleCloseModal7 = () => {
+    setModalOpen7(false);
   };
 
   // const handleFormSubmit3 = () => {
@@ -261,6 +293,15 @@ const Home: React.FC = () => {
           onClose={handleCloseModal6}
           modalPaddingSize="sm"
           component={<ForgotEmail />}
+        />
+      )}
+      {/* 비밀번호 찾기 모달  */}
+      <Button onClick={handleOpenModal7}>비밀번호 찾기 모달</Button>
+      {modalOpen7 && (
+        <SmallModal
+          onClose={handleCloseModal7}
+          modalPaddingSize="sm"
+          component={<ForgotPassword />}
         />
       )}
 

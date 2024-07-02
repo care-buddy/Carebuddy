@@ -8,12 +8,12 @@ import Radio from '@components/common/Radio';
 const ForgotEmail: React.FC = () => (
   <Container>
     <LargeText>아이디 찾기</LargeText>
-    <InputContainer>
-      <StyledInput
-        placeholder="가입하신 이메일을 입력해주세요."
-        placeholderColor="light-grey"
-      />
-    </InputContainer>
+    {/* <InputContainer> */}
+    <StyledInput
+      placeholder="가입하신 이메일을 입력해주세요."
+      placeholderColor="light-grey"
+    />
+    {/* </InputContainer> */}
     <Button buttonStyle="square-green">아이디 찾기</Button>
     {/* 일치하는 정보 발견 시 보여줄 부분 */}
     {/* <GreyStyledP>입력하신 정보와 일치하는 계정을 발견했습니다.</GreyStyledP>
@@ -62,12 +62,6 @@ const Container = styled.div`
   }
 `;
 
-const InputContainer = styled.div`
-  // background-color: yellow; //임시
-  padding: 8px 4px;
-  margin-bottom: 8px;
-`;
-
 const LargeText = styled.p`
   font-size: var(--font-size-hd-1);
   color: var(--color-black);
@@ -105,5 +99,6 @@ const P = styled.p`
 `;
 
 const StyledInput = styled(Input)`
-  width: 100%; /* 입력란을 좌우로 꽉 채우기 */
+  width: 100%;
+  padding: 8px 4px;
 `;
