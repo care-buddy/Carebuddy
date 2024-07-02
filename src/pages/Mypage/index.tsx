@@ -8,6 +8,9 @@ import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
 import Input from '@/components/common/Input';
 import SmallModal from '@/components/common/SmallModal';
 import UserAsk from '@/pages/Mypage/UserAsk';
+import Modal from '@/components/common/Modal/index'
+import PostCreate from '@/pages/PostCreate/index'
+import TopBar from '@/components/common/TopBar';
 
 const Container = styled.div`
   margin: 30px 0 30px 0;
@@ -49,6 +52,7 @@ const ImgContainer = styled.div`
 const LinkButton = styled.div`
   margin: 10px 0 10px 0;
   text-decoration: underline;
+  cursor: pointer;
 `;
 
 const ButtonContainer = styled.div`
@@ -121,6 +125,7 @@ const ProfileContainer = () => (
         <List>
           <Item>닉네임</Item>
           <Input
+            inputSize='bg'
             placeholder="입력하여주세요."
             value="케어버디"
           />
@@ -144,6 +149,7 @@ const ProfileContainer = () => (
 
 const Mypage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
 
   const handleWithdrawClick = () => {
     setIsModalOpen(true);
@@ -157,6 +163,14 @@ const Mypage: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const handleWriteClick = () => {
+    setIsWriteModalOpen(true);
+  };
+
+  const handleCloseWriteModal = () => {
+    setIsWriteModalOpen(false);
+  };
+
   const contentItems = [
     { id: '1', content: '회원정보', component: <UserInfoContainer /> },
     { id: '2', content: '프로필', component: <ProfileContainer /> },
@@ -166,6 +180,16 @@ const Mypage: React.FC = () => {
 
   return (
     <Container>
+      <TopBar category="회원 정보 수정" title="마이 페이지" />
+      <Button onClick={handleWriteClick}>글 작성하기 모달 임시</Button>
+      {isWriteModalOpen && (
+        <Modal
+          title='글 작성하기'
+          value='등록'
+          component={<PostCreate />}
+          onClose={handleCloseWriteModal}
+        />
+      )}
       {contentItems.map(item => (
         <React.Fragment key={item.id}>
           <Menu>
