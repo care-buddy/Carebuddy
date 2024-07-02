@@ -1,13 +1,30 @@
 import React, { useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-interface SmallModalProps {
+// 버튼 스타일, 사이즈 props
+interface StyledSmallModalProps {
+  modalPaddingSize?: 'sm' | 'md';
+}
+
+const modalPaddingSizes = {
+  sm: css`
+    padding: 30px 0;
+  `,
+  md: css`
+    padding: 48px 0;
+  `,
+};
+
+interface SmallModalProps extends StyledSmallModalProps {
   onClose: () => void;
   component: React.ReactNode;
 }
 
-const SmallModal: React.FC<SmallModalProps> = ({ onClose, component }) => {
-
+const SmallModal: React.FC<SmallModalProps> = ({
+  onClose,
+  component,
+  modalPaddingSize = 'md',
+}) => {
   useEffect(() => {
     document.body.style.overflow = 'hidden'; // 모달 열렸을 때 배경 스크롤 막음
 
@@ -18,7 +35,10 @@ const SmallModal: React.FC<SmallModalProps> = ({ onClose, component }) => {
 
   return (
     <ModalBackground onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
+      <ModalContent
+        onClick={(e) => e.stopPropagation()}
+        modalPaddingSize={modalPaddingSize}
+      >
         {component}
       </ModalContent>
     </ModalBackground>
@@ -40,7 +60,7 @@ const ModalBackground = styled.div`
   z-index: 9999;
 `;
 
-const ModalContent = styled.div`
+const ModalContent = styled.div<StyledSmallModalProps>`
   position: relative;
   width: 30vw;
   max-height: 70vh;
@@ -53,7 +73,9 @@ const ModalContent = styled.div`
   z-index: 10000;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 48px 0;
   box-sizing: border-box;
   align-items: center;
+
+  ${(props) =>
+    props.modalPaddingSize && modalPaddingSizes[props.modalPaddingSize]}
 `;

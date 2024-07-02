@@ -50,14 +50,20 @@ const BasicRegistration: React.FC = () => {
       <Section>
         <Heading>아이디</Heading>
         <EmailContainer>
-          <Input placeholder="이메일 형식으로 입력해주세요." />
+          <Input
+            placeholder="이메일 형식으로 입력해주세요."
+            placeholderColor="light-grey"
+          />
           <Button buttonSize="sm" buttonStyle="square-grey">
             발송
           </Button>
         </EmailContainer>
         <p>메일 발송하면 보이는 영역</p>
         <EmailContainer>
-          <Input placeholder="메일로 발송된 인증 번호를 입력해주세요." />
+          <Input
+            placeholder="메일로 발송된 인증 번호를 입력해주세요."
+            placeholderColor="light-grey"
+          />
           <Button buttonSize="sm" buttonStyle="square-grey">
             인증
           </Button>
@@ -67,9 +73,15 @@ const BasicRegistration: React.FC = () => {
       <Section>
         <Heading>회원정보 입력</Heading>
         <P>닉네임*</P>
-        <Input placeholder="닉네임을 입력해주세요." />
+        <Input
+          placeholder="닉네임을 입력해주세요."
+          placeholderColor="light-grey"
+        />
         <P>핸드폰 번호*</P>
-        <Input placeholder="핸드폰 번호(-제외)를 입력해주세요." />
+        <Input
+          placeholder="핸드폰 번호(-제외)를 입력해주세요."
+          placeholderColor="light-grey"
+        />
       </Section>
 
       <Section>
@@ -205,10 +217,11 @@ const EmailContainer = styled.div`
   display: flex;
   justify-content: space-between;
 
-  button{
-  // width: 18%
+  button {
+    // width: 18%
   }
 
   input {
-  width: 80%;}
+    width: 80%;
+  }
 `;
