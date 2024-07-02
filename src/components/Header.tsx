@@ -2,7 +2,9 @@ import { Link, NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import logo from '@assets/carebuddyLogo.png';
+import { LuBell } from 'react-icons/lu';
 import Dropdown from './Dropdown';
+import Notification from './Notification';
 
 const Wrapper = styled.header`
   position: fixed;
@@ -66,7 +68,7 @@ const MenuItem = styled(NavLink)`
   }
 `;
 
-const Notification = styled.div`
+const NotificationWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -99,8 +101,71 @@ const DropdownContainer = styled.div`
   animation: ${fadeIn} 0.3s ease-in-out;
 `;
 
+/* 임시 알림 구역: 수정필요! */
+const NotificationIcon = styled.div`
+  position: relative;
+  cursor: pointer;
+  padding: 10px 16px;
+  padding-top: 44px;
+  > svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-green-main);
+
+    &.big {
+      width: 24px;
+      height: 24px;
+    }
+  }
+`;
+
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+
+  // 알림 관련 함수 (임시)
+  const toggleNotification = () => {
+    setShowNotification(!showNotification);
+  };
+
+  const closeNotification = () => {
+    setShowNotification(false);
+  };
+
+  // 임의의 알림 데이터 설정
+  const notifications = [
+    {
+      id: 1,
+      user: 'nickname',
+      message: '님이 내 게시물을 마음에 들어합니다.',
+      date: '24/03/02',
+      details: '어떤 사료가 좋을까요?',
+    },
+    {
+      id: 2,
+      user: '닉네임',
+      message: '님이 내 게시물을 마음에 들어합니다.',
+      date: '어제',
+      details:
+        '알림이 없을때를 고려하지 않음 외부 클릭시 닫히지 않음을 고려하지 않음',
+    },
+    {
+      id: 3,
+      user: 'nickname',
+      message: '님이 내 게시물을 마음에 들어합니다.',
+      date: '1시간',
+      details:
+        '갯수가 많아졌을때를 고려하지 않음 길어집니다 두줄까지 허용할까요?',
+    },
+    {
+      id: 4,
+      user: '로직을 구현하지 않음',
+      message: '님이 댓글을 남겼습니다.',
+      date: '24/03/02',
+      details:
+        '임의의 댓글입니다 임의의 댓글입니다 임의의 댓글입니다 임의의 댓글입니...',
+    },
+  ];
 
   // 드롭다운 메뉴 클릭 시, 드롭다운 메뉴가 사라지도록 하는 함수
   const handleLinkClick = () => {
@@ -157,15 +222,23 @@ const Header: React.FC = () => {
             )}
           </MenuItem>
         </Menu>
-        <Notification>
-          라우팅용 임시버튼들
-          <MenuItem to="/login-router">로그인</MenuItem>
+        <NotificationWrapper>
           <MenuItem to="/mypage">마이페이지</MenuItem>
           <MenuItem to="/pharInfo">약국정보</MenuItem>
           <MenuItem to="/globalSearch">전체 검색</MenuItem>
           <MenuItem to="/post">글(post)</MenuItem>
+          <NotificationIcon onClick={toggleNotification}>
+            <LuBell />
+            {showNotification && (
+              <Notification
+                show={showNotification}
+                notifications={notifications}
+                onClose={closeNotification}
+              />
+            )}
+          </NotificationIcon>
           <MenuItem to="/community">전체 커뮤니티</MenuItem>
-        </Notification>
+        </NotificationWrapper>
       </Content>
     </Wrapper>
   );

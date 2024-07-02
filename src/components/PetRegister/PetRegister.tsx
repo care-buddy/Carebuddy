@@ -27,12 +27,12 @@ const PetRegister = () => {
 
   // const [setFormData, setFormData] = useState<FormData>({
   // const [, setFormData] = useState<FormData>({
-    // name: '',
-    // age: 0,
-    // weight: 0,
-    // gender: '',
-    // species: '',
-    // neutered: '',
+  // name: '',
+  // age: 0,
+  // weight: 0,
+  // gender: '',
+  // species: '',
+  // neutered: '',
   // });
 
   // petInfo 객체 초기화
@@ -74,7 +74,6 @@ const PetRegister = () => {
     // 임시
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     type: 'name' | 'age' | 'weight'
-
   ) => {
     // 임시
     // eslint-disable-next-line no-console
@@ -112,7 +111,11 @@ const PetRegister = () => {
       </Section>
       <Section>
         <Heading>반려동물 이름</Heading>
-        <Input onChange={(e) => handleInputChange(e, 'name')} placeholder="이름을 입력해주세요" />
+        <Input
+          onChange={(e) => handleInputChange(e, 'name')}
+          placeholder="이름을 입력해주세요"
+          placeholderColor="light-grey"
+        />
       </Section>
       <Section>
         <Heading>반려동물 성별</Heading>
@@ -158,7 +161,12 @@ const PetRegister = () => {
       </Section>
       <Section>
         <Heading>반려동물 나이</Heading>
-        <Input type="number" onChange={(e) => handleInputChange(e, 'age')} placeholder="나이를 입력해주세요" />
+        <Input
+          type="number"
+          onChange={(e) => handleInputChange(e, 'age')}
+          placeholder="나이를 입력해주세요"
+          placeholderColor='light-grey'
+        />
       </Section>
       <Section>
         <Heading>중성화 여부</Heading>
@@ -184,7 +192,12 @@ const PetRegister = () => {
 
       <Section>
         <Heading>반려동물 체중</Heading>
-        <Input type="number" onChange={(e) => handleInputChange(e, 'weight')} placeholder="체중을 입력해주세요"/>
+        <Input
+          type="number"
+          onChange={(e) => handleInputChange(e, 'weight')}
+          placeholder="체중을 입력해주세요"
+          placeholderColor='light-grey'
+        />
       </Section>
     </>
   );
