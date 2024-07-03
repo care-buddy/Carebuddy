@@ -14,7 +14,8 @@ import {
   Userpage,
   HosInfo,
   PharInfo,
-  GlobalSearch
+  GlobalSearch,
+  LostPage,
 } from '@/pages';
 
 const router = createBrowserRouter([
@@ -39,6 +40,10 @@ const router = createBrowserRouter([
       { path: 'globalSearch', element: <GlobalSearch /> },
     ],
   },
+  {
+    path: '*',
+    element: <LostPage />,
+  },
 ]);
 
 // 전역 공통 스타일
@@ -58,6 +63,8 @@ const GlobalStyles = createGlobalStyle`
     --font-size-lg-1: 1.625rem; // 26
     --font-size-lg-2: 2rem; // 32
     --font-size-lg-3: 2.25rem; 
+
+    --font-size-exlg-1: 10rem;
     
     /* h1,h2: bold, h3~h5: semibold, h6: medium 
       p: regular and bold
@@ -93,6 +100,13 @@ const GlobalStyles = createGlobalStyle`
     font-weight: 400;
     font-style: normal;
   }
+
+  @font-face {
+    font-family: 'BMJUA';
+    src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_one@1.0/BMJUA.woff') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
 
     *, *::before, *::after { 
     font-family: 'Pretendard-Regular', sans-serif;
