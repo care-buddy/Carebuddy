@@ -148,9 +148,11 @@ const ProfileContainer = () => (
 );
 
 const Mypage: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
+  const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
+  // 회원탈퇴 모달 함수
   const handleWithdrawClick = () => {
     setIsModalOpen(true);
   };
@@ -171,6 +173,14 @@ const Mypage: React.FC = () => {
     setIsWriteModalOpen(false);
   };
 
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+  };
+
   const contentItems = [
     { id: '1', content: '회원정보', component: <UserInfoContainer /> },
     { id: '2', content: '프로필', component: <ProfileContainer /> },
@@ -188,6 +198,15 @@ const Mypage: React.FC = () => {
           value='등록'
           component={<PostCreate />}
           onClose={handleCloseWriteModal}
+        />
+      )}
+      <Button onClick={handleEditClick}>글 수정하기 모달 임시</Button>
+      {isEditModalOpen && (
+        <Modal
+          title='글 수정하기'
+          value='수정'
+          component={<PostCreate />}
+          onClose={handleCloseEditModal}
         />
       )}
       {contentItems.map(item => (

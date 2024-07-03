@@ -6,13 +6,12 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
 const Container = styled.div`
-  margin: 30px 0;
   display: flex;
   flex-direction: column;
 `;
 
 const SelectWrapper = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 10px;
 `;
 
 const InputWrapper = styled.div`
@@ -20,7 +19,7 @@ const InputWrapper = styled.div`
 `;
 
 const EditorContainer = styled.div`
-  height: 300px;
+  height: 350px;
 `;
 
 const SelectOptions = [
