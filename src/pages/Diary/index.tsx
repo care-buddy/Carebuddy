@@ -19,6 +19,9 @@ import ActionButton from '@/components/common/ActtionButton';
 import TopBar from '@/components/common/TopBar';
 import PetRegister from '@/components/PetRegister/PetRegister';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import useFetch from '@/hooks/useFetch';
 import HosRecords from './HosRecords';
 
 const Wrapper = styled.div`
@@ -346,6 +349,41 @@ interface FormData {
   hospitalizationStatus?: Date | null;
 }
 
+interface Buddy {
+  _id: number;
+  name: string;
+  species: string;
+  age: number;
+}
+
+const mock = new MockAdapter(axios);
+
+const dummyBuddies = [
+  {
+    _id: 1,
+    name: '후이',
+    species: '말티즈',
+    age: 3,
+    buddyImage: null,
+    createdAt: '2024-04-19T09:00:00.463Z',
+    updatedAt: '2024-04-19T09:00:00.463Z',
+    deletedAt: null,
+  },
+  {
+    _id: 2,
+    name: '쿠키',
+    species: '샴',
+    age: 2,
+    buddyImage: null,
+    createdAt: '2024-04-19T09:00:00.463Z',
+    updatedAt: '2024-04-19T09:00:00.463Z',
+    deletedAt: null,
+  },
+];
+
+// /api/buddies로 GET 요청 모킹
+mock.onGet('/api/buddies').reply(200, dummyBuddies);
+
 const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
@@ -362,6 +400,38 @@ const Diary: React.FC = () => {
     memo: '',
     hospitalizationStatus: null,
   });
+  const {
+    data: buddies,
+    isLoading,
+    error,
+  } = useFetch<Buddy[]>(() =>
+    axios.get('/api/buddies').then((res) => res.data)
+  );
+
+  // const [buddies, setBuddies] = useState<Buddy[]>([]);
+  // const [loading, setLoading] = useState(true); // 로딩 상태 추가
+  // useEffect(() => {
+  //   const fetchBuddies = async () => {
+  //     setLoading(true); // 로딩 시작
+  //     try {
+  //       const response = await axios.get('/api/buddies');
+  //       setBuddies(response.data);
+  //     } catch (error) {
+  //       console.error('Error fetching buddies:', error);
+  //     }
+  //     setLoading(false); // 로딩 종료
+  //   };
+
+  //   fetchBuddies();
+  // }, []);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   // 모달 관련 함수
   const handleOpenModal = () => {
@@ -422,23 +492,28 @@ const Diary: React.FC = () => {
             modules={[Pagination, Virtual]}
             className="mySwiper"
           >
-            <SwiperSlide key={0} virtualIndex={0}>
-              <CardsWrapper>
-                <Cards>
-                  <ActionButton
-                    buttonBorder="border-none"
-                    direction="vertical"
-                    onDelete={() => {}}
-                    onEdit={handleOpenPetEditModal}
-                  />
-                  <Photo src={DefaultPetProfileImg} />
-                  <Name>이름</Name>
-                  <Details>종 / 나이</Details>
-                </Cards>
-              </CardsWrapper>
-            </SwiperSlide>
+            {buddies &&
+              buddies.map((buddy, index) => (
+                <SwiperSlide key={buddy._id} virtualIndex={index}>
+                  <CardsWrapper>
+                    <Cards>
+                      <ActionButton
+                        buttonBorder="border-none"
+                        direction="vertical"
+                        onDelete={() => {}}
+                        onEdit={handleOpenPetEditModal}
+                      />
+                      <Photo src={DefaultPetProfileImg} />
+                      <Name>{buddy.name}</Name>
+                      <Details>
+                        {buddy.species} / {buddy.age}살
+                      </Details>
+                    </Cards>
+                  </CardsWrapper>
+                </SwiperSlide>
+              ))}
 
-            <SwiperSlide key={1} virtualIndex={1}>
+            <SwiperSlide key={999} virtualIndex={999}>
               <CardsWrapper>
                 <Cards className="add-card" onClick={handleOpenPetModal}>
                   <AddProfile>
