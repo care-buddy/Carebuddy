@@ -13,11 +13,17 @@ import {
   LuActivitySquare,
   LuStethoscope,
   LuMessageSquarePlus,
+  LuPlus,
 } from 'react-icons/lu';
 import ActionButton from '@/components/common/ActtionButton';
 import TopBar from '@/components/common/TopBar';
 import PetRegister from '@/components/PetRegister/PetRegister';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import useFetch from '@/hooks/useFetch';
 import HosRecords from './HosRecords';
+import PetCard from './PetCard';
+import { CardsWrapper, Cards } from './card-components';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -44,72 +50,18 @@ const ProfilesTitle = styled.div`
 /* 카드프로필 끝 */
 
 /* 카드 */
-
-const CardsWrapper = styled.div`
-  position: relative;
-  height: 300px;
-  display: flex;
+const StyledSwiper = styled(Swiper)`
   width: 100%;
-  position: relative;
-`;
-
-const Cards = styled.div`
-  width: 244px;
-  height: 90%;
-  /* background: #ffffff; */
-  box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.1);
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-
-  > button {
+  padding: 4px 10px;
+  > div {
+    padding-top: 8px;
+  }
+  > div:last-child {
     position: absolute;
-    top: 15px;
-    right: 15px;
-    > div {
-      position: absolute;
-    }
+    bottom: 0;
+    display: flex;
+    justify-content: center;
   }
-  :hover {
-    cursor: pointer;
-  }
-`;
-
-const Photo = styled.img`
-  width: 130px;
-  height: 130px;
-  background: rgba(152, 185, 156, 0.3);
-  border-radius: 50%;
-  border: 0;
-  overflow: hidden;
-  text-align: center;
-`;
-
-const Name = styled.p`
-  margin-top: 22px;
-  height: 26px;
-  font-size: var(--font-size-hd-1);
-  font-weight: bold;
-  line-height: 26px;
-  text-align: center;
-  margin-bottom: 6px;
-  transition: color 0.3s ease;
-  &.selectedPet {
-    color: var(--color-green-main);
-  }
-`;
-
-const Details = styled.p`
-  width: 100%;
-  height: 19px;
-  font-size: 16px;
-  line-height: 19px;
-  text-align: center;
-  color: #7d7d7d;
-  margin: 0;
 `;
 
 /* 카드 끝 */
@@ -121,7 +73,7 @@ const DiaryWrapper = styled.div`
   width: 100%;
   height: auto;
   padding: 50px 80px 40px 60px;
-  border: 1px solid #cecece;
+  border: 2px solid var(--color-grey-2);
   border-radius: 6px 80px 6px 6px;
   margin-top: 100px;
   position: relative;
@@ -157,14 +109,17 @@ const HorizontalLine = styled.div`
 
 // 타이틀을 포함한 다이어리 컨테이너
 const ReportWrapper = styled.div`
-  height: 280px;
+  /* height: 100% */
   width: 100%;
-  margin-top: 50px;
-  margin-bottom: 150px;
+  margin-top: 40px;
+  margin-bottom: 50px;
   &.noReport {
     > p {
       padding-bottom: 8px;
     }
+  }
+  + div {
+    margin-top: 80px;
   }
 `;
 
@@ -174,9 +129,12 @@ const Paragraph = styled.p``;
 const Report = styled.div`
   padding: 20px 3%;
   margin-top: 24px;
-  height: 100%;
-  border: 1px solid #7d7d7d;
-  border-radius: 6px;
+  /* height: 300px; */
+  /* border: 2px solid var(--color-grey-2); */
+  border-top: 3px solid var(--color-green-sub-2);
+  border-radius: 8px;
+  /* border-radius: 1rem; */
+  box-shadow: 0 6px 12px rgba(0, 20, 0, 0.1);
   /* display: flex;
   position: relative; */
   display: grid;
@@ -197,6 +155,14 @@ const DeseaseName = styled.div`
   width: 100%;
   padding-top: 26px;
   /* padding-right: 20px; */
+  position: relative;
+  > p {
+    position: absolute;
+    top: 56px;
+    left: 36px;
+    color: var(--color-grey-1);
+    font-size: var(--font-size-ft-1);
+  }
 `;
 
 const Icon = styled.div`
@@ -217,7 +183,7 @@ const Icon = styled.div`
 /* 다이어리 상세 : 그리드로 변경 */
 const DiaryDetailsLeft = styled.div`
   display: flex;
-  border-left: solid 2px #cecece;
+  border-left: solid 2px rgba(20, 40, 20, 0.1);
   padding: 26px 4%;
   padding-left: 30px;
   flex-direction: column;
@@ -275,27 +241,23 @@ const Doctor = styled.span`
 
 /* 다이어리 상세 끝  */
 
-const StyledSwiper = styled(Swiper)`
-  width: 100%;
-  > div {
-    padding-top: 8px;
-  }
-  > div:last-child {
-    position: absolute;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-  }
-`;
-
 // 프로필이 없을 때
 const AddProfile = styled.div`
   width: 100px;
   height: 100px;
-  background: var(--color-grey-2);
+  background: var(--color-grey-3);
   border-radius: 50%;
   border: 0;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  > svg {
+    color: #b3b3b3;
+    width: 50px;
+    height: 50px;
+  }
 `;
 
 const AddProfileMsg = styled.p`
@@ -317,6 +279,63 @@ interface FormData {
   hospitalizationStatus?: Date | null;
 }
 
+interface Buddy {
+  _id: string;
+  name: string;
+  species: string;
+  age: number;
+}
+
+const mock = new MockAdapter(axios);
+
+const dummyBuddies = [
+  {
+    _id: '1a',
+    name: '후이',
+    species: '말티즈',
+    age: 3,
+    buddyImage: null,
+    createdAt: '2024-04-19T09:00:00.463Z',
+    updatedAt: '2024-04-19T09:00:00.463Z',
+    deletedAt: null,
+  },
+  {
+    _id: '2b',
+    name: '쿠키',
+    species: '샴',
+    age: 2,
+    buddyImage: null,
+    createdAt: '2024-04-19T09:00:00.463Z',
+    updatedAt: '2024-04-19T09:00:00.463Z',
+    deletedAt: null,
+  },
+];
+
+// /api/buddies로 GET 요청 모킹
+mock.onGet('/api/buddies').reply(200, dummyBuddies);
+
+const dummyBuddy1 = {
+  _id: '1a',
+  name: '후이',
+  species: '말티즈',
+  age: 3,
+  buddyImage: null,
+  createdAt: '2024-04-19T09:00:00.463Z',
+  updatedAt: '2024-04-19T09:00:00.463Z',
+  deletedAt: null,
+};
+
+const dummyBuddy2 = {
+  _id: '2b',
+  name: '쿠키',
+  species: '샴',
+  age: 2,
+  buddyImage: null,
+  createdAt: '2024-04-19T09:00:00.463Z',
+  updatedAt: '2024-04-19T09:00:00.463Z',
+  deletedAt: null,
+};
+
 const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
@@ -333,6 +352,22 @@ const Diary: React.FC = () => {
     memo: '',
     hospitalizationStatus: null,
   });
+  const {
+    data: buddies,
+    isLoading,
+    error,
+  } = useFetch<Buddy[]>(() =>
+    axios.get('/api/buddies').then((res) => res.data)
+  ); // 전체 반려동물
+  const [selectedBuddy, setSelectedBuddy] = useState<Buddy | null>(null); // 선택된 반려동물
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   // 모달 관련 함수
   const handleOpenModal = () => {
@@ -348,12 +383,26 @@ const Diary: React.FC = () => {
     setEditModalOpen(!editModalOpen);
   };
 
-  const handleOpenPetEditModal = () => {
-    setPetEditModalOpen(!petEditModalOpen);
+  mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
+  mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
+
+  const handleOpenPetEditModal = (buddyId: string) => {
+    // API를 통해 특정 반려동물 정보 가져오기
+    axios
+      .get(`/api/buddies/${buddyId}`)
+      .then((res) => {
+        console.log('Buddy 1:', res.data);
+        setSelectedBuddy(res.data); // 가져온 반려동물 정보 설정
+        setPetEditModalOpen(true); // 수정 모달 열기
+      })
+      .catch((err) => {
+        console.error('Error fetching buddy details:', err);
+      });
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
+    setSelectedBuddy(null); // 모달 창이 닫힐 때 선택된 반려동물 정보 초기화
   };
 
   const handleCloseEditModal = () => {
@@ -383,7 +432,7 @@ const Diary: React.FC = () => {
           <StyledSwiper
             virtual
             slidesPerView={4}
-            spaceBetween={0}
+            spaceBetween={20}
             // slidesOffsetBefore={20}
             // /* 전체적인 슬라이드의 오른쪽에 20px 공백을 준다. */
             // slidesOffsetAfter={30}
@@ -393,26 +442,38 @@ const Diary: React.FC = () => {
             modules={[Pagination, Virtual]}
             className="mySwiper"
           >
-            <SwiperSlide key={0} virtualIndex={0}>
-              <CardsWrapper>
-                <Cards>
-                  <ActionButton
-                    buttonBorder="border-none"
-                    direction="vertical"
+            {buddies &&
+              buddies.map((buddy, index) => (
+                <SwiperSlide key={buddy._id} virtualIndex={index}>
+                  {/* <CardsWrapper>
+                    <Cards>
+                      <ActionButton
+                        buttonBorder="border-none"
+                        direction="vertical"
+                        onDelete={() => {}}
+                        onEdit={handleOpenPetEditModal}
+                      />
+                      <Photo src={DefaultPetProfileImg} />
+                      <Name>{buddy.name}</Name>
+                      <Details>
+                        {buddy.species} / {buddy.age}살
+                      </Details>
+                    </Cards>
+                  </CardsWrapper> */}
+                  <PetCard
+                    buddy={buddy}
+                    onEdit={() => handleOpenPetEditModal(buddy._id)}
                     onDelete={() => {}}
-                    onEdit={handleOpenPetEditModal}
                   />
-                  <Photo />
-                  <Name>이름</Name>
-                  <Details>종 / 나이</Details>
-                </Cards>
-              </CardsWrapper>
-            </SwiperSlide>
-            <SwiperSlide key={1} virtualIndex={1}>
-              <CardsWrapper>
-                <Cards>
-                  <AddProfile onClick={handleOpenPetModal} />
+                </SwiperSlide>
+              ))}
 
+            <SwiperSlide key={999} virtualIndex={999}>
+              <CardsWrapper>
+                <Cards className="add-card" onClick={handleOpenPetModal}>
+                  <AddProfile>
+                    <LuPlus />
+                  </AddProfile>
                   <AddProfileMsg>프로필 추가</AddProfileMsg>
                 </Cards>
               </CardsWrapper>
@@ -457,15 +518,103 @@ const Diary: React.FC = () => {
             />
           )}
           <ReportWrapper>
-            <Paragraph>날짜(컴포넌트화 필요합니다)</Paragraph>
-
             <Report>
               <DeseaseName>
                 <Icon>
                   <TbReportMedical className="big" />
                 </Icon>
                 <DeseaseTitle>질병 타이틀</DeseaseTitle>
+                <Paragraph>24/07/03</Paragraph>
               </DeseaseName>
+
+              <DiaryDetailsLeft>
+                <DiaryDetailContainer>
+                  <Icon>
+                    <LuActivitySquare />
+                  </Icon>
+                  <DiaryDetail>
+                    <DetailTitle>증상</DetailTitle>
+                    <Paragraph>
+                      {'data.symptom' || '증상 기록이 없어요'}
+                    </Paragraph>
+                  </DiaryDetail>
+                </DiaryDetailContainer>
+                <DiaryDetailContainer>
+                  <Icon>
+                    <TbBuildingHospital />
+                  </Icon>
+                  <DiaryDetail>
+                    <DetailTitle>입원 여부</DetailTitle>
+                    <Paragraph>입원중 or 입원하지 않았어요</Paragraph>
+                  </DiaryDetail>
+                </DiaryDetailContainer>
+                <DiaryDetailContainer>
+                  <Icon>
+                    <LuMessageSquarePlus />
+                  </Icon>
+                  <DiaryDetail>
+                    <DetailTitle>보호자 메모</DetailTitle>
+                    <Paragraph>{'data.memo' || '메모 없음'}</Paragraph>
+                  </DiaryDetail>
+                </DiaryDetailContainer>
+              </DiaryDetailsLeft>
+              <DiaryDetailsRight>
+                <ActionButton
+                  buttonBorder="border-none"
+                  direction="vertical"
+                  onDelete={() => {}}
+                  onEdit={handleOpenEditModal}
+                />
+                {editModalOpen && (
+                  <Modal
+                    onClose={handleCloseEditModal}
+                    title="병원 기록 수정"
+                    value="수정"
+                    component={
+                      <HosRecords
+                        formData={formData}
+                        setFormData={setFormData}
+                      />
+                    }
+                    onHandleClick={() => {}}
+                  />
+                )}
+                <DiaryDetailContainer>
+                  <Icon>
+                    <LuPill />
+                  </Icon>
+                  <DiaryDetail>
+                    <DetailTitle>처방</DetailTitle>
+                    <Paragraph>
+                      {'data.treatment' || '처방 기록이 없어요'}
+                    </Paragraph>
+                  </DiaryDetail>
+                </DiaryDetailContainer>
+                <DiaryDetailContainer>
+                  <Icon>
+                    <LuStethoscope />
+                  </Icon>
+                  <DiaryDetail>
+                    <DetailTitle>동물병원</DetailTitle>
+                    <Paragraph>
+                      방문 기록 여부
+                      <Doctor> 수의사 선생님 성함</Doctor>
+                    </Paragraph>
+                  </DiaryDetail>
+                </DiaryDetailContainer>
+              </DiaryDetailsRight>
+            </Report>
+          </ReportWrapper>
+          <ReportWrapper>
+            <Report>
+              <DeseaseName>
+                <Icon>
+                  <TbReportMedical className="big" />
+                </Icon>
+                <DeseaseTitle>질병 타이틀</DeseaseTitle>
+                <Paragraph>24/07/03</Paragraph>
+              </DeseaseName>
+
               <DiaryDetailsLeft>
                 <DiaryDetailContainer>
                   <Icon>
