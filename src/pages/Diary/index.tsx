@@ -18,11 +18,12 @@ import {
 import ActionButton from '@/components/common/ActtionButton';
 import TopBar from '@/components/common/TopBar';
 import PetRegister from '@/components/PetRegister/PetRegister';
-import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import useFetch from '@/hooks/useFetch';
 import HosRecords from './HosRecords';
+import PetCard from './PetCard';
+import { CardsWrapper, Cards } from './card-components';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -61,77 +62,6 @@ const StyledSwiper = styled(Swiper)`
     display: flex;
     justify-content: center;
   }
-`;
-
-const CardsWrapper = styled.div`
-  position: relative;
-  height: 300px;
-  display: flex;
-  width: 100%;
-  position: relative;
-`;
-
-const Cards = styled.div`
-  width: 224px;
-  height: 90%;
-  /* box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.1); */
-  box-shadow: 0px 0px 14px rgba(0, 10, 0, 0.1);
-
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-
-  > button {
-    position: absolute;
-    top: 15px;
-    right: 10px;
-    > div {
-      position: absolute;
-    }
-  }
-  :hover {
-    cursor: pointer;
-  }
-  &.add-card {
-    cursor: pointer;
-  }
-`;
-
-const Photo = styled.img`
-  width: 130px;
-  height: 130px;
-  background: rgba(152, 185, 156, 0.3);
-  border-radius: 50%;
-  border: 0;
-  overflow: hidden;
-  text-align: center;
-`;
-
-const Name = styled.p`
-  margin-top: 22px;
-  height: 26px;
-  font-size: var(--font-size-hd-1);
-  font-weight: bold;
-  line-height: 26px;
-  text-align: center;
-  margin-bottom: 6px;
-  transition: color 0.3s ease;
-  &.selectedPet {
-    color: var(--color-green-main);
-  }
-`;
-
-const Details = styled.p`
-  width: 100%;
-  height: 19px;
-  font-size: 16px;
-  line-height: 19px;
-  text-align: center;
-  color: #7d7d7d;
-  margin: 0;
 `;
 
 /* 카드 끝 */
@@ -350,7 +280,7 @@ interface FormData {
 }
 
 interface Buddy {
-  _id: number;
+  _id: string;
   name: string;
   species: string;
   age: number;
@@ -360,7 +290,7 @@ const mock = new MockAdapter(axios);
 
 const dummyBuddies = [
   {
-    _id: 1,
+    _id: '1a',
     name: '후이',
     species: '말티즈',
     age: 3,
@@ -370,7 +300,7 @@ const dummyBuddies = [
     deletedAt: null,
   },
   {
-    _id: 2,
+    _id: '2b',
     name: '쿠키',
     species: '샴',
     age: 2,
@@ -383,6 +313,28 @@ const dummyBuddies = [
 
 // /api/buddies로 GET 요청 모킹
 mock.onGet('/api/buddies').reply(200, dummyBuddies);
+
+const dummyBuddy1 = {
+  _id: '1a',
+  name: '후이',
+  species: '말티즈',
+  age: 3,
+  buddyImage: null,
+  createdAt: '2024-04-19T09:00:00.463Z',
+  updatedAt: '2024-04-19T09:00:00.463Z',
+  deletedAt: null,
+};
+
+const dummyBuddy2 = {
+  _id: '2b',
+  name: '쿠키',
+  species: '샴',
+  age: 2,
+  buddyImage: null,
+  createdAt: '2024-04-19T09:00:00.463Z',
+  updatedAt: '2024-04-19T09:00:00.463Z',
+  deletedAt: null,
+};
 
 const Diary: React.FC = () => {
   // 모달 관련 상태 관리
@@ -406,24 +358,8 @@ const Diary: React.FC = () => {
     error,
   } = useFetch<Buddy[]>(() =>
     axios.get('/api/buddies').then((res) => res.data)
-  );
-
-  // const [buddies, setBuddies] = useState<Buddy[]>([]);
-  // const [loading, setLoading] = useState(true); // 로딩 상태 추가
-  // useEffect(() => {
-  //   const fetchBuddies = async () => {
-  //     setLoading(true); // 로딩 시작
-  //     try {
-  //       const response = await axios.get('/api/buddies');
-  //       setBuddies(response.data);
-  //     } catch (error) {
-  //       console.error('Error fetching buddies:', error);
-  //     }
-  //     setLoading(false); // 로딩 종료
-  //   };
-
-  //   fetchBuddies();
-  // }, []);
+  ); // 전체 반려동물
+  const [selectedBuddy, setSelectedBuddy] = useState<Buddy | null>(null); // 선택된 반려동물
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -447,12 +383,26 @@ const Diary: React.FC = () => {
     setEditModalOpen(!editModalOpen);
   };
 
-  const handleOpenPetEditModal = () => {
-    setPetEditModalOpen(!petEditModalOpen);
+  mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
+  mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
+
+  const handleOpenPetEditModal = (buddyId: string) => {
+    // API를 통해 특정 반려동물 정보 가져오기
+    axios
+      .get(`/api/buddies/${buddyId}`)
+      .then((res) => {
+        console.log('Buddy 1:', res.data);
+        setSelectedBuddy(res.data); // 가져온 반려동물 정보 설정
+        setPetEditModalOpen(true); // 수정 모달 열기
+      })
+      .catch((err) => {
+        console.error('Error fetching buddy details:', err);
+      });
   };
 
   const handleCloseModal = () => {
     setModalOpen(false);
+    setSelectedBuddy(null); // 모달 창이 닫힐 때 선택된 반려동물 정보 초기화
   };
 
   const handleCloseEditModal = () => {
@@ -495,7 +445,7 @@ const Diary: React.FC = () => {
             {buddies &&
               buddies.map((buddy, index) => (
                 <SwiperSlide key={buddy._id} virtualIndex={index}>
-                  <CardsWrapper>
+                  {/* <CardsWrapper>
                     <Cards>
                       <ActionButton
                         buttonBorder="border-none"
@@ -509,7 +459,12 @@ const Diary: React.FC = () => {
                         {buddy.species} / {buddy.age}살
                       </Details>
                     </Cards>
-                  </CardsWrapper>
+                  </CardsWrapper> */}
+                  <PetCard
+                    buddy={buddy}
+                    onEdit={() => handleOpenPetEditModal(buddy._id)}
+                    onDelete={() => {}}
+                  />
                 </SwiperSlide>
               ))}
 
