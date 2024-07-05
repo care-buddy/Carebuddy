@@ -1,8 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// 컴포넌트
-import Button from '../common/Button';
+import ActionButton from '../common/ActtionButton';
 
 type CommentProps = {
   // 닉네임, userId 둘 다 받아오는게 맞는지 모르겠음. recoil 적용 후 수정 - 임시
@@ -25,19 +24,14 @@ const Comment: React.FC<CommentProps> = ({
   <StyledComment>
     <ProfileImg src={profileImg} alt="댓글 프로필 사진" />
     <Container>
+      <Div>
       <Info>
         <p>{nickname}</p>
         <UploadedDate>{date}</UploadedDate>
       </Info>
+      <ActionButton buttonBorder='border-none' buttonSize='sm' direction='horizonal'/>
+      </Div>
       <Content>{text}</Content>
-      <CommentOptionWrapper>
-        <Button buttonStyle="link" buttonSize="sm">
-          수정
-        </Button>
-        <Button buttonStyle="link" buttonSize="sm">
-          삭제
-        </Button>
-      </CommentOptionWrapper>
     </Container>
   </StyledComment>
 );
@@ -48,7 +42,6 @@ const StyledComment = styled.div`
   display: flex;
   margin-top: 12px;
   padding: 10px;
-  // background-color: red;
 
   img {
     width: 50px;
@@ -80,19 +73,20 @@ const ProfileImg = styled.img`
   margin-right: 10px;
 `;
 
-const CommentOptionWrapper = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  flex-grow: 1;
+// const CommentOptionWrapper = styled.div`
+//   display: flex;
+//   justify-content: flex-end;
+//   flex-grow: 1;
 
-  & > * {
-    margin: 0 5px;
-    font-size: var(--font-size-sm-1);
-  }
-`;
+//   & > * {
+//     margin: 0 5px;
+//     font-size: var(--font-size-sm-1);
+//   }
+// `;
 
 const Info = styled.div`
   display: flex;
+  align-items: center;
 
   p {
     margin-right: 5px;
@@ -106,3 +100,8 @@ const Info = styled.div`
 //   margin: 5px 10px 0 0;
 //   padding: 5px 5px;
 // `;
+
+const Div = styled.div`
+display: flex;
+justify-content: space-between;
+`;

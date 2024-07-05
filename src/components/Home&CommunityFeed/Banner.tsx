@@ -14,7 +14,7 @@ const StyledBanner = styled.div`
   position: relative;
 
   img {
-    width: 1024px;
+    width: 700px;
     height: auto;
   }
 `;

@@ -1,9 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// 임시 데이터
-import { tempCommentText } from '@constants/tempData';
-
 // 컴포넌트
 import Button from '../common/Button';
 
@@ -19,7 +16,7 @@ const CommentWritingBox: React.FC<CommentWritingBoxProps> = ({
   <StyledCommentWritingBox>
     <Nickname>{nickname}</Nickname>
     <CommentBox
-      value={tempCommentText}
+      // value={}
       placeholder="댓글 내용을 입력하세요..."
     />
     <ButtonContainer>
@@ -37,11 +34,12 @@ const StyledCommentWritingBox = styled.div`
   flex-direction: column;
   border: 1px solid var(--color-grey-2);
   border-radius: 10px;
-  padding: 10px 15px;
+  padding: 16px 16px;
   position: relative;
   min-height: 120px;
   height: auto;
   margin: 20px 0;
+  box-sizing: border-box;
 `;
 
 const Nickname = styled.p`

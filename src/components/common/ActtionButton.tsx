@@ -10,6 +10,7 @@ import {
 
 interface StyledActionButtonProps {
   buttonBorder: 'border-solid' | 'border-none';
+  buttonSize?: 'sm' | 'md';
 }
 
 const buttonBorders = {
@@ -21,6 +22,17 @@ const buttonBorders = {
   `,
 };
 
+const buttonSizes = {
+  sm: css`
+    height: 20px;
+    width: 20px;
+  `,
+  md: css`
+    height: 35px;
+    width: 35px;
+  `,
+};
+
 const StyledActionButton = styled.button<StyledActionButtonProps>`
   cursor: pointer;
   display: flex;
@@ -29,11 +41,10 @@ const StyledActionButton = styled.button<StyledActionButtonProps>`
   align-items: center;
   background-color: transparent;
   color: var(--color-grey-2);
-  height: 35px;
-  width: 35px;
   margin-left: 10px;
   position: relative;
   ${(props) => props.buttonBorder && buttonBorders[props.buttonBorder]};
+  ${(props) => props.buttonSize && buttonSizes[props.buttonSize]};
 `;
 
 const StyledIconHorizontal = styled(LuMoreHorizontal)`
@@ -95,14 +106,15 @@ const Icon = styled.div`
 `;
 
 interface ActionButtonProps extends StyledActionButtonProps {
-  direction: string;
+  direction?: string;
   onEdit?: () => void; // 수정 버튼 클릭 이벤트 핸들러
   onDelete?: () => void; // 삭제 버튼 클릭 이벤트 핸들러
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({
   buttonBorder,
-  direction,
+  buttonSize = 'md',
+  direction='vertical',
   onEdit,
   onDelete,
 }) => {
@@ -146,6 +158,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   return (
     <StyledActionButton
       buttonBorder={buttonBorder}
+      buttonSize={buttonSize}
       onClick={handleClick}
       ref={buttonRef}
     >
