@@ -2,8 +2,9 @@ import { Link, NavLink } from 'react-router-dom';
 import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import logo from '@assets/carebuddyLogo.png';
-import { LuBell } from 'react-icons/lu';
+import { LuBell, LuUser2 } from 'react-icons/lu';
 import Dropdown from './Dropdown';
+import Button from './common/Button';
 import Notification from './Notification';
 
 const Wrapper = styled.header`
@@ -70,8 +71,7 @@ const MenuItem = styled(NavLink)`
 
 const NotificationWrapper = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  /* position: relative; */
 `;
 
 const fadeIn = keyframes`
@@ -104,18 +104,25 @@ const DropdownContainer = styled.div`
 /* 임시 알림 구역: 수정필요! */
 const NotificationIcon = styled.div`
   position: relative;
-  cursor: pointer;
-  padding: 10px 16px;
-  padding-top: 44px;
-  > svg {
-    width: 20px;
-    height: 20px;
-    color: var(--color-green-main);
+  cursor: default;
+  padding: 44px 16px 10px 16px;
+  > svg,
+  a > svg {
+    width: 22px;
+    height: 22px;
+    color: var(--color-black-main);
+    cursor: pointer;
+  }
+  > button {
+    position: absolute;
+    padding-right: 16px;
 
-    &.big {
-      width: 24px;
-      height: 24px;
-    }
+    right: 0;
+    top: 10px;
+  }
+  > svg + a,
+  > div + a {
+    margin-left: 1rem;
   }
 `;
 
@@ -223,12 +230,8 @@ const Header: React.FC = () => {
           </MenuItem>
         </Menu>
         <NotificationWrapper>
-          <MenuItem to="/mypage">마이페이지</MenuItem>
-          <MenuItem to="/pharInfo">약국정보</MenuItem>
-          <MenuItem to="/globalSearch">전체 검색</MenuItem>
-          <MenuItem to="/post">글(post)</MenuItem>
-          <NotificationIcon onClick={toggleNotification}>
-            <LuBell />
+          <NotificationIcon>
+            <LuBell onClick={toggleNotification} />
             {showNotification && (
               <Notification
                 show={showNotification}
@@ -236,8 +239,14 @@ const Header: React.FC = () => {
                 onClose={closeNotification}
               />
             )}
+
+            <Link to="/mypage">
+              <LuUser2 />
+            </Link>
+            <Button buttonStyle="grey" buttonSize="sm">
+              로그인
+            </Button>
           </NotificationIcon>
-          <MenuItem to="/community">전체 커뮤니티</MenuItem>
         </NotificationWrapper>
       </Content>
     </Wrapper>

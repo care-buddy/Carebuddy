@@ -73,7 +73,7 @@ const PetRegister = () => {
     e: React.ChangeEvent<HTMLInputElement>,
     // 임시
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type: 'name' | 'age' | 'weight'
+    type: 'name' | 'age' | 'weight' | 'kind'
   ) => {
     // 임시
     // eslint-disable-next-line no-console
@@ -160,12 +160,20 @@ const PetRegister = () => {
         </Button>
       </Section>
       <Section>
+        <Heading>품종</Heading>
+        <Input
+          onChange={(e) => handleInputChange(e, 'kind')}
+          placeholder="품종을 입력해주세요"
+          placeholderColor="light-grey"
+        />
+      </Section>
+      <Section>
         <Heading>반려동물 나이</Heading>
         <Input
           type="number"
           onChange={(e) => handleInputChange(e, 'age')}
           placeholder="나이를 입력해주세요"
-          placeholderColor='light-grey'
+          placeholderColor="light-grey"
         />
       </Section>
       <Section>
@@ -196,7 +204,7 @@ const PetRegister = () => {
           type="number"
           onChange={(e) => handleInputChange(e, 'weight')}
           placeholder="체중을 입력해주세요"
-          placeholderColor='light-grey'
+          placeholderColor="light-grey"
         />
       </Section>
     </>
