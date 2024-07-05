@@ -40,7 +40,7 @@ const Details = styled.p`
 
 interface Buddy {
   name: string;
-  species: string;
+  kind: string;
   age: number;
 }
 
@@ -62,7 +62,7 @@ const PetCard: React.FC<ProfileCardProps> = ({ buddy, onEdit, onDelete }) => (
       <Photo src={DefaultPetProfileImg} />
       <Name>{buddy.name}</Name>
       <Details>
-        {buddy.species} / {buddy.age}살
+        {buddy.kind} / {buddy.age}살
       </Details>
     </Cards>
   </CardsWrapper>

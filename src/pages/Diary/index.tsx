@@ -21,6 +21,7 @@ import PetRegister from '@/components/PetRegister/PetRegister';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import useFetch from '@/hooks/useFetch';
+import { Buddy } from '@/interfaces';
 import HosRecords from './HosRecords';
 import PetCard from './PetCard';
 import { CardsWrapper, Cards } from './card-components';
@@ -279,10 +280,10 @@ interface FormData {
   hospitalizationStatus?: Date | null;
 }
 
-interface Buddy {
+interface BuddyProfile {
   _id: string;
   name: string;
-  species: string;
+  kind: string;
   age: number;
 }
 
@@ -292,7 +293,7 @@ const dummyBuddies = [
   {
     _id: '1a',
     name: '후이',
-    species: '말티즈',
+    kind: '말티즈',
     age: 3,
     buddyImage: null,
     createdAt: '2024-04-19T09:00:00.463Z',
@@ -302,7 +303,7 @@ const dummyBuddies = [
   {
     _id: '2b',
     name: '쿠키',
-    species: '샴',
+    kind: '샴',
     age: 2,
     buddyImage: null,
     createdAt: '2024-04-19T09:00:00.463Z',
@@ -314,23 +315,31 @@ const dummyBuddies = [
 // /api/buddies로 GET 요청 모킹
 mock.onGet('/api/buddies').reply(200, dummyBuddies);
 
-const dummyBuddy1 = {
+const dummyBuddy1: Buddy = {
   _id: '1a',
   name: '후이',
-  species: '말티즈',
+  species: 0,
+  kind: '말티즈',
+  sex: 2,
   age: 3,
   buddyImage: null,
+  isNeutered: 1,
+  weight: 3,
   createdAt: '2024-04-19T09:00:00.463Z',
   updatedAt: '2024-04-19T09:00:00.463Z',
   deletedAt: null,
 };
 
-const dummyBuddy2 = {
+const dummyBuddy2: Buddy = {
   _id: '2b',
   name: '쿠키',
-  species: '샴',
+  species: 1,
+  kind: '샴',
+  sex: 1,
   age: 2,
   buddyImage: null,
+  isNeutered: null,
+  weight: 6,
   createdAt: '2024-04-19T09:00:00.463Z',
   updatedAt: '2024-04-19T09:00:00.463Z',
   deletedAt: null,
@@ -356,7 +365,7 @@ const Diary: React.FC = () => {
     data: buddies,
     isLoading,
     error,
-  } = useFetch<Buddy[]>(() =>
+  } = useFetch<BuddyProfile[]>(() =>
     axios.get('/api/buddies').then((res) => res.data)
   ); // 전체 반려동물
   const [selectedBuddy, setSelectedBuddy] = useState<Buddy | null>(null); // 선택된 반려동물
@@ -484,7 +493,7 @@ const Diary: React.FC = () => {
               onClose={handleClosePetModal}
               title="동물 정보 등록"
               value="등록"
-              component={<PetRegister />}
+              component={<PetRegister petData={null} />}
               onHandleClick={handleFormSubmit}
             />
           )}
@@ -493,7 +502,7 @@ const Diary: React.FC = () => {
               onClose={handleClosePetEditModal}
               title="동물 정보 수정"
               value="수정"
-              component={<PetRegister />}
+              component={<PetRegister petData={selectedBuddy} />}
               onHandleClick={handleFormSubmit}
             />
           )}
