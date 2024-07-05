@@ -15,6 +15,10 @@
     "prettier"
   ],
   "rules": {
+    // react hooks의 의존성배열이 충분하지 않을 때 경고 표시
+    "react-hooks/exhaustive-deps": ["warn"],
+    // 자동으로 만들어지는 _id를 key로 사용할 수 있도록 설정하기 위해
+    "no-underscore-dangle": "off",
     // 다른 스코프의 변수도명 사용 가능하도록
     "no-shadow": 0,
     // 커스텀 라디오 버튼 사용을 위해 접근성 규칙 설정
