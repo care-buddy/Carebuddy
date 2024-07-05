@@ -7,7 +7,7 @@ export interface Buddy {
   sex: number;
   weight: number;
   isNeutered: number | null;
-  buddyImage: string | null;
+  buddyImage: string;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

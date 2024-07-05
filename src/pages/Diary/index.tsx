@@ -22,6 +22,9 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import useFetch from '@/hooks/useFetch';
 import { Buddy } from '@/interfaces';
+// 임시 사진
+import { tempProfileSrc } from '@constants/tempData';
+import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import HosRecords from './HosRecords';
 import PetCard from './PetCard';
 import { CardsWrapper, Cards } from './card-components';
@@ -285,6 +288,7 @@ interface BuddyProfile {
   name: string;
   kind: string;
   age: number;
+  buddyImage: string;
 }
 
 const mock = new MockAdapter(axios);
@@ -295,7 +299,7 @@ const dummyBuddies = [
     name: '후이',
     kind: '말티즈',
     age: 3,
-    buddyImage: null,
+    buddyImage: tempProfileSrc,
     createdAt: '2024-04-19T09:00:00.463Z',
     updatedAt: '2024-04-19T09:00:00.463Z',
     deletedAt: null,
@@ -305,7 +309,7 @@ const dummyBuddies = [
     name: '쿠키',
     kind: '샴',
     age: 2,
-    buddyImage: null,
+    buddyImage: DefaultPetProfileImg,
     createdAt: '2024-04-19T09:00:00.463Z',
     updatedAt: '2024-04-19T09:00:00.463Z',
     deletedAt: null,
@@ -322,7 +326,7 @@ const dummyBuddy1: Buddy = {
   kind: '말티즈',
   sex: 2,
   age: 3,
-  buddyImage: null,
+  buddyImage: tempProfileSrc,
   isNeutered: 1,
   weight: 3,
   createdAt: '2024-04-19T09:00:00.463Z',
@@ -337,7 +341,7 @@ const dummyBuddy2: Buddy = {
   kind: '샴',
   sex: 1,
   age: 2,
-  buddyImage: null,
+  buddyImage: DefaultPetProfileImg,
   isNeutered: null,
   weight: 6,
   createdAt: '2024-04-19T09:00:00.463Z',

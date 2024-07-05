@@ -9,17 +9,21 @@ import Input from '@components/common/Input';
 
 import { LuCamera } from 'react-icons/lu';
 
-// 임시 데이터
-import { tempProfileSrc } from '@constants/tempData';
 import { Buddy } from '@/interfaces';
+
+import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 
 interface PetRegisterProps {
   petData: Buddy | null;
 }
 
 const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 프리뷰 이미지
-  const [, setSelectedFile] = useState<File | null>(null); // 전송할 이미지
+  const [buddyImage, setBuddyImage] = useState<string>(DefaultPetProfileImg);
+  // 전송할 이미지
+  // 변경할 이미지를 고르고, 바로 변경되는 것이 아니기 때문에 저장할 상태가 필요
+  const [selectedFile, setSelectedFile] = useState<string | undefined>(
+    undefined
+  );
 
   // petInfo 객체 초기화
   const [petInfo, setPetInfo] = useState({
@@ -33,9 +37,9 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
     const file = e?.target.files?.[0];
 
     if (file) {
-      setSelectedFile(file);
-      const imageUrl = URL.createObjectURL(file); // 프리뷰 url
-      setPreviewUrl(imageUrl);
+      // setSelectedFile(file);
+      const imageUrl = URL.createObjectURL(file);
+      setSelectedFile(imageUrl);
     }
   };
 
@@ -57,6 +61,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
         species: petData.species,
         isNeutered: petData.isNeutered,
       });
+      setBuddyImage(petData.buddyImage);
     }
   }, [petData]);
 
@@ -73,7 +78,10 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
       <Section>
         <Heading>프로필 등록</Heading>
         <ImageContainer>
-          <Img src={previewUrl || tempProfileSrc} alt="프로필 이미지" />
+          <Img
+            src={selectedFile === undefined ? buddyImage : selectedFile}
+            alt="프로필 이미지"
+          />
           <LabelForFileInput>
             <LuCamera />
             <input
@@ -146,7 +154,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
           onChange={(e) => handleInputChange(e, 'age')}
           placeholder="나이를 입력해주세요"
           placeholderColor="light-grey"
-          defaultValue={petData?.age || 0}
+          defaultValue={petData?.age || ''}
         />
       </Section>
       <Section>
@@ -178,7 +186,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
           onChange={(e) => handleInputChange(e, 'weight')}
           placeholder="체중을 입력해주세요"
           placeholderColor="light-grey"
-          defaultValue={petData?.weight || 0}
+          defaultValue={petData?.weight || ''}
         />
       </Section>
     </>
@@ -211,7 +219,7 @@ const ImageContainer = styled.div`
   height: 160px;
 `;
 
-const Img = styled.img<{ src?: string }>`
+const Img = styled.img<{ src: string }>`
   border-radius: 50%;
   width: 150px;
   height: 150px;

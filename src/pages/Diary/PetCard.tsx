@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import ActionButton from '@/components/common/ActtionButton';
-import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import { CardsWrapper, Cards } from './card-components';
 
 const Photo = styled.img`
@@ -42,6 +41,7 @@ interface Buddy {
   name: string;
   kind: string;
   age: number;
+  buddyImage: string;
 }
 
 interface ProfileCardProps {
@@ -59,7 +59,7 @@ const PetCard: React.FC<ProfileCardProps> = ({ buddy, onEdit, onDelete }) => (
         onDelete={onDelete}
         onEdit={onEdit}
       />
-      <Photo src={DefaultPetProfileImg} />
+      <Photo src={buddy.buddyImage} />
       <Name>{buddy.name}</Name>
       <Details>
         {buddy.kind} / {buddy.age}살
