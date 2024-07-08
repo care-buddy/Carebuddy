@@ -15,9 +15,13 @@ import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 
 interface PetRegisterProps {
   petData: Buddy | null;
+  onFormDataChange: (FormData: FormData) => void; // 폼데이터를 수집해 부모 컴포넌트로 전달하기 위한 콜백 함수
 }
 
-const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
+const PetRegister: React.FC<PetRegisterProps> = ({
+  petData,
+  onFormDataChange,
+}) => {
   const [buddyImage, setBuddyImage] = useState<string>(DefaultPetProfileImg);
   // 전송할 이미지
   // 변경할 이미지를 고르고, 바로 변경되는 것이 아니기 때문에 저장할 상태가 필요
@@ -30,6 +34,12 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
     sex: petData?.sex ?? (null as 1 | 2 | null), // 남: 1, 여: 2
     species: petData?.species ?? (null as 0 | 1 | null), // 강아지 0, 고양이 1
     isNeutered: petData?.isNeutered ?? (null as 'before' | 1 | null),
+    // 없을 때 값은 임시
+    name: petData?.name ?? '',
+    kind: petData?.kind ?? '',
+    age: petData?.age ?? '',
+    weight: petData?.weight ?? '',
+    buddyImage: petData?.buddyImage ?? '',
   });
 
   // 이미지 핸들러(화면상에서 보여줌 + 전송할 파일 설정)
@@ -41,6 +51,17 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
       const imageUrl = URL.createObjectURL(file);
       setSelectedFile(imageUrl);
     }
+  };
+
+  // formData - input 핸들러
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'name' | 'age' | 'weight' | 'kind'
+  ) => {
+    setPetInfo({
+      ...petInfo,
+      [type]: e.target.value,
+    });
   };
 
   // formData - button 핸들러: 성별, 종, 중성화 여부가 버튼으로 관리
@@ -55,23 +76,44 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
   };
 
   useEffect(() => {
+    // 수정 모달의 경우, 펫데이터가 있으므로 초기값 세팅
     if (petData) {
       setPetInfo({
         sex: petData.sex,
         species: petData.species,
         isNeutered: petData.isNeutered,
+        name: petData?.name,
+        kind: petData?.kind,
+        age: petData?.age,
+        weight: petData?.weight,
+        buddyImage: petData?.buddyImage,
       });
       setBuddyImage(petData.buddyImage);
     }
   }, [petData]);
 
-  // formData - input 핸들러
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: 'name' | 'age' | 'weight' | 'kind'
-  ) => {
-    console.log(e, type);
+  // 폼데이터 생성 함수
+  const createFormData = () => {
+    const formData = new FormData();
+    // string으로 append 해줘야한다?
+    formData.append('sex', String(petInfo.sex));
+    formData.append('species', String(petInfo.species));
+    formData.append('isNeutered', String(petInfo.isNeutered));
+    formData.append('name', petInfo.name);
+    formData.append('age', String(petInfo.age));
+    formData.append('weight', String(petInfo.weight));
+    formData.append('kind', petInfo.kind);
+    // 선택 파일이 있을 때에만 append?
+    if (selectedFile) {
+      formData.append('buddyImage', selectedFile);
+    }
+    return formData;
   };
+
+  // 모달 내용이 변경될 때마다 폼데이터를 객체를 만들어 업데이트해준다
+  useEffect(() => {
+    onFormDataChange(createFormData());
+  }, [petInfo, selectedFile]);
 
   return (
     <>
@@ -161,10 +203,10 @@ const PetRegister: React.FC<PetRegisterProps> = ({ petData }) => {
         <Heading>중성화 여부</Heading>
         <Button
           buttonStyle={
-            petInfo.isNeutered === null ? 'square-green' : 'square-white'
+            petInfo.isNeutered === 0 ? 'square-green' : 'square-white'
           }
           buttonSize="sm"
-          onClick={() => handleClick('isNeutered', null)}
+          onClick={() => handleClick('isNeutered', 0)}
         >
           중성화 전
         </Button>

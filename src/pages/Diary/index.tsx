@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Swiper, SwiperSlide } from 'swiper/react';
+
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { Pagination, Virtual } from 'swiper/modules';
+
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import { TbReportMedical, TbBuildingHospital } from 'react-icons/tb';
@@ -13,11 +13,10 @@ import {
   LuActivitySquare,
   LuStethoscope,
   LuMessageSquarePlus,
-  LuPlus,
 } from 'react-icons/lu';
 import ActionButton from '@/components/common/ActtionButton';
 import TopBar from '@/components/common/TopBar';
-import PetRegister from '@/components/PetRegister/PetRegister';
+
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import useFetch from '@/hooks/useFetch';
@@ -26,8 +25,7 @@ import { Buddy } from '@/interfaces';
 import { tempProfileSrc } from '@constants/tempData';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import HosRecords from './HosRecords';
-import PetCard from './PetCard';
-import { CardsWrapper, Cards } from './card-components';
+import PetProfiles from './PetProfiles';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -37,38 +35,6 @@ const Wrapper = styled.div`
   margin: 0 auto;
   height: auto;
 `;
-
-/* 카드프로필 */
-
-const ProfilesWrapper = styled.div`
-  height: 400px;
-  display: block;
-`;
-
-const ProfilesTitle = styled.div`
-  font-size: var(--font-size-hd-2);
-  font-weight: var(--font-weight-bold);
-  margin: 20px 0 30px 0;
-`;
-
-/* 카드프로필 끝 */
-
-/* 카드 */
-const StyledSwiper = styled(Swiper)`
-  width: 100%;
-  padding: 4px 10px;
-  > div {
-    padding-top: 8px;
-  }
-  > div:last-child {
-    position: absolute;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-  }
-`;
-
-/* 카드 끝 */
 
 /* 다이어리 */
 
@@ -245,32 +211,6 @@ const Doctor = styled.span`
 
 /* 다이어리 상세 끝  */
 
-// 프로필이 없을 때
-const AddProfile = styled.div`
-  width: 100px;
-  height: 100px;
-  background: var(--color-grey-3);
-  border-radius: 50%;
-  border: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  > svg {
-    color: #b3b3b3;
-    width: 50px;
-    height: 50px;
-  }
-`;
-
-const AddProfileMsg = styled.p`
-  margin-top: 26px;
-  font-size: 18px;
-  text-align: center;
-  color: #7d7d7d;
-`;
-
 // 임시, 나중에 폼데이터 인터페이스 통합
 interface FormData {
   doctorName?: string;
@@ -293,28 +233,31 @@ interface BuddyProfile {
 
 const mock = new MockAdapter(axios);
 
-const dummyBuddies = [
-  {
-    _id: '1a',
-    name: '후이',
-    kind: '말티즈',
-    age: 3,
-    buddyImage: tempProfileSrc,
-    createdAt: '2024-04-19T09:00:00.463Z',
-    updatedAt: '2024-04-19T09:00:00.463Z',
-    deletedAt: null,
-  },
-  {
-    _id: '2b',
-    name: '쿠키',
-    kind: '샴',
-    age: 2,
-    buddyImage: DefaultPetProfileImg,
-    createdAt: '2024-04-19T09:00:00.463Z',
-    updatedAt: '2024-04-19T09:00:00.463Z',
-    deletedAt: null,
-  },
-];
+const dummyBuddies = {
+  name: '주인이름',
+  buddies: [
+    {
+      _id: '1a',
+      name: '후이',
+      kind: '말티즈',
+      age: 3,
+      buddyImage: tempProfileSrc,
+      createdAt: '2024-04-19T09:00:00.463Z',
+      updatedAt: '2024-04-19T09:00:00.463Z',
+      deletedAt: null,
+    },
+    {
+      _id: '2b',
+      name: '쿠키',
+      kind: '샴',
+      age: 2,
+      buddyImage: DefaultPetProfileImg,
+      createdAt: '2024-04-19T09:00:00.463Z',
+      updatedAt: '2024-04-19T09:00:00.463Z',
+      deletedAt: null,
+    },
+  ],
+};
 
 // /api/buddies로 GET 요청 모킹
 mock.onGet('/api/buddies').reply(200, dummyBuddies);
@@ -353,8 +296,7 @@ const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [petModalOpen, setPetModalOpen] = useState(false);
-  const [petEditModalOpen, setPetEditModalOpen] = useState(false);
+
   const [formData, setFormData] = useState<FormData>({
     doctorName: '',
     consultationDate: '',
@@ -366,13 +308,12 @@ const Diary: React.FC = () => {
     hospitalizationStatus: null,
   });
   const {
-    data: buddies,
+    data: buddiesData,
     isLoading,
     error,
-  } = useFetch<BuddyProfile[]>(() =>
+  } = useFetch<{ name: string; buddies: BuddyProfile[] }>(() =>
     axios.get('/api/buddies').then((res) => res.data)
   ); // 전체 반려동물
-  const [selectedBuddy, setSelectedBuddy] = useState<Buddy | null>(null); // 선택된 반려동물
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -387,10 +328,6 @@ const Diary: React.FC = () => {
     setModalOpen(true);
   };
 
-  const handleOpenPetModal = () => {
-    setPetModalOpen(true);
-  };
-
   const handleOpenEditModal = () => {
     // 수정 모달 표시 여부를 관리하는 함수
     setEditModalOpen(!editModalOpen);
@@ -399,34 +336,12 @@ const Diary: React.FC = () => {
   mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
   mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
 
-  const handleOpenPetEditModal = (buddyId: string) => {
-    // API를 통해 특정 반려동물 정보 가져오기
-    axios
-      .get(`/api/buddies/${buddyId}`)
-      .then((res) => {
-        console.log('Buddy 1:', res.data);
-        setSelectedBuddy(res.data); // 가져온 반려동물 정보 설정
-        setPetEditModalOpen(true); // 수정 모달 열기
-      })
-      .catch((err) => {
-        console.error('Error fetching buddy details:', err);
-      });
-  };
-
   const handleCloseModal = () => {
     setModalOpen(false);
-    setSelectedBuddy(null); // 모달 창이 닫힐 때 선택된 반려동물 정보 초기화
   };
 
   const handleCloseEditModal = () => {
     setEditModalOpen(false);
-  };
-  const handleClosePetModal = () => {
-    setPetModalOpen(false);
-  };
-
-  const handleClosePetEditModal = () => {
-    setPetEditModalOpen(false);
   };
 
   const handleFormSubmit = () => {
@@ -440,77 +355,8 @@ const Diary: React.FC = () => {
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
       <Wrapper>
-        <ProfilesWrapper>
-          <ProfilesTitle>user 님의 반려동물</ProfilesTitle>
-          <StyledSwiper
-            virtual
-            slidesPerView={4}
-            spaceBetween={20}
-            // slidesOffsetBefore={20}
-            // /* 전체적인 슬라이드의 오른쪽에 20px 공백을 준다. */
-            // slidesOffsetAfter={30}
-            pagination={{
-              clickable: true,
-            }}
-            modules={[Pagination, Virtual]}
-            className="mySwiper"
-          >
-            {buddies &&
-              buddies.map((buddy, index) => (
-                <SwiperSlide key={buddy._id} virtualIndex={index}>
-                  {/* <CardsWrapper>
-                    <Cards>
-                      <ActionButton
-                        buttonBorder="border-none"
-                        direction="vertical"
-                        onDelete={() => {}}
-                        onEdit={handleOpenPetEditModal}
-                      />
-                      <Photo src={DefaultPetProfileImg} />
-                      <Name>{buddy.name}</Name>
-                      <Details>
-                        {buddy.species} / {buddy.age}살
-                      </Details>
-                    </Cards>
-                  </CardsWrapper> */}
-                  <PetCard
-                    buddy={buddy}
-                    onEdit={() => handleOpenPetEditModal(buddy._id)}
-                    onDelete={() => {}}
-                  />
-                </SwiperSlide>
-              ))}
+        <PetProfiles name={buddiesData?.name} buddies={buddiesData?.buddies} />
 
-            <SwiperSlide key={999} virtualIndex={999}>
-              <CardsWrapper>
-                <Cards className="add-card" onClick={handleOpenPetModal}>
-                  <AddProfile>
-                    <LuPlus />
-                  </AddProfile>
-                  <AddProfileMsg>프로필 추가</AddProfileMsg>
-                </Cards>
-              </CardsWrapper>
-            </SwiperSlide>
-          </StyledSwiper>
-          {petModalOpen && (
-            <Modal
-              onClose={handleClosePetModal}
-              title="동물 정보 등록"
-              value="등록"
-              component={<PetRegister petData={null} />}
-              onHandleClick={handleFormSubmit}
-            />
-          )}
-          {petEditModalOpen && (
-            <Modal
-              onClose={handleClosePetEditModal}
-              title="동물 정보 수정"
-              value="수정"
-              component={<PetRegister petData={selectedBuddy} />}
-              onHandleClick={handleFormSubmit}
-            />
-          )}
-        </ProfilesWrapper>
         <DiaryWrapper>
           <NameInTitle className="diaryTitle">
             (반려동물 이름)<DiaryTitle>의 건강 다이어리</DiaryTitle>
