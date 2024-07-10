@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
 import 'swiper/css';
@@ -26,6 +26,7 @@ import { tempProfileSrc } from '@constants/tempData';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
+import dummyBuddies from './dummyData';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -231,66 +232,12 @@ interface BuddyProfile {
   buddyImage: string;
 }
 
+interface ProfilesWrapperProps {
+  name?: string;
+  buddies?: BuddyProfile[];
+}
+
 const mock = new MockAdapter(axios);
-
-const dummyBuddies = {
-  name: '주인이름',
-  buddies: [
-    {
-      _id: '1a',
-      name: '후이',
-      kind: '말티즈',
-      age: 3,
-      buddyImage: tempProfileSrc,
-      createdAt: '2024-04-19T09:00:00.463Z',
-      updatedAt: '2024-04-19T09:00:00.463Z',
-      deletedAt: null,
-    },
-    {
-      _id: '2b',
-      name: '쿠키',
-      kind: '샴',
-      age: 2,
-      buddyImage: DefaultPetProfileImg,
-      createdAt: '2024-04-19T09:00:00.463Z',
-      updatedAt: '2024-04-19T09:00:00.463Z',
-      deletedAt: null,
-    },
-  ],
-};
-
-// /api/buddies로 GET 요청 모킹
-mock.onGet('/api/buddies').reply(200, dummyBuddies);
-
-const dummyBuddy1: Buddy = {
-  _id: '1a',
-  name: '후이',
-  species: 0,
-  kind: '말티즈',
-  sex: 2,
-  age: 3,
-  buddyImage: tempProfileSrc,
-  isNeutered: 1,
-  weight: 3,
-  createdAt: '2024-04-19T09:00:00.463Z',
-  updatedAt: '2024-04-19T09:00:00.463Z',
-  deletedAt: null,
-};
-
-const dummyBuddy2: Buddy = {
-  _id: '2b',
-  name: '쿠키',
-  species: 1,
-  kind: '샴',
-  sex: 1,
-  age: 2,
-  buddyImage: DefaultPetProfileImg,
-  isNeutered: null,
-  weight: 6,
-  createdAt: '2024-04-19T09:00:00.463Z',
-  updatedAt: '2024-04-19T09:00:00.463Z',
-  deletedAt: null,
-};
 
 const Diary: React.FC = () => {
   // 모달 관련 상태 관리
@@ -307,21 +254,48 @@ const Diary: React.FC = () => {
     memo: '',
     hospitalizationStatus: null,
   });
-  const {
-    data: buddiesData,
-    isLoading,
-    error,
-  } = useFetch<{ name: string; buddies: BuddyProfile[] }>(() =>
-    axios.get('/api/buddies').then((res) => res.data)
-  ); // 전체 반려동물
+
+  const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
+    null
+  );
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchBuddiesData = () => {
+    // /api/buddies로 GET 요청 모킹
+    mock.onGet('/api/buddies').reply(200, dummyBuddies);
+
+    axios
+      .get('/api/buddies')
+      .then((response) => {
+        console.log(response.data);
+        if (response.status === 200) {
+          setBuddiesData(response.data);
+          setLoading(false);
+        } else {
+          throw new Error('Failed to fetch data');
+        }
+      })
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchBuddiesData(); // 데이터 다시 불러오기
+    return () => {
+      setBuddiesData(null); // 컴포넌트가 언마운트될 때 buddiesData 상태 초기화
+    };
+  }, []);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  // if (error) {
+  //   return <div>Error: {error.message}</div>;
+  // }
 
   // 모달 관련 함수
   const handleOpenModal = () => {
@@ -332,9 +306,6 @@ const Diary: React.FC = () => {
     // 수정 모달 표시 여부를 관리하는 함수
     setEditModalOpen(!editModalOpen);
   };
-
-  mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
-  mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
 
   const handleCloseModal = () => {
     setModalOpen(false);

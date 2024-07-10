@@ -11,6 +11,8 @@ import PetRegister from '@/components/PetRegister/PetRegister';
 import { Buddy } from '@/interfaces';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { tempProfileSrc } from '@constants/tempData';
+import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import { CardsWrapper, Cards } from './card-components';
 import PetCard from './PetCard';
 
@@ -59,6 +61,38 @@ const AddProfileMsg = styled.p`
   color: #7d7d7d;
 `;
 
+const mock = new MockAdapter(axios);
+
+const dummyBuddy1: Buddy = {
+  _id: '1a',
+  name: '후이',
+  species: 0,
+  kind: '말티즈',
+  sex: 2,
+  age: 3,
+  buddyImage: tempProfileSrc,
+  isNeutered: 1,
+  weight: 3,
+  createdAt: '2024-04-19T09:00:00.463Z',
+  updatedAt: '2024-04-19T09:00:00.463Z',
+  deletedAt: null,
+};
+
+const dummyBuddy2: Buddy = {
+  _id: '2b',
+  name: '쿠키',
+  species: 1,
+  kind: '샴',
+  sex: 1,
+  age: 2,
+  buddyImage: DefaultPetProfileImg,
+  isNeutered: null,
+  weight: 6,
+  createdAt: '2024-04-19T09:00:00.463Z',
+  updatedAt: '2024-04-19T09:00:00.463Z',
+  deletedAt: null,
+};
+
 interface ProfilesWrapperProps {
   name?: string;
   buddies?: BuddyProfile[];
@@ -80,20 +114,31 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({ name, buddies }) => {
   const [selectedBuddy, setSelectedBuddy] = useState<Buddy | null>(null); // 선택된 반려동물
   const [formData, setFormData] = useState<FormData | null>(null); // 수정/등록을 위한 폼데이터 상태
 
+  // const [profiles, setProfiles] = useState<BuddyProfile[]>(buddies || []);
+
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
   const handleOpenPetModal = () => {
     setPetModalOpen(true);
   };
   const handleOpenPetEditModal = (buddyId: string) => {
     // API를 통해 특정 반려동물 정보 가져오기
+
+    // /api/buddies로 GET 요청 모킹
+    mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
+    mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
+
     axios
       .get(`/api/buddies/${buddyId}`)
       .then((res) => {
-        console.log('Buddy 1:', res.data);
         setSelectedBuddy(res.data); // 가져온 반려동물 정보 설정
+        setLoading(false);
         setPetEditModalOpen(true); // 수정 모달 열기
       })
-      .catch((err) => {
-        console.error('Error fetching buddy details:', err);
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
       });
   };
 
