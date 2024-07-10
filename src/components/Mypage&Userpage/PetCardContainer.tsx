@@ -5,7 +5,7 @@ const Container = styled.div`
   margin: 30px 0 30px 0;
 `;
 
-const PetCardContainer:React.FC = () => (
+const PetCardContainer: React.FC = () => (
   <Container>
     <div>반려동물 카드</div>
   </Container>
