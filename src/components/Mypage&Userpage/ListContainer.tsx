@@ -43,7 +43,6 @@ const ListContainer = () => {
 
   return (
     <Container>
-      {/* <ListContainer> */}
       <DataContainer>
         <Title>그룹</Title>
         <Title>글제목</Title>
@@ -56,7 +55,6 @@ const ListContainer = () => {
           <ContentList>{post.date}</ContentList>
         </DataContainer>
       ))}
-      {/* </ListContainer> */}
     </Container>
   );
 };

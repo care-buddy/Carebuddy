@@ -11,11 +11,11 @@ const Container = styled.div`
 `;
 
 const SelectWrapper = styled.div`
-  margin-bottom: 10px;
+  margin-bottom: 15px;
 `;
 
 const InputWrapper = styled.div`
-  margin-bottom: 20px;
+  margin-bottom: 15px;
 `;
 
 const EditorContainer = styled.div`
