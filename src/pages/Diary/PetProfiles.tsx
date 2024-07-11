@@ -146,11 +146,10 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
 
       const response = await axiosInstance.get(`/buddies/${buddyId}`);
-      setSelectedBuddy(response.data); // 가져온 반려동물 정보 설정
+      setSelectedBuddy(response.data); // 가져온 반려동물 정보 설정, 수정(PUT) 요청 시 여기서 id를 가져올 수 있다
       setLoading(false);
     } catch (error) {
       setError(error);
-      console.error('Error fetching buddy data:', error.message);
       alert(
         '불러오는 데 오류 발생 다시 시도해주세요 오류메시지를 다시 설정해주세요'
       );
@@ -193,7 +192,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
         age: formData.get('age'),
         buddyImage: formData.get('buddyImage'),
       };
-      console.log(newBuddy.buddyImage);
+
       setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
       onSubmitBuddy(newBuddy);
       return [200, { success: true, message: '반려동물 등록 성공' }];
@@ -203,6 +202,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       .post('/buddies', formData)
       .then((res) => {
         console.log(res.data);
+
         handleClosePetModal();
       })
       .catch((error) => {
@@ -210,11 +210,63 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       });
   };
 
-  useEffect(() => {
-    if (buddies) {
-      setProfiles(buddies);
-    }
-  }, [buddies]);
+  const handleEditSubmit = async () => {
+    const buddyId = selectedBuddy?._id;
+
+    // 가짜 PUT 요청 처리
+    mock.onPut(`/buddies/${buddyId}`).reply((config) => {
+      // console.log('요청 정보:', config);
+      const formData = config.data;
+      // const entries = formData.entries();
+      // // eslint-disable-next-line no-restricted-syntax
+      // for (const [key, value] of entries) {
+      //   console.log(`${key}: ${value}`);
+      // }
+
+      const updatedBuddy = {
+        _id: buddyId,
+        name: formData.get('name'),
+        kind: formData.get('kind'),
+        age: formData.get('age'),
+        buddyImage: formData.get('buddyImage'),
+        sex: formData.get('sex'),
+        species: formData.get('species'),
+        isNeutered: formData.get('isNeutered'),
+        weight: formData.get('weight'),
+      };
+
+      // 여기서 필요한 처리를 수행 (예: 데이터 업데이트)
+
+      console.log(updatedBuddy.buddyImage);
+      return [200, updatedBuddy]; // 성공 응답 반환
+    });
+
+    axiosInstance
+      .put(`/buddies/${buddyId}`, formData)
+      .then((res) => {
+        // 응답으로 수정된 정보가 올 것
+        const updatedBuddy = res.data;
+        // 수정된 정보로 해당 버디 정보 업데이트
+        setSelectedBuddy(updatedBuddy);
+
+        // 버디 프로필들 중, 해당 id의 버디만 업데이트 프로필로 변경해준다.
+        const updatedProfiles = profiles.map((profile) => {
+          if (profile._id === buddyId) {
+            return updatedBuddy;
+          }
+          return profile;
+        });
+
+        // 프로필 상태를 업데이트 된 프로필로 변경
+        setProfiles(updatedProfiles);
+
+        handleClosePetEditModal();
+      })
+      .catch((error) => {
+        console.log(error);
+        setError(error);
+      });
+  };
 
   return (
     <div>
@@ -229,8 +281,9 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
         modules={[Pagination, Virtual]}
         className="mySwiper"
       >
-        {buddies &&
-          buddies.map((buddy, index) => (
+        {/* 업데이트 된 상태도 렌더링 갱신시켜줘야하기 때문에, buddies가 아닌 profiles를 맵핑 */}
+        {profiles &&
+          profiles.map((buddy, index) => (
             <SwiperSlide key={buddy._id} virtualIndex={index}>
               <PetCard
                 buddy={buddy}
@@ -284,7 +337,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
               />
             )
           }
-          onHandleClick={handleFormSubmit}
+          onHandleClick={handleEditSubmit}
         />
       )}
     </div>

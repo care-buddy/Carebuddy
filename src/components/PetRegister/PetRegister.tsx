@@ -88,9 +88,10 @@ const PetRegister: React.FC<PetRegisterProps> = ({
         weight: petData?.weight,
         buddyImage: petData?.buddyImage,
       });
+
       setBuddyImage(petData.buddyImage);
     }
-  }, [petData]);
+  }, []);
 
   // 폼데이터 생성 함수
   const createFormData = () => {
@@ -103,10 +104,11 @@ const PetRegister: React.FC<PetRegisterProps> = ({
     formData.append('age', String(petInfo.age));
     formData.append('weight', String(petInfo.weight));
     formData.append('kind', petInfo.kind);
-    // 선택 파일이 있을 때에만 append?
+    // 선택 파일이 있을 때에는 그 파일을 append 해준다
     if (selectedFile) {
       formData.append('buddyImage', selectedFile);
-    }
+    } else formData.append('buddyImage', buddyImage);
+
     return formData;
   };
 
