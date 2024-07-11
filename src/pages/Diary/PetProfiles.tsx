@@ -94,7 +94,7 @@ const dummyBuddy2: Buddy = {
 interface ProfilesWrapperProps {
   name?: string;
   buddies?: BuddyProfile[];
-  onSubmitBuddy: (newBuddy: BuddyProfile[]) => void;
+  onSubmitBuddy: (newBuddy: BuddyProfile) => void;
 }
 
 // 공통 인터페이스 통합하기
@@ -106,13 +106,18 @@ interface BuddyProfile {
   buddyImage: string;
 }
 
+const axiosInstance = axios.create({
+  baseURL: '/api', // 기본 URL 설정
+  timeout: 5000, // 타임아웃 설정 (ms)
+});
+
 // 회원 이름과 버디 정보들을 받아와서 카드에 렌더링해준다.
 const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   name,
   buddies,
   onSubmitBuddy,
 }) => {
-  const mock = new MockAdapter(axios);
+  const mock = new MockAdapter(axiosInstance);
 
   const [petModalOpen, setPetModalOpen] = useState(false);
   const [petEditModalOpen, setPetEditModalOpen] = useState(false);
@@ -127,24 +132,32 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   const handleOpenPetModal = () => {
     setPetModalOpen(true);
   };
-  const handleOpenPetEditModal = (buddyId: string) => {
-    // API를 통해 특정 반려동물 정보 가져오기
 
-    // /api/buddies로 GET 요청 모킹
-    mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
-    mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
+  // mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
+  // mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
 
-    axios
-      .get(`/api/buddies/${buddyId}`)
-      .then((res) => {
-        setSelectedBuddy(res.data); // 가져온 반려동물 정보 설정
-        setLoading(false);
-        setPetEditModalOpen(true); // 수정 모달 열기, 로딩 중일 때 처리가 필요하다
-      })
-      .catch((error) => {
-        setError(error);
-        setLoading(false);
-      });
+  const handleOpenPetEditModal = async (buddyId: string) => {
+    try {
+      setLoading(true);
+      setPetEditModalOpen(true);
+
+      // 모킹 설정
+      mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
+      mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
+
+      const response = await axiosInstance.get(`/buddies/${buddyId}`);
+      setSelectedBuddy(response.data); // 가져온 반려동물 정보 설정
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      console.error('Error fetching buddy data:', error.message);
+      alert(
+        '불러오는 데 오류 발생 다시 시도해주세요 오류메시지를 다시 설정해주세요'
+      );
+      setError(null);
+      setLoading(false);
+      setPetEditModalOpen(false);
+    }
   };
 
   const handleClosePetModal = () => {
@@ -164,7 +177,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   // 로딩처리 필요
   const handleFormSubmit = async () => {
     // 가짜 POST 요청 처리
-    mock.onPost('/api/buddies').reply((config) => {
+    mock.onPost('/buddies').reply((config) => {
       console.log('요청 정보:', config);
       const formData = config.data;
       // const entries = formData.entries();
@@ -186,27 +199,15 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       return [200, { success: true, message: '반려동물 등록 성공' }];
     });
 
-    axios
-      .post('/api/buddies', formData)
+    axiosInstance
+      .post('/buddies', formData)
       .then((res) => {
         console.log(res.data);
         handleClosePetModal();
       })
       .catch((error) => {
         setError(error);
-        setLoading(false);
       });
-
-    // try {
-    //   const res = await axios.post('/api/buddies', formData);
-    //   console.log(res.data);
-    //   handleClosePetModal();
-    // } catch (error) {
-    //   console.log(error);
-    // }
-
-    // 모달 닫기
-    // console.log(formData?.get('name'));
   };
 
   useEffect(() => {
@@ -256,10 +257,14 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
           title="동물 정보 등록"
           value="등록"
           component={
-            <PetRegister
-              petData={null}
-              onFormDataChange={handleFormDataChange}
-            />
+            isLoading ? (
+              <div>Loading...</div>
+            ) : (
+              <PetRegister
+                petData={null}
+                onFormDataChange={handleFormDataChange}
+              />
+            )
           }
           onHandleClick={handleFormSubmit}
         />
@@ -270,10 +275,14 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
           title="동물 정보 수정"
           value="수정"
           component={
-            <PetRegister
-              petData={selectedBuddy}
-              onFormDataChange={handleFormDataChange}
-            />
+            isLoading ? (
+              <div>Loading...</div>
+            ) : (
+              <PetRegister
+                petData={selectedBuddy}
+                onFormDataChange={handleFormDataChange}
+              />
+            )
           }
           onHandleClick={handleFormSubmit}
         />
