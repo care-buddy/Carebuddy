@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -61,8 +61,6 @@ const AddProfileMsg = styled.p`
   color: #7d7d7d;
 `;
 
-const mock = new MockAdapter(axios);
-
 const dummyBuddy1: Buddy = {
   _id: '1a',
   name: '후이',
@@ -96,6 +94,7 @@ const dummyBuddy2: Buddy = {
 interface ProfilesWrapperProps {
   name?: string;
   buddies?: BuddyProfile[];
+  onSubmitBuddy: (newBuddy: BuddyProfile[]) => void;
 }
 
 // 공통 인터페이스 통합하기
@@ -108,15 +107,21 @@ interface BuddyProfile {
 }
 
 // 회원 이름과 버디 정보들을 받아와서 카드에 렌더링해준다.
-const PetProfiles: React.FC<ProfilesWrapperProps> = ({ name, buddies }) => {
+const PetProfiles: React.FC<ProfilesWrapperProps> = ({
+  name,
+  buddies,
+  onSubmitBuddy,
+}) => {
+  const mock = new MockAdapter(axios);
+
   const [petModalOpen, setPetModalOpen] = useState(false);
   const [petEditModalOpen, setPetEditModalOpen] = useState(false);
   const [selectedBuddy, setSelectedBuddy] = useState<Buddy | null>(null); // 선택된 반려동물
   const [formData, setFormData] = useState<FormData | null>(null); // 수정/등록을 위한 폼데이터 상태
 
-  // const [profiles, setProfiles] = useState<BuddyProfile[]>(buddies || []);
+  const [profiles, setProfiles] = useState<BuddyProfile[]>(buddies || []); // 반려동물 전체 프로필 상태: 등록 및 수정을 위함
 
-  const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const handleOpenPetModal = () => {
@@ -134,7 +139,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({ name, buddies }) => {
       .then((res) => {
         setSelectedBuddy(res.data); // 가져온 반려동물 정보 설정
         setLoading(false);
-        setPetEditModalOpen(true); // 수정 모달 열기
+        setPetEditModalOpen(true); // 수정 모달 열기, 로딩 중일 때 처리가 필요하다
       })
       .catch((error) => {
         setError(error);
@@ -156,35 +161,59 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({ name, buddies }) => {
     setFormData(data);
   };
 
-  // 가짜 API 설정
-  const mock = new MockAdapter(axios);
-
-  // 가짜 POST 요청 처리
-  mock.onPost('/api/buddies').reply((config) => {
-    console.log('요청 정보:', config);
-    const formData = config.data;
-    const entries = formData.entries();
-    // Mock Post 확인용이므로 룰을 잠시 삭제
-    // eslint-disable-next-line no-restricted-syntax
-    for (const [key, value] of entries) {
-      console.log(`${key}: ${value}`);
-    }
-    return [200, { success: true, message: '반려동물 등록 성공' }];
-  });
-
   // 로딩처리 필요
   const handleFormSubmit = async () => {
-    try {
-      const res = await axios.post('/api/buddies', formData);
-      console.log(res.data);
-      handleClosePetModal();
-    } catch (error) {
-      console.log(error);
-    }
+    // 가짜 POST 요청 처리
+    mock.onPost('/api/buddies').reply((config) => {
+      console.log('요청 정보:', config);
+      const formData = config.data;
+      // const entries = formData.entries();
+      // Mock Post 확인용이므로 룰을 잠시 삭제
+      // eslint-disable-next-line no-restricted-syntax
+      // for (const [key, value] of entries) {
+      //   console.log(`${key}: ${value}`);
+      // }
+      const newBuddy: BuddyProfile = {
+        _id: String(Date.now()), // 임시 id
+        name: formData.get('name'),
+        kind: formData.get('kind'),
+        age: formData.get('age'),
+        buddyImage: formData.get('buddyImage'),
+      };
+      console.log(newBuddy.buddyImage);
+      setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
+      onSubmitBuddy(newBuddy);
+      return [200, { success: true, message: '반려동물 등록 성공' }];
+    });
+
+    axios
+      .post('/api/buddies', formData)
+      .then((res) => {
+        console.log(res.data);
+        handleClosePetModal();
+      })
+      .catch((error) => {
+        setError(error);
+        setLoading(false);
+      });
+
+    // try {
+    //   const res = await axios.post('/api/buddies', formData);
+    //   console.log(res.data);
+    //   handleClosePetModal();
+    // } catch (error) {
+    //   console.log(error);
+    // }
 
     // 모달 닫기
     // console.log(formData?.get('name'));
   };
+
+  useEffect(() => {
+    if (buddies) {
+      setProfiles(buddies);
+    }
+  }, [buddies]);
 
   return (
     <div>

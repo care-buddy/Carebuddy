@@ -235,11 +235,11 @@ interface BuddyProfile {
 interface ProfilesWrapperProps {
   name?: string;
   buddies?: BuddyProfile[];
+  onSubmitBuddy: (newBuddy: BuddyProfile) => void;
 }
 
-const mock = new MockAdapter(axios);
-
 const Diary: React.FC = () => {
+  const mock = new MockAdapter(axios);
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -284,18 +284,24 @@ const Diary: React.FC = () => {
 
   useEffect(() => {
     fetchBuddiesData(); // 데이터 다시 불러오기
-    return () => {
-      setBuddiesData(null); // 컴포넌트가 언마운트될 때 buddiesData 상태 초기화
-    };
   }, []);
 
   if (isLoading) {
     return <div>Loading...</div>;
   }
 
-  // if (error) {
-  //   return <div>Error: {error.message}</div>;
-  // }
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  const handleSubmitBuddy = (newBuddy: BuddyProfile) => {
+    if (buddiesData?.buddies) {
+      setBuddiesData({
+        ...buddiesData,
+        buddies: [...buddiesData.buddies, newBuddy],
+      });
+    }
+  };
 
   // 모달 관련 함수
   const handleOpenModal = () => {
@@ -326,7 +332,11 @@ const Diary: React.FC = () => {
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
       <Wrapper>
-        <PetProfiles name={buddiesData?.name} buddies={buddiesData?.buddies} />
+        <PetProfiles
+          name={buddiesData?.name}
+          buddies={buddiesData?.buddies}
+          onSubmitBuddy={handleSubmitBuddy}
+        />
 
         <DiaryWrapper>
           <NameInTitle className="diaryTitle">

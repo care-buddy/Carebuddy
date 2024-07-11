@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import ActionButton from '@/components/common/ActtionButton';
+import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import { CardsWrapper, Cards } from './card-components';
 
 const Photo = styled.img`
@@ -59,7 +60,8 @@ const PetCard: React.FC<ProfileCardProps> = ({ buddy, onEdit, onDelete }) => (
         onDelete={onDelete}
         onEdit={onEdit}
       />
-      <Photo src={buddy.buddyImage} />
+      {/* 버디 이미지를 추가하지 않았다면, 기본 이미지가 렌더링 */}
+      <Photo src={buddy.buddyImage || DefaultPetProfileImg} />
       <Name>{buddy.name}</Name>
       <Details>
         {buddy.kind} / {buddy.age}살
