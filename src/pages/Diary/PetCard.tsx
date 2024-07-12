@@ -40,8 +40,9 @@ const Details = styled.p`
 
 interface Buddy {
   name: string;
-  species: string;
+  kind: string;
   age: number;
+  buddyImage: string;
 }
 
 interface ProfileCardProps {
@@ -59,10 +60,11 @@ const PetCard: React.FC<ProfileCardProps> = ({ buddy, onEdit, onDelete }) => (
         onDelete={onDelete}
         onEdit={onEdit}
       />
-      <Photo src={DefaultPetProfileImg} />
+      {/* 버디 이미지를 추가하지 않았다면, 기본 이미지가 렌더링 */}
+      <Photo src={buddy.buddyImage || DefaultPetProfileImg} />
       <Name>{buddy.name}</Name>
       <Details>
-        {buddy.species} / {buddy.age}살
+        {buddy.kind} / {buddy.age}살
       </Details>
     </Cards>
   </CardsWrapper>
