@@ -136,6 +136,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   // mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
   // mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
 
+  // 수정 모달
   const handleOpenPetEditModal = async (buddyId: string) => {
     try {
       setLoading(true);
@@ -171,6 +172,28 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   // 폼데이터가 변화할때마다 상태 업데이트
   const handleFormDataChange = (data: FormData) => {
     setFormData(data);
+  };
+
+  const deleteProfile = async (buddyId: string) => {
+    // 가짜 DELETE 요청 처리
+    try {
+      mock
+        .onDelete(`/buddies/${buddyId}`)
+        .reply(200, { success: true, message: '반려동물 등록 성공' });
+
+      setLoading(true);
+
+      await axiosInstance.delete(`/buddies/${buddyId}`);
+
+      // filter 사용하여 현재 profiles 상태를 delete 요청한 프로필을 제외하여 다시 구성해줌
+      const updatedProfiles = profiles.filter(
+        (profile) => profile._id !== buddyId
+      );
+      setProfiles(updatedProfiles); // 상태 업데이트
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+    }
   };
 
   // 로딩처리 필요
@@ -288,7 +311,9 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
               <PetCard
                 buddy={buddy}
                 onEdit={() => handleOpenPetEditModal(buddy._id)}
-                onDelete={() => {}}
+                onDelete={() => {
+                  deleteProfile(buddy._id);
+                }}
               />
             </SwiperSlide>
           ))}
