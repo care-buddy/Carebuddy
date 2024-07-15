@@ -1,36 +1,75 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 
-import Button from '@components/common/Button';
 import Banner from '@/components/Home&CommunityFeed/Banner';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 import Select from '@/components/common/Select';
+import Modal from '@/components/common/Modal';
+import PostCreate from '@/pages/PostCreate/index';
+
+import formatDate from '@/utils/formatDate';
 
 // 임시 데이터
-import {
-  tempTitle,
-  tempContent,
-  tempDate,
-  tempNickname,
-  tempProfileSrc,
-  tempPostId,
-  tempGroupArray1,
-} from '@constants/tempData';
+import { tempGroupArray1, dummyPosts, dummyGroups } from '@constants/tempData';
+
+interface PostData {
+  _id: '';
+  userId: {
+    nickName: '';
+    profileImage: [''];
+    deletedAt: '';
+  };
+  communityId: {
+    _id: '';
+    category: 0;
+    community: '';
+    deletedAt: '';
+  };
+  title: '';
+  likedUsers: ['', ''];
+  content: '';
+  deletedAt: '';
+  postImage: [''];
+  createdAt: '';
+}
+
+// 임시
+const tempGroup = [
+  <CommunityElement
+    key={tempGroupArray1.groupId}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+  <CommunityElement
+    key={tempGroupArray1.groupId}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+  <CommunityElement
+    key={tempGroupArray1.groupId}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+];
+
+const mock = new MockAdapter(axios);
 
 const Home: React.FC = () => {
-  const tempGroup = (
-    <CommunityElement
-      key={tempGroupArray1.groupId}
-      groupId={tempGroupArray1.groupId}
-      name={tempGroupArray1.groupName}
-      introduction={tempGroupArray1.introduction}
-      memberCount={tempGroupArray1.memberCount}
-    />
-  );
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
+  const [posts, setPosts] = useState<PostData[] | null>(null);
 
+  // select(추후에 컴포넌트화?)
   const SelectOptions = [
     { value: 'dog', label: '강아지' },
     { value: 'cat', label: '고양이' },
@@ -40,6 +79,36 @@ const Home: React.FC = () => {
     { value: 'group', label: '그룹' },
     { value: 'eyes', label: '눈 / 피부 / 귀' },
   ];
+
+  // 글 작성 모달 닫기
+  const handleCloseWriteModal = () => {
+    setIsWriteModalOpen(false);
+  };
+
+  // 전체 게시글, 전체 그룹 목 API,
+  mock.onGet('/api/posts').reply(200, dummyPosts);
+  mock.onGet('/api/groups').reply(200, dummyGroups);
+
+  // 데이터 받기
+  useEffect(() => {
+    const fetchData = async () => {
+      // 게시글 목록
+      try {
+        const response = await axios.get(`api/posts`);
+        console.log('Component mounted, making API call...');
+
+        // 등록일 formatting
+        const formattedPosts = response.data.map((post:PostData) => ({
+          ...post,
+          createdAt: formatDate(post.createdAt),
+        }));
+        setPosts(formattedPosts);
+      } catch (error) {
+        console.error('게시글 목록 조회 실패', error); 
+      }
+    };
+    fetchData();
+  }, [posts]);   
 
   return (
     <>
@@ -58,18 +127,28 @@ const Home: React.FC = () => {
               />
               <Select selectStyle="round" options={SelectGroupOptions} />
             </SelectContainer>
-            <WriteButton />
+            <WriteButton setIsWriteModalOpen={setIsWriteModalOpen} />
+            {isWriteModalOpen && (
+              <Modal
+                title="글 작성하기"
+                value="등록"
+                component={<PostCreate />}
+                onClose={handleCloseWriteModal}
+              />
+            )}
           </FeedOptionContainer>
-          <FeedBox
-            postId={tempPostId}
-            title={tempTitle}
-            content={tempContent}
-            uploadedDate={tempDate}
-            nickname={tempNickname}
-            profileSrc={tempProfileSrc}
-          />
+          {posts?.map((post) => (
+            <FeedBox
+              postId={post._id}
+              title={post.title}
+              content={post.content}
+              uploadedDate={post.createdAt}
+              nickname={post.userId.nickName}
+              profileSrc={post.userId.profileImage[0]}
+            />
+          ))}
         </FeedBoxContainer>
-        <SidePanel name="추천 그룹 or 추천 커뮤니티" elementArray={tempGroup} />
+        <SidePanel name="추천 커뮤니티" elementArray={tempGroup} />
       </ContentContainer>
     </>
   );

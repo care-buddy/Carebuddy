@@ -10,7 +10,6 @@ import CommentWritingBox from '@/components/Post/CommentWritingBox';
 import Comment from '@/components/Post/Comment';
 import TopBar from '@/components/common/TopBar';
 
-
 import { LuThumbsUp, LuChevronLeft } from 'react-icons/lu';
 
 import formatDateIncludeTime from '@/utils/formatDateIncludeTime';
@@ -97,7 +96,6 @@ const Post: React.FC<PostProps> = () => {
       _id: '',
       nickName: '',
       profileImage: [''],
-      // deletedAt: null,
       deletedAt: '',
     },
     communityId: {
@@ -109,10 +107,8 @@ const Post: React.FC<PostProps> = () => {
     likedUsers: [],
     content: '',
     deletedAt: '',
-    // deletedAt: null,
     postImage: [''],
     createdAt: '',
-    // createdAt: null,
   });
   const [comments, setComments] = useState([
     {
@@ -123,10 +119,8 @@ const Post: React.FC<PostProps> = () => {
       },
       text: '',
       deletedAt: '',
-      // deletedAt: null,
       _id: '',
       createdAt: '',
-      // createdAt: null,
     },
   ]);
 

@@ -6,6 +6,7 @@ import LikeAndCommentCount from '@components/Post/LikesAndCommentCount';
 import CommunityCategory from '@components/GlobalSearch/CommunityCategory';
 
 import formatDate from '@/utils/formatDate';
+import processedContentForFeedBox from '@/utils/processedContentForFeedBox';
 
 // 임시 데이터
 import { tempLikeCount, tempCommentCount } from '@constants/tempData';
@@ -42,9 +43,8 @@ const FeedBox: React.FC<FeedBoxProps> = ({
     }
   }, [communityName]);
 
-  // 유틸함수화 할듯 아마
-  const processedContent = content.split('. ').slice(0, 2).join('. '); // 두 문장만 보여주기
-  const formattedDate = formatDate({ rowDate: uploadedDate }); // 시간 제외하고 날짜만 보여주기
+  const processedContent = processedContentForFeedBox(content) // content 글자 잘라서 보여주기
+  const formattedDate = formatDate(uploadedDate); // 시간 제외하고 날짜만 보여주기
 
   return (
     <StyledFeedBox to={`/post/${postId}`}>

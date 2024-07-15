@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 
-// 컴포넌트
 import TopBar from '@/components/common/TopBar';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
@@ -9,20 +10,130 @@ import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 import MemberElement from '@/components/Home&CommunityFeed/MemberElement';
 import Search from '@/components/common/Search';
 import Button from '@/components/common/Button';
+import Modal from '@/components/common/Modal';
+import PostCreate from '@/pages/PostCreate/index';
+import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
+
+import formatDate from '@/utils/formatDate';
+
 
 // 임시 데이터
 import {
-  tempTitle,
-  tempContent,
-  tempDate,
-  tempNickname,
   tempProfileSrc,
-  tempPostId,
   tempMemberArray1,
   tempGroupArray1,
+  dummyPosts, 
+  dummyGroups
 } from '@constants/tempData';
 
+// 임시
+const tempGroup = [
+  <CommunityElement
+    key={tempGroupArray1.groupId}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+  <CommunityElement
+    key={tempGroupArray1.groupId}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+  <CommunityElement
+    key={tempGroupArray1.groupId}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+];
+
+const mock = new MockAdapter(axios);
+
+// 전체 게시글 목 API
+mock.onGet('/api/posts').reply(200, {
+  success: true,
+  data: [
+    {
+      _id: '6621f4ae536c1c27679a9df4',
+      userId: {
+        nickName: '김지연',
+        profileImage: ['https://picsum.photos/200'],
+        deletedAt: null,
+      },
+      communityId: {
+        _id: '66214eb084ee7839e29e8ac6',
+        category: 0,
+        community: '뇌·신경',
+        deletedAt: null,
+      },
+      title: '콘텐츠제목2',
+      likedUsers: [],
+      content:
+        '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+      deletedAt: '2024-04-19T08:22:51.722Z',
+      postImage: ['https://picsum.photos/200'],
+      createdAt: '2024-04-19T04:35:58.458Z',
+    },
+    {
+      _id: '6621f4ae536c1c27679a9df4',
+      userId: {
+        nickName: '박유신',
+        profileImage: ['https://picsum.photos/200'],
+        deletedAt: null,
+      },
+      communityId: {
+        _id: '66214eb084ee7839e29e8ac6',
+        category: 0,
+        community: '눈/피부/귀',
+        deletedAt: null,
+      },
+      title: '콘텐츠내용',
+      likedUsers: ['1', '2'],
+      content:
+        '콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11',
+      deletedAt: '2024-04-19T08:22:51.722Z',
+      postImage: ['https://picsum.photos/200'],
+      createdAt: '2024-04-19T04:35:58.458Z',
+    },
+  ],
+});
+
+
+
 const CommunityFeed: React.FC = () => {
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
+  const [posts, setPosts] = useState([
+    {
+      _id: '',
+      userId: {
+        nickName: '',
+        profileImage: [''],
+        deletedAt: '',
+      },
+      communityId: {
+        _id: '',
+        category: 0,
+        community: '',
+        deletedAt: '',
+      },
+      title: '',
+      likedUsers: ['', ''],
+      content: '',
+      deletedAt: '',
+      postImage: [''],
+      createdAt: '',
+    },
+  ]);
+
+  // 글 작성 모달 닫기
+  const handleCloseWriteModal = () => {
+    setIsWriteModalOpen(false);
+  };
+
   // 작동 테스트용
   const tempGroup = (
     <MemberElement
@@ -33,6 +144,28 @@ const CommunityFeed: React.FC = () => {
       profileSrc={tempProfileSrc}
     />
   );
+
+  // 데이터 받기
+  useEffect(() => {
+    const fetchData = async () => {
+      // 게시글 목록
+      try {
+        const response = await axios.get(`api/posts`);
+        const posts = response.data.data;
+
+        // 등록일 formatting
+        const formattedPosts = posts.map((post: object) => ({
+          ...post,
+          createdAt: formatDate(post.createdAt),
+        }));
+
+        setPosts(formattedPosts);
+      } catch (error) {
+        console.error('게시글 목록 조회 실패', error);
+      }
+    };
+    fetchData();
+  }, []);
 
   return (
     <>
@@ -50,16 +183,26 @@ const CommunityFeed: React.FC = () => {
       <Container>
         <FeedBoxContainer>
           <FeedOptionContainer>
-            <WriteButton />
+            <WriteButton setIsWriteModalOpen={setIsWriteModalOpen} />
+            {isWriteModalOpen && (
+              <Modal
+                title="글 작성하기"
+                value="등록"
+                component={<PostCreate />}
+                onClose={handleCloseWriteModal}
+              />
+            )}
           </FeedOptionContainer>
-          <FeedBox
-            postId={tempPostId}
-            title={tempTitle}
-            content={tempContent}
-            uploadedDate={tempDate}
-            nickname={tempNickname}
-            profileSrc={tempProfileSrc}
-          />
+          {posts.map((post) => (
+            <FeedBox
+              postId={post._id}
+              title={post.title}
+              content={post.content}
+              uploadedDate={post.createdAt}
+              nickname={post.userId.nickName}
+              profileSrc={post.userId.profileImage[0]}
+            />
+          ))}
         </FeedBoxContainer>
         <SidePanelContainer>
           <LinkButtonContainer>

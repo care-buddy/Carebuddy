@@ -111,3 +111,97 @@ PC통신, 스마트폰 앱, 무선 등을 이용하는 전자상거래에 대해
 `;
 
 export { tempTerms  };
+
+// 더미데이터
+
+const dummyPosts = [
+  {
+    _id: '6621f4ae536c1c27679a9df4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee7839e29e8ac6',
+      category: 0,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '콘텐츠제목2',
+    likedUsers: [],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+  {
+    _id: '6621f4ae536c1c27679a9df4',
+    userId: {
+      nickName: '박유신',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee7839e29e8ac6',
+      category: 0,
+      community: '눈/피부/귀',
+      deletedAt: null,
+    },
+    title: '콘텐츠내용',
+    likedUsers: ['1', '2'],
+    content:
+      '콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+]
+
+const dummyGroups =   [
+  {
+    _id: '6621f4ae536c1c27679a9df4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee7839e29e8ac6',
+      category: 0,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '콘텐츠제목2',
+    likedUsers: [],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+  {
+    _id: '6621f4ae536c1c27679a9df4',
+    userId: {
+      nickName: '박유신',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee7839e29e8ac6',
+      category: 0,
+      community: '눈/피부/귀',
+      deletedAt: null,
+    },
+    title: '콘텐츠내용',
+    likedUsers: ['1', '2'],
+    content:
+      '콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+]
+
+export {dummyPosts, dummyGroups};

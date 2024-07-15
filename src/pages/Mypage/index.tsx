@@ -9,7 +9,6 @@ import Input from '@/components/common/Input';
 import SmallModal from '@/components/common/SmallModal';
 import UserAsk from '@/pages/Mypage/UserAsk';
 import Modal from '@/components/common/Modal/index'
-import PostCreate from '@/pages/PostCreate/index'
 import TopBar from '@/components/common/TopBar';
 
 const Container = styled.div`
@@ -149,7 +148,6 @@ const ProfileContainer = () => (
 
 const Mypage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
-  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
   // 회원탈퇴 모달 함수
@@ -163,14 +161,6 @@ const Mypage: React.FC = () => {
 
   const handleConfirmWithdraw = () => {
     setIsModalOpen(false);
-  };
-
-  const handleWriteClick = () => {
-    setIsWriteModalOpen(true);
-  };
-
-  const handleCloseWriteModal = () => {
-    setIsWriteModalOpen(false);
   };
 
   const handleEditClick = () => {
@@ -191,15 +181,7 @@ const Mypage: React.FC = () => {
   return (
     <Container>
       <TopBar category="회원 정보 수정" title="마이 페이지" />
-      <Button onClick={handleWriteClick}>글 작성하기 모달 임시</Button>
-      {isWriteModalOpen && (
-        <Modal
-          title='글 작성하기'
-          value='등록'
-          component={<PostCreate />}
-          onClose={handleCloseWriteModal}
-        />
-      )}
+
       <Button onClick={handleEditClick}>글 수정하기 모달 임시</Button>
       {isEditModalOpen && (
         <Modal

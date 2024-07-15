@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import TopBar from '@/components/common/TopBar';
@@ -6,6 +6,8 @@ import Search from '@/components/common/Search';
 import Select from '@/components/common/Select';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
+import Modal from '@/components/common/Modal';
+import PostCreate from '@/pages/PostCreate/index';
 
 // 임시 데이터
 import {
@@ -19,6 +21,13 @@ import {
 } from '@constants/tempData';
 
 const GlobalSearch: React.FC = () => {
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
+
+  // 글 작성 모달
+  const handleCloseWriteModal = () => {
+    setIsWriteModalOpen(false);
+  };
+
   const SelectOptions = [
     { value: 'dog', label: '강아지' },
     { value: 'cat', label: '고양이' },
@@ -47,7 +56,15 @@ const GlobalSearch: React.FC = () => {
               />
               <Select selectStyle="round" options={SelectGroupOptions} />
             </SelectContainer>
-            <WriteButton />
+            <WriteButton setIsWriteModalOpen={setIsWriteModalOpen} />
+            {isWriteModalOpen && (
+              <Modal
+                title="글 작성하기"
+                value="등록"
+                component={<PostCreate />}
+                onClose={handleCloseWriteModal}
+              />
+            )}
           </FeedOptionContainer>
           <FeedBoxContainer>
             <FeedBox
