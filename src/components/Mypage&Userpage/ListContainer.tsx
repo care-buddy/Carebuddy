@@ -1,17 +1,5 @@
 import styled from "styled-components";
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-
-const mock = new MockAdapter(axios, { delayResponse: 500 });
-
-mock.onGet('/api/user').reply(200, {
-  communityId: [
-    { id: '1', category: 0, community: '안녕하세요', date: '2024-01-01' },
-    { id: '2', category: 0, community: '글입니다히히히', date: '2024-01-02' },
-    { id: '3', category: 1, community: '가운데정렬왜안돼', date: '2024-01-03' },
-  ],
-});
+import React from 'react';
 
 const Container = styled.div`
   margin: 30px 0;
@@ -48,20 +36,12 @@ interface CommunityPost {
   date: string;
 }
 
-const ListContainer: React.FC = () => {
-  const [posts, setPosts] = useState<CommunityPost[]>([]);
+interface ListContainerProps {
+  posts: CommunityPost[];
+  isLoading: boolean;
+}
 
-  useEffect(() => {
-    axios.get('/api/user')
-      .then((response) => {
-        setPosts(response.data.communityId || []);
-        console.log(setPosts)
-      })
-      .catch((error) => {
-        console.error('Error fetching user data:', error);
-      });
-  }, []);
-
+const ListContainer: React.FC<ListContainerProps> = ({ posts, isLoading }) => {
   return (
     <Container>
       <DataContainer>
@@ -69,13 +49,17 @@ const ListContainer: React.FC = () => {
         <Title>글제목</Title>
         <Title>작성일</Title>
       </DataContainer>
-      {posts.map((post) => (
-        <DataContainer key={post.id}>
-          <GroupContent>[{post.category === 0 ? '강아지' : '고양이'}]</GroupContent>
-          <ContentList>{post.community}</ContentList>
-          <ContentList>{post.date}</ContentList>
-        </DataContainer>
-      ))}
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        posts.map((post) => (
+          <DataContainer key={post.id}>
+            <GroupContent>[{post.category === 0 ? '강아지' : '고양이'}]</GroupContent>
+            <ContentList>{post.community}</ContentList>
+            <ContentList>{post.date}</ContentList>
+          </DataContainer>
+        ))
+      )}
     </Container>
   );
 };

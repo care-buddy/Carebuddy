@@ -21,6 +21,11 @@ mock.onGet('/api/user').reply(200, {
   email: 'carebuddy@naver.com',
   nickname: '케어버디',
   introduction: '소개글입니다^^',
+  communityId: [
+    { id: '1', category: 0, community: '안녕하세요', date: '2024-01-01' },
+    { id: '2', category: 0, community: '글입니다히히히', date: '2024-01-02' },
+    { id: '3', category: 1, community: '가운데정렬왜안돼', date: '2024-01-03' },
+  ],
 });
 
 const Container = styled.div`
@@ -89,8 +94,7 @@ const ImageBox = styled.div`
   }
 `;
 
-const Data = styled.span`
-`;
+const Data = styled.span``;
 
 const InfoContainer = styled.div`
   display: flex;
@@ -108,6 +112,14 @@ interface UserData {
   email: string;
   nickname: string;
   introduction: string;
+  communityId: CommunityPost[];
+}
+
+interface CommunityPost {
+  id: string;
+  category: number;
+  community: string;
+  date: string;
 }
 
 const UserInfoContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
@@ -170,17 +182,27 @@ const Mypage: React.FC = () => {
     email: '',
     nickname: '',
     introduction: '',
+    communityId: [],
   });
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
   useEffect(() => {
-    axios.get('/api/user').then((response) => {
-      setUserData(response.data);
-    }).catch((error) => {
-      console.error('Error fetching user data:', error);
-    });
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get('/api/user');
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // 회원탈퇴 모달 함수
@@ -216,7 +238,7 @@ const Mypage: React.FC = () => {
     { id: '1', content: '회원정보', component: <UserInfoContainer userData={userData} /> },
     { id: '2', content: '프로필', component: <ProfileContainer userData={userData} /> },
     { id: '3', content: '반려동물 관리', component: <PetCardContainer /> },
-    { id: '4', content: '작성 글 목록', component: <ListContainer /> },
+    { id: '4', content: '작성 글 목록', component: <ListContainer posts={userData.communityId} isLoading={isLoading} /> },
   ];
 
   return (
@@ -240,14 +262,18 @@ const Mypage: React.FC = () => {
           onClose={handleCloseEditModal}
         />
       )}
-      {contentItems.map(item => (
-        <React.Fragment key={item.id}>
-          <Menu>
-            <Item>{item.content}</Item>
-          </Menu>
-          {item.component}
-        </React.Fragment>
-      ))}
+      {isLoading ? (
+        <div>Loading...</div>
+      ) : (
+        contentItems.map(item => (
+          <React.Fragment key={item.id}>
+            <Menu>
+              <Item>{item.content}</Item>
+            </Menu>
+            {item.component}
+          </React.Fragment>
+        ))
+      )}
       <WithdrawContainer>
         <Withdraw onClick={handleWithdrawClick}>회원탈퇴</Withdraw>
       </WithdrawContainer>
