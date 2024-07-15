@@ -29,7 +29,7 @@ function useFetchData<T>(fetchFunction: () => Promise<T>): FetchResult<T> {
     }
 
     fetchData();
-  }, []);
+  }, [isLoading]);
 
   return { data, isLoading, isSuccess, error };
 }

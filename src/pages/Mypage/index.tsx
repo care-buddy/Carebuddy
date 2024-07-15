@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import defaultImg from '@/assets/person.png';
 import Button from '@/components/common/Button';
 import TextArea from '@/components/common/TextArea';
@@ -8,8 +10,18 @@ import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
 import Input from '@/components/common/Input';
 import SmallModal from '@/components/common/SmallModal';
 import UserAsk from '@/pages/Mypage/UserAsk';
-import Modal from '@/components/common/Modal/index'
+import Modal from '@/components/common/Modal/index';
+import PostCreate from '@/pages/PostCreate/index';
 import TopBar from '@/components/common/TopBar';
+
+// user api Mock 설정
+const mock = new MockAdapter(axios, { delayResponse: 500 });
+
+mock.onGet('/api/user').reply(200, {
+  email: 'carebuddy@naver.com',
+  nickname: '케어버디',
+  introduction: '소개글입니다^^',
+});
 
 const Container = styled.div`
   margin: 30px 0 30px 0;
@@ -92,19 +104,25 @@ const Withdraw = styled.div`
   cursor: pointer;
 `;
 
-const UserInfoContainer = () => (
+interface UserData {
+  email: string;
+  nickname: string;
+  introduction: string;
+}
+
+const UserInfoContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
   <Container>
     <InfoContainer>
       <Item>이메일</Item>
-      <Data>carebuddy@naver.com</Data>
+      <Data>{userData.email}</Data>
     </InfoContainer>
     <InfoContainer>
       <Item>닉네임</Item>
-      <Data>케어버디</Data>
+      <Data>{userData.nickname}</Data>
     </InfoContainer>
     <InfoContainer>
       <Item>소개글</Item>
-      <Data>소개글입니다^^</Data>
+      <Data>{userData.introduction}</Data>
     </InfoContainer>
   </Container>
 );
@@ -113,7 +131,7 @@ const handleSaveClick = () => {
   alert('소개글이 저장되었습니다');
 };
 
-const ProfileContainer = () => (
+const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
   <Container>
     <UserContainer>
       <ImgContainer>
@@ -126,7 +144,7 @@ const ProfileContainer = () => (
           <Input
             inputSize='bg'
             placeholder="입력하여주세요."
-            value="케어버디"
+            value={userData.nickname}
           />
         </List>
         <List>
@@ -135,6 +153,7 @@ const ProfileContainer = () => (
             <TextArea
               size="md"
               placeholder="소개글을 입력하세요"
+              value={userData.introduction}
             />
           </Data>
         </List>
@@ -147,8 +166,21 @@ const ProfileContainer = () => (
 );
 
 const Mypage: React.FC = () => {
+  const [userData, setUserData] = useState<UserData>({
+    email: '',
+    nickname: '',
+    introduction: '',
+  });
   const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
+
+  useEffect(() => {
+    axios.get('/api/user').then((response) => {
+      setUserData(response.data);
+    }).catch((error) => {
+      console.error('Error fetching user data:', error);
+    });
+  }, []);
 
   // 회원탈퇴 모달 함수
   const handleWithdrawClick = () => {
@@ -172,8 +204,8 @@ const Mypage: React.FC = () => {
   };
 
   const contentItems = [
-    { id: '1', content: '회원정보', component: <UserInfoContainer /> },
-    { id: '2', content: '프로필', component: <ProfileContainer /> },
+    { id: '1', content: '회원정보', component: <UserInfoContainer userData={userData} /> },
+    { id: '2', content: '프로필', component: <ProfileContainer userData={userData} /> },
     { id: '3', content: '반려동물 관리', component: <PetCardContainer /> },
     { id: '4', content: '작성 글 목록', component: <ListContainer /> },
   ];
