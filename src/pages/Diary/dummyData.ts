@@ -1,7 +1,7 @@
 import { tempProfileSrc } from '@constants/tempData';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 
-const dummyBuddies = {
+export const dummyBuddies = {
   name: '주인이름',
   buddies: [
     {
@@ -27,4 +27,9 @@ const dummyBuddies = {
   ],
 };
 
-export default dummyBuddies;
+export const dummyBuddies2 = {
+  name: '방금가입한 회원',
+  buddies: [],
+};
+
+// export default dummyBuddies;

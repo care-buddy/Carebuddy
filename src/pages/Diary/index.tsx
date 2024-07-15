@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-
+import styled, { keyframes } from 'styled-components';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -19,14 +18,9 @@ import TopBar from '@/components/common/TopBar';
 
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import useFetch from '@/hooks/useFetch';
-import { Buddy } from '@/interfaces';
-// 임시 사진
-import { tempProfileSrc } from '@constants/tempData';
-import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
-import dummyBuddies from './dummyData';
+import { dummyBuddies, dummyBuddies2 } from './dummyData';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -36,13 +30,25 @@ const Wrapper = styled.div`
   margin: 0 auto;
   height: auto;
 `;
-
+// 임시 애니메이션 수정해야함!
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+  }
+  to {
+    opacity: 1;
+  }
+`;
 /* 다이어리 */
 
 const DiaryWrapper = styled.div`
+  /* animation: ${fadeIn} 0.3s ease-in-out; */
+  /* transition: all 0.5s ease; */
   box-sizing: border-box;
   width: 100%;
   height: auto;
+  min-height: 600px;
   padding: 50px 80px 40px 60px;
   border: 2px solid var(--color-grey-2);
   border-radius: 6px 80px 6px 6px;
@@ -80,11 +86,13 @@ const HorizontalLine = styled.div`
 
 // 타이틀을 포함한 다이어리 컨테이너
 const ReportWrapper = styled.div`
+  animation: ${fadeIn} 0.3s ease-in-out;
   /* height: 100% */
   width: 100%;
   margin-top: 40px;
   margin-bottom: 50px;
   &.noReport {
+    animation: none;
     > p {
       padding-bottom: 8px;
     }
@@ -238,8 +246,61 @@ interface ProfilesWrapperProps {
   onSubmitBuddy: (newBuddy: BuddyProfile) => void;
 }
 
+interface Record {
+  _id: string;
+  doctorName: string;
+  address: string;
+  consultationDate: Date;
+  hospitalizationStatus: Date | null;
+  disease: string;
+  symptom: string;
+  treatment: string;
+  memo: string | null;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date | null;
+}
+
+const dummyRecord: Record[] = [
+  {
+    _id: '1r',
+    doctorName: 'Dr.Lee',
+    address: 'Seoul, Korea',
+    consultationDate: new Date('2024-04-08T07:00:00.000Z'),
+    hospitalizationStatus: null,
+    disease: '감기1',
+    symptom: '기침, 콧물',
+    treatment: '해열제',
+    memo: null,
+    deletedAt: null,
+    createdAt: new Date('2024-04-08T07:00:00.000Z'),
+    updatedAt: new Date('2024-04-08T07:00:00.000Z'),
+  },
+  {
+    _id: '2r',
+    doctorName: '2번 의사',
+    address: 'Seoul, Korea',
+    consultationDate: new Date('2024-04-08T07:00:00.000Z'),
+    hospitalizationStatus: new Date('2024-04-08T07:00:00.000Z'),
+    disease: '감기2',
+    symptom: '기침, 콧물',
+    treatment: '해열제',
+    memo: 'null',
+    deletedAt: null,
+    createdAt: new Date('2024-04-08T07:00:00.000Z'),
+    updatedAt: new Date('2024-04-08T07:00:00.000Z'),
+  },
+];
+
+const dummyRecord2 = null;
+
+const axiosInstance = axios.create({
+  baseURL: '/api', // 기본 URL 설정
+  timeout: 5000, // 타임아웃 설정 (ms)
+});
+
 const Diary: React.FC = () => {
-  const mock = new MockAdapter(axios);
+  const mock = new MockAdapter(axiosInstance);
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
@@ -258,33 +319,50 @@ const Diary: React.FC = () => {
   const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
     null
   );
-  const [isLoading, setLoading] = useState(true);
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchBuddiesData = () => {
-    // /api/buddies로 GET 요청 모킹
-    mock.onGet('/api/buddies').reply(200, dummyBuddies);
+  const [recordsData, setRecords] = useState<Record[] | null>(null);
 
-    axios
-      .get('/api/buddies')
-      .then((response) => {
-        console.log(response.data);
-        if (response.status === 200) {
-          setBuddiesData(response.data);
-          setLoading(false);
-        } else {
-          throw new Error('Failed to fetch data');
-        }
-      })
-      .catch((error) => {
-        setError(error);
-        setLoading(false);
-      });
+  const fetchBuddiesData = async () => {
+    // /api/buddies로 GET 요청 모킹
+    try {
+      setLoading(true);
+      mock.onGet('/buddies').reply(200, dummyBuddies);
+      const response = await axiosInstance.get('/buddies');
+      console.log(response.data);
+      setBuddiesData(response.data);
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+    }
   };
 
+  const fetchRecordsData = async (buddyId: string) => {
+    // /api/hospitals로 GET 요청 모킹
+    try {
+      setLoading(true);
+      mock.onGet('/hospitals/1a').reply(200, dummyRecord);
+      mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
+      const response = await axiosInstance.get(`/hospitals/${buddyId}`);
+      console.log(response.data);
+      setRecords(response.data);
+      setLoading(false);
+    } catch (error) {
+      setError(error);
+      setLoading(false);
+    }
+  };
+
+  // 화면 첫 진입 시, 렌더링해올 데이터들 fetch
   useEffect(() => {
-    fetchBuddiesData(); // 데이터 다시 불러오기
-  }, []);
+    fetchBuddiesData();
+    // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
+    if (selectedId) fetchRecordsData(selectedId);
+  }, [selectedId]);
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -328,6 +406,12 @@ const Diary: React.FC = () => {
     handleCloseModal();
   };
 
+  // PetProfiles가 마운트될 때, 버디프로필이 있다면 실행된다.
+  // 따라서 프로필이 있다면 selectedId 상태가 초기값이 null에서 id로 업데이트된다
+  const handleSelectedId = (buddyId: string) => {
+    setSelectedId(buddyId);
+  };
+
   return (
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
@@ -336,6 +420,7 @@ const Diary: React.FC = () => {
           name={buddiesData?.name}
           buddies={buddiesData?.buddies}
           onSubmitBuddy={handleSubmitBuddy}
+          onBuddySelect={handleSelectedId}
         />
 
         <DiaryWrapper>
@@ -357,7 +442,103 @@ const Diary: React.FC = () => {
               onHandleClick={handleFormSubmit}
             />
           )}
-          <ReportWrapper>
+          {recordsData ? (
+            recordsData.map((record, index) => (
+              <ReportWrapper>
+                <Report>
+                  <DeseaseName>
+                    <Icon>
+                      <TbReportMedical className="big" />
+                    </Icon>
+                    <DeseaseTitle>{record.disease}</DeseaseTitle>
+                    <Paragraph>24/07/03</Paragraph>
+                  </DeseaseName>
+
+                  <DiaryDetailsLeft>
+                    <DiaryDetailContainer>
+                      <Icon>
+                        <LuActivitySquare />
+                      </Icon>
+                      <DiaryDetail>
+                        <DetailTitle>증상</DetailTitle>
+                        <Paragraph>
+                          {'data.symptom' || '증상 기록이 없어요'}
+                        </Paragraph>
+                      </DiaryDetail>
+                    </DiaryDetailContainer>
+                    <DiaryDetailContainer>
+                      <Icon>
+                        <TbBuildingHospital />
+                      </Icon>
+                      <DiaryDetail>
+                        <DetailTitle>입원 여부</DetailTitle>
+                        <Paragraph>입원중 or 입원하지 않았어요</Paragraph>
+                      </DiaryDetail>
+                    </DiaryDetailContainer>
+                    <DiaryDetailContainer>
+                      <Icon>
+                        <LuMessageSquarePlus />
+                      </Icon>
+                      <DiaryDetail>
+                        <DetailTitle>보호자 메모</DetailTitle>
+                        <Paragraph>{'data.memo' || '메모 없음'}</Paragraph>
+                      </DiaryDetail>
+                    </DiaryDetailContainer>
+                  </DiaryDetailsLeft>
+                  <DiaryDetailsRight>
+                    <ActionButton
+                      buttonBorder="border-none"
+                      direction="vertical"
+                      onDelete={() => {}}
+                      onEdit={handleOpenEditModal}
+                    />
+                    {editModalOpen && (
+                      <Modal
+                        onClose={handleCloseEditModal}
+                        title="병원 기록 수정"
+                        value="수정"
+                        component={
+                          <HosRecords
+                            formData={formData}
+                            setFormData={setFormData}
+                          />
+                        }
+                        onHandleClick={() => {}}
+                      />
+                    )}
+                    <DiaryDetailContainer>
+                      <Icon>
+                        <LuPill />
+                      </Icon>
+                      <DiaryDetail>
+                        <DetailTitle>처방</DetailTitle>
+                        <Paragraph>
+                          {'data.treatment' || '처방 기록이 없어요'}
+                        </Paragraph>
+                      </DiaryDetail>
+                    </DiaryDetailContainer>
+                    <DiaryDetailContainer>
+                      <Icon>
+                        <LuStethoscope />
+                      </Icon>
+                      <DiaryDetail>
+                        <DetailTitle>동물병원</DetailTitle>
+                        <Paragraph>
+                          방문 기록 여부
+                          <Doctor> 수의사 선생님 성함</Doctor>
+                        </Paragraph>
+                      </DiaryDetail>
+                    </DiaryDetailContainer>
+                  </DiaryDetailsRight>
+                </Report>
+              </ReportWrapper>
+            ))
+          ) : (
+            <ReportWrapper className="noReport">
+              <div>기록이 없습니다 안내문구</div>
+            </ReportWrapper>
+          )}
+          {/* <ReportWrapper>
             <Report>
               <DeseaseName>
                 <Icon>
@@ -444,8 +625,8 @@ const Diary: React.FC = () => {
                 </DiaryDetailContainer>
               </DiaryDetailsRight>
             </Report>
-          </ReportWrapper>
-          <ReportWrapper>
+          </ReportWrapper> */}
+          {/* <ReportWrapper>
             <Report>
               <DeseaseName>
                 <Icon>
@@ -532,7 +713,7 @@ const Diary: React.FC = () => {
                 </DiaryDetailContainer>
               </DiaryDetailsRight>
             </Report>
-          </ReportWrapper>
+          </ReportWrapper> */}
         </DiaryWrapper>
       </Wrapper>
     </>
