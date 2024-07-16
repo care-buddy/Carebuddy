@@ -22,8 +22,8 @@ import {
   tempProfileSrc,
   tempMemberArray1,
   tempGroupArray1,
-  dummyPosts, 
-  dummyGroups
+  // dummyPosts, 
+  // dummyGroups
 } from '@constants/tempData';
 
 // 임시
@@ -101,8 +101,6 @@ mock.onGet('/api/posts').reply(200, {
     },
   ],
 });
-
-
 
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성

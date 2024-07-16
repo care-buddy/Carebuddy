@@ -18,7 +18,7 @@ import formatDate from '@/utils/formatDate';
 import { tempGroupArray1, dummyPosts, dummyGroups } from '@constants/tempData';
 
 interface PostData {
-  _id: '';
+  _id: ''; 
   userId: {
     nickName: '';
     profileImage: [''];
@@ -69,7 +69,7 @@ const Home: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
   const [posts, setPosts] = useState<PostData[] | null>(null);
 
-  // select(추후에 컴포넌트화?)
+  // select(추후에 컴포넌트화)
   const SelectOptions = [
     { value: 'dog', label: '강아지' },
     { value: 'cat', label: '고양이' },
@@ -89,32 +89,37 @@ const Home: React.FC = () => {
   mock.onGet('/api/posts').reply(200, dummyPosts);
   mock.onGet('/api/groups').reply(200, dummyGroups);
 
+  const axiosInstance = axios.create({
+    baseURL: '/api', // 기본 URL 설정
+    timeout: 5000, // 타임아웃 설정 (ms)
+  });
+
   // 데이터 받기
   useEffect(() => {
     const fetchData = async () => {
       // 게시글 목록
       try {
-        const response = await axios.get(`api/posts`);
-        console.log('Component mounted, making API call...');
+        const response = await axiosInstance.get(`/posts`);
+        console.log('Component mounted, making API call...'); // 임시
 
         // 등록일 formatting
-        const formattedPosts = response.data.map((post:PostData) => ({
+        const formattedPosts = response.data.map((post: PostData) => ({
           ...post,
           createdAt: formatDate(post.createdAt),
-        }));
+        })); 
         setPosts(formattedPosts);
       } catch (error) {
-        console.error('게시글 목록 조회 실패', error); 
+        console.error('게시글 목록 조회 실패', error);// 임시
       }
     };
-    fetchData();
-  }, [posts]);   
+    fetchData(); 
+  }, []);
 
   return (
     <>
-      <BannerContainer>
+      {/* <BannerContainer> */}
         <Banner />
-      </BannerContainer>
+      {/* </BannerContainer> */}
       <ContentContainer>
         <FeedBoxContainer>
           <FeedOptionContainer>
@@ -161,7 +166,7 @@ const ContentContainer = styled.div`
   grid-template-columns: 70% 20%;
   justify-content: space-between;
   width: 100%;
-  margin-top: 80px;
+  margin-top: 40px;
 
   & > * {
     margin-bottom: 30px;
@@ -191,11 +196,4 @@ const SelectContainer = styled.div`
 const P = styled.p`
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-ft-1);
-`;
-
-const BannerContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  background-color: var(--color-green-sub-2);
-  width: 100%;
 `;
