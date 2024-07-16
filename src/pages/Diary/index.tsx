@@ -18,9 +18,15 @@ import TopBar from '@/components/common/TopBar';
 
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { Record } from '@/interfaces';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
-import { dummyBuddies, dummyBuddies2 } from './dummyData';
+import {
+  dummyBuddies,
+  dummyBuddies2,
+  dummyRecord,
+  dummyRecord2,
+} from './dummyData';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -246,54 +252,6 @@ interface ProfilesWrapperProps {
   onSubmitBuddy: (newBuddy: BuddyProfile) => void;
 }
 
-interface Record {
-  _id: string;
-  doctorName: string;
-  address: string;
-  consultationDate: Date;
-  hospitalizationStatus: Date | null;
-  disease: string;
-  symptom: string;
-  treatment: string;
-  memo: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
-}
-
-const dummyRecord: Record[] = [
-  {
-    _id: '1r',
-    doctorName: 'Dr.Lee',
-    address: 'Seoul, Korea',
-    consultationDate: new Date('2024-04-08T07:00:00.000Z'),
-    hospitalizationStatus: null,
-    disease: '감기1',
-    symptom: '기침, 콧물',
-    treatment: '해열제',
-    memo: null,
-    deletedAt: null,
-    createdAt: new Date('2024-04-08T07:00:00.000Z'),
-    updatedAt: new Date('2024-04-08T07:00:00.000Z'),
-  },
-  {
-    _id: '2r',
-    doctorName: '2번 의사',
-    address: 'Seoul, Korea',
-    consultationDate: new Date('2024-04-08T07:00:00.000Z'),
-    hospitalizationStatus: new Date('2024-04-08T07:00:00.000Z'),
-    disease: '감기2',
-    symptom: '기침, 콧물',
-    treatment: '해열제',
-    memo: 'null',
-    deletedAt: null,
-    createdAt: new Date('2024-04-08T07:00:00.000Z'),
-    updatedAt: new Date('2024-04-08T07:00:00.000Z'),
-  },
-];
-
-const dummyRecord2 = null;
-
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
   timeout: 5000, // 타임아웃 설정 (ms)
@@ -332,7 +290,6 @@ const Diary: React.FC = () => {
       setLoading(true);
       mock.onGet('/buddies').reply(200, dummyBuddies);
       const response = await axiosInstance.get('/buddies');
-      console.log(response.data);
       setBuddiesData(response.data);
       setLoading(false);
     } catch (error) {
@@ -424,8 +381,18 @@ const Diary: React.FC = () => {
         />
 
         <DiaryWrapper>
-          <NameInTitle className="diaryTitle">
-            (반려동물 이름)<DiaryTitle>의 건강 다이어리</DiaryTitle>
+          <NameInTitle>
+            {buddiesData?.buddies && buddiesData.buddies.length > 0 ? (
+              <>
+                {
+                  buddiesData.buddies.find((buddy) => buddy._id === selectedId)
+                    ?.name
+                }
+                <DiaryTitle> 의 건강 다이어리</DiaryTitle>
+              </>
+            ) : (
+              <DiaryTitle>반려동물 프로필을 등록해주세요.</DiaryTitle>
+            )}
           </NameInTitle>
           <HorizontalLine />
           <Button buttonStyle="square-green" onClick={handleOpenModal}>

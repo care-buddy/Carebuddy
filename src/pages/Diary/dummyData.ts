@@ -1,5 +1,6 @@
 import { tempProfileSrc } from '@constants/tempData';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
+import { Record } from '@/interfaces';
 
 export const dummyBuddies = {
   name: '주인이름',
@@ -32,4 +33,35 @@ export const dummyBuddies2 = {
   buddies: [],
 };
 
-// export default dummyBuddies;
+export const dummyRecord: Record[] = [
+  {
+    _id: '1r',
+    doctorName: 'Dr.Lee',
+    address: 'Seoul, Korea',
+    consultationDate: new Date('2024-04-08T07:00:00.000Z'),
+    hospitalizationStatus: null,
+    disease: '감기1',
+    symptom: '기침, 콧물',
+    treatment: '해열제',
+    memo: null,
+    deletedAt: null,
+    createdAt: new Date('2024-04-08T07:00:00.000Z'),
+    updatedAt: new Date('2024-04-08T07:00:00.000Z'),
+  },
+  {
+    _id: '2r',
+    doctorName: '2번 의사',
+    address: 'Seoul, Korea',
+    consultationDate: new Date('2024-04-08T07:00:00.000Z'),
+    hospitalizationStatus: new Date('2024-04-08T07:00:00.000Z'),
+    disease: '감기2',
+    symptom: '기침, 콧물',
+    treatment: '해열제',
+    memo: 'null',
+    deletedAt: null,
+    createdAt: new Date('2024-04-08T07:00:00.000Z'),
+    updatedAt: new Date('2024-04-08T07:00:00.000Z'),
+  },
+];
+
+export const dummyRecord2 = null;
