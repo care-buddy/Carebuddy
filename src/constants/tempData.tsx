@@ -32,7 +32,7 @@ const tempGroupArray1 = {
   groupName: '눈/코/귀',
   introduction: '그룹 설명',
   memberCount: 5,
-  category: '고양이'
+  category: '고양이',
 };
 
 const tempGroupArray2 = [
@@ -97,7 +97,11 @@ const tempCommunityName = `눈, 코, 귀`;
 const tempCommunityIntroduction = `유형을 좋다 배달을 따냐 처지가 노력에 있다. 현행법을 설날이라고, 국한되지 식량난도.`;
 const tempCommunityIntroduction2 = `유형을 좋다 배달을 따냐 처지가 노력에 있다. 현행법을 설날이라고, 국한되지 식량난도. 유형을 좋다 배달을 따냐 처지가 노력에 있다. 현행법을 설날이라고, 국한되지 식량난도.`;
 
-export { tempCommunityName, tempCommunityIntroduction, tempCommunityIntroduction2  };
+export {
+  tempCommunityName,
+  tempCommunityIntroduction,
+  tempCommunityIntroduction2,
+};
 
 // Registration
 
@@ -110,7 +114,7 @@ PC통신, 스마트폰 앱, 무선 등을 이용하는 전자상거래에 대해
 ① "라이펫"은 이 약관의 내용과 상호 및 대표자 성명, 영업소 소재지 주소(소비자의 불만을 처리할 수 있는 곳의 주소를 포함), 전화번호, 모사전송번호, 전자우편주소, 사업자등록번호, 통신판매업 신고번호, 개인정보관리책임자등을 이용자가 쉽게 알 수 있도록 라이펫의 초기 서비스 화면(전면)에 게시합니다. 다만, 약관의 내용은 이용자가 연결화면을 통하여 볼 수 있도록 할 수 있습니다. ② "라이펫"은 이용자가 약관에 동의하기에 앞서 약관에 정하여져 있는 내용 중 청약철회, 배송책임, 환불조건 등과 같은 중요한 내용을 이용자가 이해할 수 있도록 별도의 연결화면 또는 팝업화면 등을 제공하여 이용자의 확인을 구하여야 합니다. ③ "라이펫"은 「전자상거래 등에서의 소비자보호에 관한 법률」, 「약관의 규제에 관한 법률」, 「전자문서 및 전자거래기본법」, 「전자금융거래법」, 「전자서명법」, 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」, 「방문판매 등에 관한 법률」, 「소비자기본법」 등 관련 법을 위배하지 않는 범위에서 이 약관을 개정할 수 있습니다. ④ "라이펫"이 약관을 개정할 경우에는 적용일자 및 개정사유를 명시하여 현행약관과 함께 초기화면에 그 적용일자 7일 이전부터 적용일자 전일까지 공지합니다. 다만, 이용자에게 불리하게 약관내용을 변경하는 경우에는 최소한 30일 이상의 사전 유예기간을 두고 공지합니다. 이 경우 "라이펫"은 개정 전 내용과 개정 후 내용을 명확하게 비교하여 이용자가 알기 쉽도록 표시합니다. 
 `;
 
-export { tempTerms  };
+export { tempTerms };
 
 // 더미데이터
 
@@ -157,9 +161,9 @@ const dummyPosts = [
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
   },
-]
+];
 
-const dummyGroups =   [
+const dummyGroups = [
   {
     _id: '6621f4ae536c1c27679a9df4',
     userId: {
@@ -202,6 +206,51 @@ const dummyGroups =   [
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
   },
-]
+];
 
-export {dummyPosts, dummyGroups};
+const dummyCommunities = [
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '가나다',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '라마바',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '사아자',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '차카타',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '파하',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '위식도',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+];
+
+export { dummyPosts, dummyGroups, dummyCommunities };

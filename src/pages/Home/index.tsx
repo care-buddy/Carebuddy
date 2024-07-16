@@ -145,6 +145,7 @@ const Home: React.FC = () => {
           </FeedOptionContainer>
           {posts?.map((post) => (
             <FeedBox
+              key={post._id}
               postId={post._id}
               title={post.title}
               content={post.content}
