@@ -22,10 +22,16 @@ mock.onGet('/api/user').reply(200, {
   nickname: '케어버디',
   introduction: '소개글입니다^^',
   communityId: [
-    { id: '1', category: 0, community: '안녕하세요', date: '2024-01-01' },
-    { id: '2', category: 0, community: '글입니다히히히', date: '2024-01-02' },
-    { id: '3', category: 1, community: '가운데정렬왜안돼', date: '2024-01-03' },
+    // id는 api 고유 id값이 아니라 map순환을 위해 임시 부여한 id를 의미함
+    { id: '1', category: 0, community: '눈', createdAt: '2024-01-01' },
+    { id: '2', category: 0, community: '위식도', createdAt: '2024-01-02' },
+    { id: '3', category: 1, community: '중성화', createdAt: '2024-01-03' },
   ],
+  postId: [
+    { title: '안녕하세요' },
+    { title: '글제목입니다 ㅎㅎ' },
+    { title: '동물이 최고야!!' },
+  ]
 });
 
 const Container = styled.div`
@@ -107,19 +113,23 @@ const Withdraw = styled.div`
   text-decoration: underline;
   cursor: pointer;
 `;
-
 interface UserData {
   email: string;
   nickname: string;
   introduction: string;
   communityId: CommunityPost[];
+  postId: PostId[];
 }
 
 interface CommunityPost {
   id: string;
   category: number;
   community: string;
-  date: string;
+  createdAt: string;
+}
+
+interface PostId {
+  title: string;
 }
 
 const UserInfoContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
@@ -183,7 +193,9 @@ const Mypage: React.FC = () => {
     nickname: '',
     introduction: '',
     communityId: [],
+    postId: [],
   });
+
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
@@ -238,7 +250,7 @@ const Mypage: React.FC = () => {
     { id: '1', content: '회원정보', component: <UserInfoContainer userData={userData} /> },
     { id: '2', content: '프로필', component: <ProfileContainer userData={userData} /> },
     { id: '3', content: '반려동물 관리', component: <PetCardContainer /> },
-    { id: '4', content: '작성 글 목록', component: <ListContainer posts={userData.communityId} isLoading={isLoading} /> },
+    { id: '4', content: '작성 글 목록', component: <ListContainer communityPosts={userData.communityId} postIds={userData.postId} isLoading={isLoading} /> },
   ];
 
   return (

@@ -33,35 +33,40 @@ interface CommunityPost {
   id: string;
   category: number;
   community: string;
-  date: string;
+  createdAt: string;
+}
+
+interface PostId {
+  title: string;
 }
 
 interface ListContainerProps {
-  posts: CommunityPost[];
+  communityPosts: CommunityPost[];
+  postIds: PostId[];
   isLoading: boolean;
 }
 
-const ListContainer: React.FC<ListContainerProps> = ({ posts, isLoading }) => {
-  return (
-    <Container>
-      <DataContainer>
-        <Title>그룹</Title>
-        <Title>글제목</Title>
-        <Title>작성일</Title>
-      </DataContainer>
-      {isLoading ? (
-        <div>Loading...</div>
-      ) : (
-        posts.map((post) => (
+const ListContainer: React.FC<ListContainerProps> = ({ communityPosts, postIds, isLoading }) => (
+  <Container>
+    <DataContainer>
+      <Title>그룹</Title>
+      <Title>글제목</Title>
+      <Title>작성일</Title>
+    </DataContainer>
+    {isLoading ? (
+      <div>Loading...</div>
+    ) : (
+      <>
+        {communityPosts.map((post, index) => (
           <DataContainer key={post.id}>
-            <GroupContent>[{post.category === 0 ? '강아지' : '고양이'}]</GroupContent>
-            <ContentList>{post.community}</ContentList>
-            <ContentList>{post.date}</ContentList>
+            <GroupContent>[{post.category === 0 ? '강아지' : '고양이'}] {post.community}</GroupContent>
+            <ContentList>{postIds[index].title}</ContentList>
+            <ContentList>{post.createdAt}</ContentList>
           </DataContainer>
-        ))
-      )}
-    </Container>
-  );
-};
+        ))}
+      </>
+    )}
+  </Container>
+);
 
 export default ListContainer;
