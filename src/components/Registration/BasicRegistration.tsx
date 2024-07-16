@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
 import CheckBox from '@components/common/CheckBox';
+import LinkButton from '@components/common/LinkButton';
 
 import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 
@@ -114,13 +115,12 @@ const BasicRegistration: React.FC = () => {
         <TermCheckContainer>
           {viewFullTerms && <LuChevronUp />}
           {!viewFullTerms && <LuChevronDown />}
-          <Button
-            buttonStyle="link"
-            buttonSize="sm"
+          <LinkButton
+            linkSize="sm"
             onClick={handleViewFullTerms}
           >
             전문 보기
-          </Button>
+          </LinkButton>
         </TermCheckContainer>
         {viewFullTerms && (
           <TermContainer>

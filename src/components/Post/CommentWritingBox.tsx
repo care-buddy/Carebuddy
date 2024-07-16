@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 // 컴포넌트
 import Button from '../common/Button';
+import LinkButton from '../common/LinkButton';
 
 type CommentWritingBoxProps = {
   nickname: string;
@@ -20,9 +21,9 @@ const CommentWritingBox: React.FC<CommentWritingBoxProps> = ({
       placeholder="댓글 내용을 입력하세요..."
     />
     <ButtonContainer>
-      <Button buttonStyle="link" buttonSize="sm">
+      <LinkButton linkSize="sm" href="temp">
         등록하기
-      </Button>
+      </LinkButton>
     </ButtonContainer>
   </StyledCommentWritingBox>
 );

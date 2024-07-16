@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// 임시
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -17,8 +19,9 @@ import formatDate from '@/utils/formatDate';
 // 임시 데이터
 import { tempGroupArray1, dummyPosts, dummyGroups } from '@constants/tempData';
 
-interface PostData {
-  _id: ''; 
+// 임시 - 추후에 type만 모아서 새로 정리 필요
+export interface PostData {
+  _id: '';
   userId: {
     nickName: '';
     profileImage: [''];
@@ -63,8 +66,6 @@ const tempGroup = [
   />,
 ];
 
-const mock = new MockAdapter(axios);
-
 const Home: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
   const [posts, setPosts] = useState<PostData[] | null>(null);
@@ -85,14 +86,16 @@ const Home: React.FC = () => {
     setIsWriteModalOpen(false);
   };
 
-  // 전체 게시글, 전체 그룹 목 API,
-  mock.onGet('/api/posts').reply(200, dummyPosts);
-  mock.onGet('/api/groups').reply(200, dummyGroups);
-
   const axiosInstance = axios.create({
     baseURL: '/api', // 기본 URL 설정
     timeout: 5000, // 타임아웃 설정 (ms)
   });
+
+  const mock = new MockAdapter(axiosInstance);
+
+  // 전체 게시글, 전체 그룹 목 API,
+  mock.onGet('/api/posts').reply(200, dummyPosts);
+  mock.onGet('/api/groups').reply(200, dummyGroups);
 
   // 데이터 받기
   useEffect(() => {
@@ -106,20 +109,18 @@ const Home: React.FC = () => {
         const formattedPosts = response.data.map((post: PostData) => ({
           ...post,
           createdAt: formatDate(post.createdAt),
-        })); 
+        }));
         setPosts(formattedPosts);
       } catch (error) {
-        console.error('게시글 목록 조회 실패', error);// 임시
+        console.error('게시글 목록 조회 실패', error); // 임시
       }
     };
-    fetchData(); 
+    fetchData();
   }, []);
 
   return (
     <>
-      {/* <BannerContainer> */}
-        <Banner />
-      {/* </BannerContainer> */}
+      <Banner />
       <ContentContainer>
         <FeedBoxContainer>
           <FeedOptionContainer>

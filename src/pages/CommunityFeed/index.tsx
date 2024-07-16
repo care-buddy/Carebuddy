@@ -9,157 +9,107 @@ import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 import MemberElement from '@/components/Home&CommunityFeed/MemberElement';
 import Search from '@/components/common/Search';
-import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import PostCreate from '@/pages/PostCreate/index';
 import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
+import LinkButton from '@/components/common/LinkButton';
+import Button from '@components/common/Button';
 
 import formatDate from '@/utils/formatDate';
 
+import type { PostData } from '@/pages/Home';
 
 // 임시 데이터
 import {
   tempProfileSrc,
   tempMemberArray1,
   tempGroupArray1,
-  // dummyPosts, 
+  dummyPosts,
   // dummyGroups
 } from '@constants/tempData';
 
-// 임시
+const axiosInstance = axios.create({
+  baseURL: '/api', // 기본 URL 설정
+  timeout: 5000, // 타임아웃 설정 (ms)
+});
+
+const mock = new MockAdapter(axiosInstance);
+
+mock.onGet('/api/posts').reply(200, dummyPosts); // 글 목록 받아오기, get 메서드
+mock
+.onPut(/\/api\/user\/\w+\/withdrawGroup/)
+.reply(200, '커뮤니티 탈퇴가 완료되었습니다.'); // 커뮤니티 탈퇴하기, put 메서드
+
+// 작동 테스트용
 const tempGroup = [
-  <CommunityElement
-    key={tempGroupArray1.groupId}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
+  <MemberElement
+    key={tempMemberArray1.userId}
+    userId={tempMemberArray1.userId}
+    nickname={tempMemberArray1.nickname}
+    introduction={tempMemberArray1.introduction}
+    profileSrc={tempProfileSrc}
   />,
-  <CommunityElement
-    key={tempGroupArray1.groupId}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
+  <MemberElement
+    key={tempMemberArray1.userId}
+    userId={tempMemberArray1.userId}
+    nickname={tempMemberArray1.nickname}
+    introduction={tempMemberArray1.introduction}
+    profileSrc={tempProfileSrc}
   />,
-  <CommunityElement
-    key={tempGroupArray1.groupId}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
+  <MemberElement
+    key={tempMemberArray1.userId}
+    userId={tempMemberArray1.userId}
+    nickname={tempMemberArray1.nickname}
+    introduction={tempMemberArray1.introduction}
+    profileSrc={tempProfileSrc}
   />,
 ];
 
-const mock = new MockAdapter(axios);
-
-// 전체 게시글 목 API
-mock.onGet('/api/posts').reply(200, {
-  success: true,
-  data: [
-    {
-      _id: '6621f4ae536c1c27679a9df4',
-      userId: {
-        nickName: '김지연',
-        profileImage: ['https://picsum.photos/200'],
-        deletedAt: null,
-      },
-      communityId: {
-        _id: '66214eb084ee7839e29e8ac6',
-        category: 0,
-        community: '뇌·신경',
-        deletedAt: null,
-      },
-      title: '콘텐츠제목2',
-      likedUsers: [],
-      content:
-        '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
-      deletedAt: '2024-04-19T08:22:51.722Z',
-      postImage: ['https://picsum.photos/200'],
-      createdAt: '2024-04-19T04:35:58.458Z',
-    },
-    {
-      _id: '6621f4ae536c1c27679a9df4',
-      userId: {
-        nickName: '박유신',
-        profileImage: ['https://picsum.photos/200'],
-        deletedAt: null,
-      },
-      communityId: {
-        _id: '66214eb084ee7839e29e8ac6',
-        category: 0,
-        community: '눈/피부/귀',
-        deletedAt: null,
-      },
-      title: '콘텐츠내용',
-      likedUsers: ['1', '2'],
-      content:
-        '콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11',
-      deletedAt: '2024-04-19T08:22:51.722Z',
-      postImage: ['https://picsum.photos/200'],
-      createdAt: '2024-04-19T04:35:58.458Z',
-    },
-  ],
-});
-
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
-  const [posts, setPosts] = useState([
-    {
-      _id: '',
-      userId: {
-        nickName: '',
-        profileImage: [''],
-        deletedAt: '',
-      },
-      communityId: {
-        _id: '',
-        category: 0,
-        community: '',
-        deletedAt: '',
-      },
-      title: '',
-      likedUsers: ['', ''],
-      content: '',
-      deletedAt: '',
-      postImage: [''],
-      createdAt: '',
-    },
-  ]);
+  const [posts, setPosts] = useState<PostData[] | null>(null);
 
   // 글 작성 모달 닫기
   const handleCloseWriteModal = () => {
     setIsWriteModalOpen(false);
   };
 
-  // 작동 테스트용
-  const tempGroup = (
-    <MemberElement
-      key={tempMemberArray1.userId}
-      userId={tempMemberArray1.userId}
-      nickname={tempMemberArray1.nickname}
-      introduction={tempMemberArray1.introduction}
-      profileSrc={tempProfileSrc}
-    />
-  );
+  // 커뮤니티 탈퇴 핸들러
+  const handleWithdrawalCommunity = async () => {
+    if (confirm('커뮤니티를 탈퇴하시겠습니까?')) {
+      try {
+        const userId = 'abc' // 임시
+        const response = await axiosInstance.put(
+          `/user/${userId}/withdrawGroup`,
+          {
+            communityId: '6617c6acb39abf604bbe8dc2',
+          }
+        );
+        
+        console.log('커뮤니티 탈퇴, 성공', response.data); // 임시
+      } catch (error) {
+        console.error('커뮤니티 탈퇴 실패', error); // 임시
+      }
+    }
+  };
 
   // 데이터 받기
   useEffect(() => {
     const fetchData = async () => {
       // 게시글 목록
       try {
-        const response = await axios.get(`api/posts`);
-        const posts = response.data.data;
+        const response = await axiosInstance.get(`/posts`);
+        console.log('Component mounted, making API call...'); // 임시
 
         // 등록일 formatting
-        const formattedPosts = posts.map((post: object) => ({
+        const formattedPosts = response.data.map((post: PostData) => ({
           ...post,
           createdAt: formatDate(post.createdAt),
         }));
 
         setPosts(formattedPosts);
       } catch (error) {
-        console.error('게시글 목록 조회 실패', error);
+        console.error('게시글 목록 조회 실패', error); // 임시
       }
     };
     fetchData();
@@ -191,8 +141,9 @@ const CommunityFeed: React.FC = () => {
               />
             )}
           </FeedOptionContainer>
-          {posts.map((post) => (
+          {posts?.map((post) => (
             <FeedBox
+              key={post._id}
               postId={post._id}
               title={post.title}
               content={post.content}
@@ -204,14 +155,14 @@ const CommunityFeed: React.FC = () => {
         </FeedBoxContainer>
         <SidePanelContainer>
           <LinkButtonContainer>
-            <Button buttonStyle="link" buttonSize="sm">
-              그룹 탈퇴
-            </Button>
-            <Button buttonStyle="link" buttonSize="sm">
-              다른 그룹 둘러보기
-            </Button>
+            <LinkButton linkSize="sm" onClick={handleWithdrawalCommunity}>
+              탈퇴하기
+            </LinkButton>
+            <LinkButton href="/community" linkSize="sm">
+              다른 커뮤니티 둘러보기
+            </LinkButton>
           </LinkButtonContainer>
-          <SidePanel name="그룹 멤버" elementArray={tempGroup} />
+          <SidePanel name="추천 멤버" elementArray={tempGroup} />
         </SidePanelContainer>
       </Container>
     </>
