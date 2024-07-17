@@ -57,7 +57,9 @@
       { "namedComponents": ["arrow-function", "function-declaration"] }
     ],
     // 변수나 함수 정의 이전에 사용 불가능하도록 제한
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    // alert,  confirm, prompt를 사용 불가능하도록 제한
+    "no-alert": "off"
   },
   "settings": {
     "import/parsers": {
