@@ -13,6 +13,7 @@ import UserAsk from '@/pages/Mypage/UserAsk';
 import Modal from '@/components/common/Modal/index';
 import PostCreate from '@/pages/PostCreate/index';
 import TopBar from '@/components/common/TopBar';
+import Loading from '@/components/common/Loading';
 
 // user api Mock 설정
 const mock = new MockAdapter(axios, { delayResponse: 500 });
@@ -113,6 +114,7 @@ const Withdraw = styled.div`
   text-decoration: underline;
   cursor: pointer;
 `;
+
 interface UserData {
   email: string;
   nickname: string;
@@ -275,7 +277,7 @@ const Mypage: React.FC = () => {
         />
       )}
       {isLoading ? (
-        <div>Loading...</div>
+        <Loading /> // 로딩컴포넌트 불러온 곳
       ) : (
         contentItems.map(item => (
           <React.Fragment key={item.id}>

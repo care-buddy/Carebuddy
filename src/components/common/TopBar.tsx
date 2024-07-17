@@ -4,8 +4,8 @@ import styled from 'styled-components';
 
 // absolute 사용을 위한 공간
 const Wrapper = styled.div`
-  width: 100vw;
-  height: 80px;
+  width: 1024px;
+  /* height: 80px; */
   font-size: var(--font-size-lg-2); //32
 `;
 
