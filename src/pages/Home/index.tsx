@@ -45,6 +45,13 @@ const tempGroup = [
   />,
 ];
 
+const axiosInstance = axios.create({
+  baseURL: '/api', // 기본 URL 설정
+  timeout: 5000, // 타임아웃 설정 (ms)
+});
+
+const mock = new MockAdapter(axiosInstance);
+
 const Home: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
   const [posts, setPosts] = useState<PostData[] | null>(null);
@@ -65,13 +72,6 @@ const Home: React.FC = () => {
     setIsWriteModalOpen(false);
   };
 
-  const axiosInstance = axios.create({
-    baseURL: '/api', // 기본 URL 설정
-    timeout: 5000, // 타임아웃 설정 (ms)
-  });
-
-  const mock = new MockAdapter(axiosInstance);
-
   // 전체 게시글, 전체 그룹 목 API,
   mock.onGet('/api/posts').reply(200, dummyPosts);
   mock.onGet('/api/groups').reply(200, dummyGroups);
@@ -84,7 +84,7 @@ const Home: React.FC = () => {
         const response = await axiosInstance.get(`/posts`);
         console.log('Component mounted, making API call...'); // 임시
 
-        // 등록일 formatting
+        // 등록일 formatting -> 나중에 렌더링 시 하는 걸로 변경
         const formattedPosts = response.data.map((post: PostData) => ({
           ...post,
           createdAt: formatDate(post.createdAt),
