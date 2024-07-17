@@ -15,15 +15,16 @@ export interface Buddy {
 
 export interface Record {
   _id: string;
-  doctorName: string;
-  address: string;
-  consultationDate: Date;
-  hospitalizationStatus: Date | null;
+  doctorName: string | null;
+  address: string | null;
+  isConsultation: boolean;
+  consultationDate: Date | null;
+  hospitalizationStatus: boolean | null;
   disease: string;
   symptom: string;
-  treatment: string;
+  treatment: string | null;
   memo: string | null;
   createdAt: Date;
-  updatedAt: Date;
-  deletedAt: Date | null;
+  updatedAt?: Date;
+  deletedAt?: Date | null;
 }

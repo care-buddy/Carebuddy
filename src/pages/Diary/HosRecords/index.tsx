@@ -4,6 +4,7 @@ import Input from '@/components/common/Input';
 import Radio from '@/components/common/Radio';
 import CheckBox from '@/components/common/CheckBox';
 import TextArea from '@/components/common/TextArea';
+import { Record } from '@/interfaces';
 
 const Component = styled.div`
   display: flex;
@@ -71,8 +72,8 @@ interface FormData {
 }
 
 interface HosRecordsProps {
-  formData: FormData;
-  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  formData: Record;
+  setFormData: React.Dispatch<React.SetStateAction<Record>>;
 }
 
 const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
@@ -82,6 +83,21 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
 
   const [selectedOption, setSelectedOption] = useState<string>('아니오');
 
+  // console.log(formData);
+  // record 객체 초기화: 이 정보로 화면을 채워줄 것임
+  // 즉, 수정 모달인 경우에는 받아온 정보로 채워주고, 등록 모달이라면 빈 상태로 보여줄 것이므로 세팅을 해준다
+  // const [recordData, setRecordData] = useState({
+  //   doctorName: record.doctorName,
+  //   address: record.address,
+  //   consultationDate: record.consultationDate,
+  //   hospitalizationStatus: record.hospitalizationStatus,
+  //   disease: record.disease,
+  //   symptom: record.symptom,
+  //   treatment: record.treatment,
+  //   memo: record.memo,
+  // });
+
+  // console.log(record);
   // useEffect(() => {
   //   setFormData((prevData) => ({
   //     ...prevData,
@@ -239,8 +255,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
           <Content>
             <ContentTitle>증상</ContentTitle>
             <ContentBody>
-              <TextArea
-                size="sm"
+              <Input
                 placeholder="입력하여주세요."
                 name="symptom"
                 value={formData.symptom || ''}
@@ -256,8 +271,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
           <Content>
             <ContentTitle>처방</ContentTitle>
             <ContentBody>
-              <TextArea
-                size="sm"
+              <Input
                 placeholder="입력하여주세요."
                 name="treatment"
                 value={formData.treatment || ''}
