@@ -16,32 +16,11 @@ import PostCreate from '@/pages/PostCreate/index';
 
 import formatDate from '@/utils/formatDate';
 
+import type { PostData } from '@constants/tempInterface';
+
 // 임시 데이터
 import { tempGroupArray1, dummyPosts, dummyGroups } from '@constants/tempData';
 
-// 임시 - 추후에 type만 모아서 새로 정리 필요
-export interface PostData {
-  _id: '';
-  userId: {
-    nickName: '';
-    profileImage: [''];
-    deletedAt: '';
-  };
-  communityId: {
-    _id: '';
-    category: 0;
-    community: '';
-    deletedAt: '';
-  };
-  title: '';
-  likedUsers: ['', ''];
-  content: '';
-  deletedAt: '';
-  postImage: [''];
-  createdAt: '';
-}
-
-// 임시
 const tempGroup = [
   <CommunityElement
     key={tempGroupArray1.groupId}

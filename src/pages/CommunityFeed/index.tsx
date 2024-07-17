@@ -11,13 +11,13 @@ import MemberElement from '@/components/Home&CommunityFeed/MemberElement';
 import Search from '@/components/common/Search';
 import Modal from '@/components/common/Modal';
 import PostCreate from '@/pages/PostCreate/index';
-import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 import LinkButton from '@/components/common/LinkButton';
-import Button from '@components/common/Button';
+// import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
+
 
 import formatDate from '@/utils/formatDate';
 
-import type { PostData } from '@/pages/Home';
+import type { PostData } from '@constants/tempInterface';
 
 // 임시 데이터
 import {
@@ -25,7 +25,6 @@ import {
   tempMemberArray1,
   tempGroupArray1,
   dummyPosts,
-  // dummyGroups
 } from '@constants/tempData';
 
 const axiosInstance = axios.create({

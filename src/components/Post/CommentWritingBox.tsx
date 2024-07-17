@@ -1,33 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// 컴포넌트
-import Button from '../common/Button';
-import LinkButton from '../common/LinkButton';
+import LinkButton from '@components/common/LinkButton';
+
+import useDebounce from '@hooks/useDebounce';
 
 type CommentWritingBoxProps = {
   nickname: string;
-  // onClick?: () => void; // 임시. 나중에 필수값으로 변경
+  onClick: (value: string) => void;
 };
 
 const CommentWritingBox: React.FC<CommentWritingBoxProps> = ({
   nickname,
-  // onClick,
-}) => (
-  <StyledCommentWritingBox>
-    <Nickname>{nickname}</Nickname>
-    <CommentBox
-      // value={}
-      placeholder="댓글 내용을 입력하세요..."
-    />
-    <ButtonContainer>
-      <LinkButton linkSize="sm" href="temp">
-        등록하기
-      </LinkButton>
-    </ButtonContainer>
-  </StyledCommentWritingBox>
-);
+  onClick,
+}) => {
+  const [comment, setComment] = useState<string>('');
 
+  const debouncedSetComment = useDebounce(300, setComment);
+
+  // 디바운싱 사용하여 작성중인 코멘트 업데이트
+  const handleUpdateComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    debouncedSetComment(e.target.value);
+  };
+
+  const handleButtonClick = () => {
+    onClick(comment);
+  };
+
+  return (
+    <StyledCommentWritingBox>
+      <Nickname>{nickname}</Nickname>
+      <CommentBox
+        placeholder="댓글 내용을 입력하세요..."
+        onChange={handleUpdateComment}
+      />
+      <ButtonContainer>
+        <LinkButton linkSize="sm" onClick={handleButtonClick}>
+          등록하기
+        </LinkButton>
+      </ButtonContainer>
+    </StyledCommentWritingBox>
+  );
+};
 export default CommentWritingBox;
 
 const StyledCommentWritingBox = styled.div`
@@ -44,7 +58,7 @@ const StyledCommentWritingBox = styled.div`
 `;
 
 const Nickname = styled.p`
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 `;
 
 const CommentBox = styled.textarea`

@@ -9,70 +9,65 @@ import LikeAndCommentCount from '@/components/Post/LikesAndCommentCount';
 import CommentWritingBox from '@/components/Post/CommentWritingBox';
 import Comment from '@/components/Post/Comment';
 import TopBar from '@/components/common/TopBar';
+import Modal from '@/components/common/Modal';
 
 import { LuThumbsUp, LuChevronLeft } from 'react-icons/lu';
 
 import formatDateIncludeTime from '@/utils/formatDateIncludeTime';
 
+import type { PostData, CommentData } from '@constants/tempInterface';
+
 // 임시 데이터
-import { tempNickname } from '@constants/tempData';
+import { dummyPost, dummyComments, dummyNewComment } from '@constants/tempData';
 
-const mock = new MockAdapter(axios);
-
-// 게시글 목 API
-mock.onGet('/api/posts/postId').reply(200, {
-  success: true,
-  data: {
-    userId: {
-      _id: '661a0e5febec873b54de2ad1',
-      nickName: '김지연',
-      profileImage: ['https://picsum.photos/200'],
-      deletedAt: null,
-      createdAt: '2024-04-13T04:47:27.495Z',
-    },
-    communityId: {
-      _id: '66214eb084ee7839e29e8ac6',
-      category: 0,
-      community: '뇌·신경',
-    },
-    title: '시험적의 예정되다 보내어',
-    likedUsers: [],
-    content: `계획할 인간과 땅이, 시간 된다 생각할까. 있어 그런 악몽이 그럼 나다. 분야를 회장단에 발표하는 차례다 버드나무는 정리하여도, 벌이의 누구에 못한다. 또 아이가, 엄마가 이왕이면 왕자를 사람과 대화나 지역으로 정열이, 간, 됩니다. 것 돈이 인선이 같이 모두 엄마는 데 거 대한다. 반드시 가속도에 가라앉히고 그, 같던, 선택할 가지는 당하다. 범부가 나에 벼농사를 혁명에 출세하고 본성을 사라지다.
-
-엄마가 이왕이면 왕자를 사람과 대화나 지역으로 정열이, 간, 됩니다. 것 돈이 인선이 같이 모두 엄마는 데 거 대한다. 반드시 가속도에 가라앉히고 그, 같던, 선택할 가지는 당하다. 범부가 나에 벼농사를 혁명에 출세하고 본성을 사라지다.`,
-    deletedAt: '2024-04-19T08:22:51.722Z',
-    postImage: ['https://picsum.photos/200'],
-    createdAt: '2024-04-19T04:35:58.458Z',
-  },
+const axiosInstance = axios.create({
+  baseURL: '/api', // 기본 URL 설정
+  timeout: 5000, // 타임아웃 설정 (ms)
 });
 
-// 댓글 목 API
-mock.onGet('/api/comments/postId').reply(200, {
-  success: true,
-  data: [
-    {
-      userId: {
-        _id: '661a0e5febec873b54de2ad1',
-        nickName: '댓글다는사람',
-        profileImage: ['https://picsum.photos/200'],
-      },
-      text: '왕자병에서 두 냉증의 살피어요 있다 버려지다. 시정하다 대칭의 공감대가 미약하다 차든지 잡는다 뽑히다. 지난해에 계몽한지 자리의 온 주목의 올라오고 지정에 들어온다. 그는 본 엄격하기 대중화되다 치다 2,280,000원 자신이 남다. 모면하여 걸맞게 자유가 어떤 있고 보아야 작정을 모색합니다. 지르어야 알려지는 부각시킨 한 유월을 환하라 말씀, 여전히 한다.',
-      deletedAt: null,
-      _id: '6622362d30d4656920c080dd',
-      createdAt: '2024-04-19T09:15:25.992Z',
+const mock = new MockAdapter(axiosInstance);
+
+mock.onGet('/posts/postId').reply(200, dummyPost); // 게시글 조회 목 API
+mock.onGet('/comments/postId').reply(200, dummyComments); // 댓글 조회 목 API
+mock.onPost(`/comments`).reply((config) => {
+  // 댓글 등록 목 API
+
+  const requestData = JSON.parse(config.data);
+  console.log('콘솔', { config, requestData });
+
+  const responseData = {
+    userId: {
+      _id: '661a0e5febec873b54de2ad1',
+      nickName: '새코멘트!',
+      profileImage: ['https://picsum.photos/200'],
     },
-    {
-      userId: {
-        _id: '661a0e5febec8b54de2ad1',
-        nickName: '댓글다는사람',
-        profileImage: ['https://picsum.photos/200'],
-      },
-      text: '2번댓글ㄹ아러망러 글 잘봤습니다 !!',
-      deletedAt: null,
-      _id: '6622362d30d4656920c080dd',
-      createdAt: '2024-04-19T09:15:25.992Z',
+    text: requestData.text,
+    deletedAt: null,
+    _id: '6622362d30d4656920c08dd',
+    createdAt: '2024-04-19T09:15:25.992Z',
+  };
+
+  return [200, responseData];
+});
+mock.onPut(`/api/posts/:_id/d`).reply((config) => {
+  // 글 삭제 목 API -> 완전하게 붙일 수 없음.
+
+  const requestData = JSON.parse(config.data);
+  console.log('콘솔', { config, requestData });
+
+  const responseData = {
+    userId: {
+      _id: '661a0e5febec873b54de2ad1',
+      nickName: '새코멘트!',
+      profileImage: ['https://picsum.photos/200'],
     },
-  ],
+    text: requestData.text,
+    deletedAt: null,
+    _id: '6622362d30d4656920c08dd',
+    createdAt: '2024-04-19T09:15:25.992Z',
+  };
+
+  return [200, responseData];
 });
 
 interface PostProps {
@@ -90,73 +85,91 @@ interface PostProps {
 }
 
 const Post: React.FC<PostProps> = () => {
-  const [post, setPost] = useState({
-    _id: '',
-    userId: {
-      _id: '',
-      nickName: '',
-      profileImage: [''],
-      deletedAt: '',
-    },
-    communityId: {
-      _id: '',
-      category: 0,
-      community: '',
-    },
-    title: '',
-    likedUsers: [],
-    content: '',
-    deletedAt: '',
-    postImage: [''],
-    createdAt: '',
-  });
-  const [comments, setComments] = useState([
-    {
-      userId: {
-        _id: '',
-        nickName: '',
-        profileImage: [''],
-      },
-      text: '',
-      deletedAt: '',
-      _id: '',
-      createdAt: '',
-    },
-  ]);
+  const [post, setPost] = useState<PostData | null>(null);
+  const [comments, setComments] = useState<CommentData[] | null>(null);
+  const [isPostModalOpen, setIsPostModalOpen] = useState(false); // 글 작성
 
-  // axios 조회
+  // 댓글 등록 API
+  const handleWrittenComment = async (comment: string) => {
+    try {
+      const response = await axiosInstance.post(`/comments`, {
+        postId: '1',
+        userId: '2',
+        text: comment,
+      });
+
+      const newComment = response.data;
+
+      if (comments) {
+        setComments([...comments, newComment]);
+      } else {
+        setComments([newComment]);
+      }
+
+      console.log(newComment, '댓글 등록에 성공했습니다');
+    } catch (error) {
+      console.error(error, '댓글 등록에 실패했습니다');
+    }
+  };
+
+  // 게시글 & 댓글 조회 API
   useEffect(() => {
     const fetchData = async () => {
       // 게시글
       try {
-        const response = await axios.get(`/api/posts/postId`);
-        const post = response.data.data;
+        const response = await axiosInstance.get(`/posts/postId`);
+        const post = response.data;
 
         // 등록일 formatting
         post.createdAt = formatDateIncludeTime(post.createdAt);
+        // console.log('게시글 조회 성공');
+
         setPost(post);
       } catch (error) {
-        console.error('게시글 조회 실패', error);
+        // console.error('게시글 조회 실패', error);
       }
 
       // 댓글
       try {
-        const response = await axios.get(`/api/comments/postId`);
-        const comments = response.data.data;
+        const response = await axiosInstance.get(`/comments/postId`);
+        const comments = response.data;
 
-        // 등록일 formatting
-        const formattedComments = comments.map((comment: object) => ({
-          ...comment,
-          createdAt: formatDateIncludeTime(comment.createdAt),
-        }));
-
-        setComments(formattedComments);
+        // console.log('댓글 조회 성공');
+        setComments(comments);
       } catch (error) {
-        console.error('댓글 조회 실패', error);
+        // console.error('댓글 조회 실패', error);
       }
     };
     fetchData();
   }, []);
+
+  // 글 수정 버튼 클릭
+  const handlePostEdit = () => {
+    // 글 수정 모달 열기 -> 글 수정 모달 만들어진지 확인 후 작업
+    setIsPostModalOpen((prevState) => !prevState);
+  };
+
+  // 글 삭제 버튼 클릭
+  const handlePostDelete = async () => {
+    if (confirm('정말로 글을 삭제하시겠습니까?')) {
+      try {
+        const response = await axiosInstance.put(`/posts/:_id/d`, {
+          postId: '포스트아이디',
+          userId: '유저아이디',
+        });
+
+        console.log(response);
+      } catch (error) {
+        console.error(error, '글 삭제에 실패했습니다');
+      }
+    }
+  };
+
+  // 댓글 수정 버튼 클릭
+  // const handleCommentEdit = () => {};
+
+  // 댓글 삭제 버튼 클릭
+  // const handleCommentDelete = () => {};
 
   return (
     <>
@@ -172,37 +185,46 @@ const Post: React.FC<PostProps> = () => {
           <p>글 목록 보기</p>
         </PostListButtonContainer>
         <TitleContainer>
-          <p>{post.title}</p>
+          <p>{post?.title}</p>
           <PostOption>
             <LikeAndCommentCount
-              likeCount={post.likedUsers.length}
-              commentCount={comments.length}
+              likeCount={post?.likedUsers.length}
+              commentCount={comments?.length}
             />
-            <ActionButton buttonBorder="border-solid" direction="horizonal" />
+            <ActionButton
+              buttonBorder="border-solid"
+              direction="horizonal"
+              onEdit={handlePostEdit}
+              onDelete={handlePostDelete}
+            />
+            {/* {isPostModalOpen && <Modal component={} />} */}
           </PostOption>
         </TitleContainer>
         <InformationContainer>
-          <ProfileImg src={post.userId.profileImage[0]} alt="프로필 이미지" />
-          <p>{post.userId.nickName}</p>
+          <ProfileImg src={post?.userId.profileImage[0]} alt="프로필 이미지" />
+          <p>{post?.userId.nickName}</p>
           <p>|</p>
-          <p>{post.createdAt}</p>
+          {post && <p>{formatDateIncludeTime(post.createdAt)}</p>}
         </InformationContainer>
         <ContentContainer>
-          <Pre>{post.content}</Pre>
-          <img src={post.postImage[0]} alt="이미지" />
+          <Pre>{post?.content}</Pre>
+          <img src={post?.postImage[0]} alt="이미지" />
           <Likes>
             <LuThumbsUp />
-            <p>추천해요 {post.likedUsers.length}</p>
+            <p>추천해요 {post?.likedUsers.length}</p>
           </Likes>
         </ContentContainer>
         <CommentContainer>
-          <CommentWritingBox nickname={tempNickname} />
+          <CommentWritingBox
+            nickname="임시닉네임"
+            onClick={handleWrittenComment}
+          />
           {comments?.map((comment) => (
             <Comment
               key={comment._id}
               text={comment.text}
               nickname={comment.userId.nickName}
-              date={comment.createdAt}
+              date={formatDateIncludeTime(comment.createdAt)}
               profileImg={comment.userId.profileImage[0]}
             />
           ))}
