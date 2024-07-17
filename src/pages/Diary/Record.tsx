@@ -37,6 +37,11 @@ const DiseaseTitle = styled.h2`
 
 const Paragraph = styled.p``;
 
+const Grey = styled.span`
+  color: var(--color-grey-1);
+  font-size: var(--font-size-ft-1);
+`;
+
 // 다이어리 본문 컨테이너
 const Report = styled.div`
   padding: 20px 3%;
@@ -150,6 +155,7 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [formData, setFormData] = useState<Record>(record);
 
+  console.log(record.symptom[0]);
   const handleOpenEditModal = () => {
     // 수정 모달 표시 여부를 관리하는 함수
     setEditModalOpen(!editModalOpen);
@@ -186,7 +192,16 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
           </Icon>
           <DiaryDetail>
             <DetailTitle>증상</DetailTitle>
-            <Paragraph>{record.symptom && '증상 기록이 없어요'}</Paragraph>
+            <Paragraph>
+              {record.symptom.length > 1 ? (
+                <>
+                  {record.symptom[0]}{' '}
+                  <Grey>외 {record.symptom.length - 1}개</Grey>
+                </>
+              ) : (
+                record.symptom[0] ?? '증상 기록이 없어요'
+              )}
+            </Paragraph>
           </DiaryDetail>
         </DiaryDetailContainer>
         <DiaryDetailContainer>
@@ -234,7 +249,16 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
           </Icon>
           <DiaryDetail>
             <DetailTitle>처방</DetailTitle>
-            <Paragraph>{record.treatment ?? '처방 기록이 없어요.'}</Paragraph>
+            <Paragraph>
+              {record.treatment.length > 1 ? (
+                <>
+                  {record.treatment[0]}{' '}
+                  <Grey>외 {record.treatment.length - 1}개</Grey>
+                </>
+              ) : (
+                record.treatment[0] ?? '처방 기록이 없어요'
+              )}
+            </Paragraph>
           </DiaryDetail>
         </DiaryDetailContainer>
         <DiaryDetailContainer>

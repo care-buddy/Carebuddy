@@ -5,6 +5,7 @@ import Radio from '@/components/common/Radio';
 import CheckBox from '@/components/common/CheckBox';
 import TextArea from '@/components/common/TextArea';
 import { Record } from '@/interfaces';
+import { LuPlusCircle, LuMinusCircle } from 'react-icons/lu';
 
 const Component = styled.div`
   display: flex;
@@ -18,6 +19,7 @@ const Container = styled.div`
   &.noBorder {
     border-bottom: none;
   }
+  padding-top: 4px;
 `;
 
 const ContentCard = styled.div`
@@ -29,6 +31,7 @@ const ContentCard = styled.div`
 const Content = styled.div`
   display: flex;
   flex-direction: column;
+  position: relative;
 `;
 
 const BoxTitle = styled.div`
@@ -36,6 +39,7 @@ const BoxTitle = styled.div`
   font-size: var(--font-size-md-2); //18
   margin: 20px 100px 20px 0;
   min-width: 32px;
+  padding-left: 4px;
 `;
 
 const ContentTitle = styled.div`
@@ -53,10 +57,66 @@ const ContentBody = styled.div`
   > span {
     margin-left: 4px;
   }
+  > div {
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+  }
+  > div:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const Label = styled.label`
   margin-right: 1rem;
+`;
+
+const AddButton = styled.button`
+  position: absolute;
+  left: 190px;
+  top: 4px;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+`;
+const RemoveButton = styled.button`
+  margin-left: 8px;
+  padding-top: 2px;
+
+  background: none;
+  border: none;
+  cursor: pointer;
+`;
+
+const List = styled.span`
+  border: 1px solid var(--color-grey-2);
+  padding: 4px 12px;
+  min-width: 40px;
+  min-height: 20px;
+  border-radius: 8px;
+  font-size: var(--font-size-ft-1);
+  display: inline-block;
+  text-align: center;
+  line-height: 20px;
+  cursor: default;
+  transition: all 0.3s;
+  &:hover {
+    background-color: #f7f6f2;
+  }
+`;
+
+const Icon = styled.div`
+  > svg {
+    width: 20px;
+    height: 20px;
+    color: var(--color-green-main);
+
+    &.small {
+      width: 18px;
+      height: 18px;
+    }
+  }
 `;
 
 // 임시
@@ -82,6 +142,11 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const [time, setTime] = useState('');
 
   const [selectedOption, setSelectedOption] = useState<string>('아니오');
+
+  const [symptoms, setSymptoms] = useState<string[]>(formData.symptom);
+  const [symptomInput, setSymptomInput] = useState('');
+  const [treatments, setTreatments] = useState<string[]>(formData.treatment);
+  const [treatmentInput, setTreatmentInput] = useState('');
 
   // console.log(formData);
   // record 객체 초기화: 이 정보로 화면을 채워줄 것임
@@ -140,6 +205,51 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
 
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
+  };
+
+  const addSymptom = () => {
+    if (symptomInput) {
+      setSymptoms([...symptoms, symptomInput]);
+    }
+
+    setSymptomInput('');
+  };
+
+  const removeSymptom = (index: number) => {
+    // 삭제할 증상의 index만 제외하고, symptom을 업데이트
+    setSymptoms(symptoms.filter((_, i) => i !== index));
+  };
+
+  // 엔터 시 증상 추가
+  const handleSymptomKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // 엔터를 눌렀는데, 비어있으면 추가 안함
+    if (e.key === 'Enter' && symptomInput.trim() !== '') {
+      // 입력한 증상으로 symptom 업데이트
+      setSymptoms([...symptoms, symptomInput.trim()]);
+      setSymptomInput('');
+    }
+  };
+
+  const addTreatment = () => {
+    if (treatmentInput) {
+      setTreatments([...treatments, treatmentInput]);
+    }
+    setTreatmentInput('');
+  };
+
+  const removeTreatment = (index: number) => {
+    // 삭제할 증상의 index만 제외하고, symptom을 업데이트
+    setTreatments(treatments.filter((_, i) => i !== index));
+  };
+
+  // 엔터 시 증상 추가
+  const handleTreatmentKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    // 엔터를 눌렀는데, 비어있으면 추가 안함
+    if (e.key === 'Enter' && treatmentInput.trim() !== '') {
+      // 입력한 증상으로 symptom 업데이트
+      setTreatments([...treatments, treatmentInput.trim()]);
+      setTreatmentInput('');
+    }
   };
 
   return (
@@ -234,66 +344,98 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
       </Container>
 
       <Container>
+        <BoxTitle>질병</BoxTitle>
         <ContentCard>
           <Content>
-            <ContentTitle>질병</ContentTitle>
+            {/* <ContentTitle> </ContentTitle> */}
+            <Input
+              height="20px"
+              placeholder="입력하여주세요."
+              name="disease"
+              value={formData.disease || ''}
+              onChange={handleInputChange}
+            />
+            <ContentBody />
+          </Content>
+        </ContentCard>
+      </Container>
+
+      <Container>
+        <BoxTitle>증상</BoxTitle>
+        <ContentCard>
+          <Content>
+            <Input
+              placeholder="입력하여주세요."
+              name="symptom"
+              value={symptomInput}
+              onChange={(e) => setSymptomInput(e.target.value)}
+              onKeyDown={handleSymptomKeyDown}
+            />
+            <AddButton onClick={addSymptom}>
+              <Icon>
+                <LuPlusCircle />
+              </Icon>
+            </AddButton>
+
             <ContentBody>
-              <Input
-                height="20px"
-                placeholder="입력하여주세요."
-                name="disease"
-                value={formData.disease || ''}
-                onChange={handleInputChange}
-              />
+              {symptoms.map((symptom, index) => (
+                <div key={index}>
+                  <List>{symptom}</List>
+                  <RemoveButton onClick={() => removeSymptom(index)}>
+                    <Icon>
+                      <LuMinusCircle className="small" />
+                    </Icon>
+                  </RemoveButton>
+                </div>
+              ))}
             </ContentBody>
           </Content>
         </ContentCard>
       </Container>
 
       <Container>
+        <BoxTitle>처방</BoxTitle>
         <ContentCard>
           <Content>
-            <ContentTitle>증상</ContentTitle>
-            <ContentBody>
-              <Input
-                placeholder="입력하여주세요."
-                name="symptom"
-                value={formData.symptom || ''}
-                onChange={handleInputChange}
-              />
-            </ContentBody>
-          </Content>
-        </ContentCard>
-      </Container>
+            <Input
+              placeholder="입력하여주세요."
+              name="treatment"
+              value={treatmentInput}
+              onChange={(e) => setTreatmentInput(e.target.value)}
+              onKeyDown={handleTreatmentKeyDown}
+            />
+            <AddButton onClick={addTreatment}>
+              <Icon>
+                <LuPlusCircle />
+              </Icon>
+            </AddButton>
 
-      <Container>
-        <ContentCard>
-          <Content>
-            <ContentTitle>처방</ContentTitle>
             <ContentBody>
-              <Input
-                placeholder="입력하여주세요."
-                name="treatment"
-                value={formData.treatment || ''}
-                onChange={handleInputChange}
-              />
+              {treatments.map((treatment, index) => (
+                <div key={index}>
+                  <List>{treatment}</List>
+                  <RemoveButton onClick={() => removeTreatment(index)}>
+                    <Icon>
+                      <LuMinusCircle className="small" />
+                    </Icon>
+                  </RemoveButton>
+                </div>
+              ))}
             </ContentBody>
           </Content>
         </ContentCard>
       </Container>
 
       <Container className="noBorder">
+        <BoxTitle>메모</BoxTitle>
         <ContentCard>
           <Content>
-            <ContentTitle>메모</ContentTitle>
-            <ContentBody>
-              <TextArea
-                placeholder="입력하여주세요."
-                name="memo"
-                value={formData.memo || ''}
-                onChange={handleInputChange}
-              />
-            </ContentBody>
+            <TextArea
+              placeholder="입력하여주세요."
+              name="memo"
+              value={formData.memo || ''}
+              onChange={handleInputChange}
+            />
           </Content>
         </ContentCard>
       </Container>

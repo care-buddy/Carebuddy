@@ -130,7 +130,17 @@ const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [formData, setFormData] = useState<FormData | null>(null);
+  const [formData, setFormData] = useState<FormData | null>({
+    doctorName: '',
+    isConsultation: true,
+    consultationDate: null,
+    address: '',
+    disease: '',
+    symptom: '',
+    treatment: '',
+    memo: '',
+    hospitalizationStatus: null,
+  });
   // {
   // doctorName: '',
   // isConsultation: true,

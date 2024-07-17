@@ -21,8 +21,8 @@ export interface Record {
   consultationDate: Date | null;
   hospitalizationStatus: boolean | null;
   disease: string;
-  symptom: string;
-  treatment: string | null;
+  symptom: string[];
+  treatment: string[];
   memo: string | null;
   createdAt: Date;
   updatedAt?: Date;
