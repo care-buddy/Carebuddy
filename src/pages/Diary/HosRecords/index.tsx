@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import Input from '@/components/common/Input';
 import Radio from '@/components/common/Radio';
 import CheckBox from '@/components/common/CheckBox';
 import TextArea from '@/components/common/TextArea';
 import { Record } from '@/interfaces';
 import { LuPlusCircle, LuMinusCircle } from 'react-icons/lu';
+import { CSSTransition } from 'react-transition-group';
 
 const Component = styled.div`
   display: flex;
@@ -119,6 +120,35 @@ const Icon = styled.div`
   }
 `;
 
+const FadeInOut = css`
+  &.fade-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  &.fade-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition:
+      opacity 300ms,
+      transform 500ms;
+  }
+  &.fade-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  &.fade-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition:
+      opacity 300ms,
+      transform 500ms;
+  }
+`;
+
+const AnimatedContent = styled.div`
+  ${FadeInOut}
+`;
+
 // 임시
 interface FormData {
   doctorName?: string;
@@ -137,7 +167,7 @@ interface HosRecordsProps {
 }
 
 const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
-  const [checked, setChecked] = useState(false);
+  const [checked, setChecked] = useState(!formData.isConsultation);
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
 
@@ -171,8 +201,8 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   //   }));
   // }, [date, time, selectedOption]);
 
-  const handleCheckboxChange = () => {
-    setChecked(!checked);
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setChecked(e.target.checked);
   };
 
   const handleInputChange = (
@@ -260,86 +290,90 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
           <Content>
             <ContentTitle>진단 확인 여부</ContentTitle>
             <ContentBody>
-              {/* <Checkbox
-                type="checkbox"
-                checked={checked}
-                onChange={handleCheckboxChange}
-              /> */}
               <CheckBox
-                value=""
-                checked={false}
-                text=""
+                value="isConsultation"
+                checked={checked}
+                text="의료진에 진단 받은 기록이 없습니다."
                 onChange={handleCheckboxChange}
-              />
-              <span>
-                의료진에 진단 받은 기록이 없습니다. (체크 시 진단 비활성화 추가)
-              </span>
-            </ContentBody>
-          </Content>
-          <Content>
-            <ContentTitle>수의사 선생님 성함을 입력하여주세요.</ContentTitle>
-            <ContentBody>
-              <Input
-                name="doctorName"
-                inputSize="sm"
-                value={formData.doctorName || ''}
-                placeholder="선생님 성함"
-                onChange={handleInputChange}
+                textColor="black"
               />
             </ContentBody>
           </Content>
-          <Content>
-            <ContentTitle>상담 날짜와 시간을 체크하여주세요.</ContentTitle>
-            <ContentBody>
-              <Input
-                type="date"
-                inputSize="sm"
-                value={date}
-                onChange={handleDateChange}
-              />
-              <Input
-                type="time"
-                inputSize="sm"
-                value={time}
-                onChange={handleTimeChange}
-              />
-            </ContentBody>
-          </Content>
-          <Content>
-            <ContentTitle>진료받은 병원을 입력해주세요.</ContentTitle>
-            <ContentBody>
-              <Input
-                name="address"
-                inputSize="sm"
-                value={formData.address || ''}
-                placeholder="병원명"
-                onChange={handleInputChange}
-              />
-            </ContentBody>
-          </Content>
-          <Content>
-            <ContentTitle>입원 여부</ContentTitle>
-            <ContentBody>
-              <Label htmlFor="radioYes">
-                <Radio
-                  id="radioYes"
-                  value="네"
-                  checked={selectedOption === '네'}
-                  onChange={handleRadioChange}
-                />
-                네
-              </Label>
-              <Label htmlFor="radioNo">
-                <Radio
-                  id="radioNo"
-                  value="아니오"
-                  checked={selectedOption === '아니오'}
-                  onChange={handleRadioChange}
-                />
-                아니오
-              </Label>
-            </ContentBody>
-          </Content>
+
+          <CSSTransition
+            in={!checked}
+            timeout={300}
+            classNames="fade"
+            unmountOnExit
+          >
+            <AnimatedContent>
+              <Content>
+                <ContentTitle>상담 날짜를 입력해주세요.</ContentTitle>
+                <ContentBody>
+                  <Input
+                    type="date"
+                    inputSize="sm"
+                    value={date}
+                    onChange={handleDateChange}
+                    // activeOption={checked ? 'readOnly' : 'active'}
+                  />
+                </ContentBody>
+              </Content>
+              <Content>
+                <ContentTitle>진료받은 병원을 입력해주세요.</ContentTitle>
+                <ContentBody>
+                  <Input
+                    name="address"
+                    inputSize="sm"
+                    value={formData.address || ''}
+                    placeholder="병원명"
+                    onChange={handleInputChange}
+                    // activeOption={checked ? 'readOnly' : 'active'}
+                  />
+                </ContentBody>
+              </Content>
+              <Content>
+                <ContentTitle>
+                  수의사 선생님 성함을 입력하여주세요.
+                </ContentTitle>
+                <ContentBody>
+                  <Input
+                    name="doctorName"
+                    inputSize="sm"
+                    value={formData.doctorName || ''}
+                    placeholder="선생님 성함"
+                    onChange={handleInputChange}
+                    // activeOption={checked ? 'readOnly' : 'active'}
+                  />
+                </ContentBody>
+              </Content>
+              <Content>
+                <ContentTitle>입원 여부</ContentTitle>
+                <ContentBody>
+                  <Label htmlFor="radioYes">
+                    <Radio
+                      id="radioYes"
+                      value="네"
+                      checked={selectedOption === '네'}
+                      onChange={handleRadioChange}
+                      // activeOption={checked ? 'readOnly' : 'active'}
+                    />
+                    네
+                  </Label>
+                  <Label htmlFor="radioNo">
+                    <Radio
+                      id="radioNo"
+                      value="아니오"
+                      checked={selectedOption === '아니오'}
+                      onChange={handleRadioChange}
+                      // activeOption={checked ? 'readOnly' : 'active'}
+                    />
+                    아니오
+                  </Label>
+                </ContentBody>
+              </Content>
+            </AnimatedContent>
+          </CSSTransition>
         </ContentCard>
       </Container>
 
@@ -378,16 +412,17 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
             </AddButton>
 
             <ContentBody>
-              {symptoms.map((symptom, index) => (
-                <div key={index}>
-                  <List>{symptom}</List>
-                  <RemoveButton onClick={() => removeSymptom(index)}>
-                    <Icon>
-                      <LuMinusCircle className="small" />
-                    </Icon>
-                  </RemoveButton>
-                </div>
-              ))}
+              {symptoms &&
+                symptoms.map((symptom, index) => (
+                  <div key={index}>
+                    <List>{symptom}</List>
+                    <RemoveButton onClick={() => removeSymptom(index)}>
+                      <Icon>
+                        <LuMinusCircle className="small" />
+                      </Icon>
+                    </RemoveButton>
+                  </div>
+                ))}
             </ContentBody>
           </Content>
         </ContentCard>
@@ -411,16 +446,17 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
             </AddButton>
 
             <ContentBody>
-              {treatments.map((treatment, index) => (
-                <div key={index}>
-                  <List>{treatment}</List>
-                  <RemoveButton onClick={() => removeTreatment(index)}>
-                    <Icon>
-                      <LuMinusCircle className="small" />
-                    </Icon>
-                  </RemoveButton>
-                </div>
-              ))}
+              {treatments &&
+                treatments.map((treatment, index) => (
+                  <div key={index}>
+                    <List>{treatment}</List>
+                    <RemoveButton onClick={() => removeTreatment(index)}>
+                      <Icon>
+                        <LuMinusCircle className="small" />
+                      </Icon>
+                    </RemoveButton>
+                  </div>
+                ))}
             </ContentBody>
           </Content>
         </ContentCard>

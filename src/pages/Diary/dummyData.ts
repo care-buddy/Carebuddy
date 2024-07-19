@@ -53,7 +53,7 @@ export const dummyRecord: Record[] = [
     _id: '2r',
     doctorName: null,
     address: null,
-    isConsultation: true,
+    isConsultation: false,
     consultationDate: new Date('2024-04-08T07:00:00.000Z'),
     hospitalizationStatus: true,
     disease: '감기2',

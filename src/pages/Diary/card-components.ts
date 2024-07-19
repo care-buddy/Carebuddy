@@ -7,6 +7,16 @@ export const CardsWrapper = styled.div`
   width: 100%;
   position: relative;
   transition: all 0.5s ease;
+
+  > button {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 9999;
+    > div {
+      position: absolute;
+    }
+  }
   &.selected-card {
     > div {
       transform: scale(1.02);
@@ -17,6 +27,9 @@ export const CardsWrapper = styled.div`
         -3px -3px 7px rgba(109, 152, 122, 0.1),
         5px 5px 7px rgb(200, 210, 200);
       /* border: 3px solid rgba(152, 185, 156); */
+    }
+    > button {
+      transform: scale(1.02);
     }
   }
   &.not-selected-card {
@@ -45,14 +58,7 @@ export const Cards = styled.div`
   align-items: center;
   position: relative;
   transition: color 0.3s ease;
-  > button {
-    position: absolute;
-    top: 15px;
-    right: 10px;
-    > div {
-      position: absolute;
-    }
-  }
+
   :hover {
     cursor: pointer;
   }

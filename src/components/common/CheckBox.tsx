@@ -19,7 +19,7 @@ interface CheckBoxProps extends StyledCheckBoxProps {
   value: string;
   checked: boolean;
   text: string;
-  onChange: () => void;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 const CheckBox: React.FC<CheckBoxProps> = ({
@@ -30,12 +30,7 @@ const CheckBox: React.FC<CheckBoxProps> = ({
   textColor = 'grey',
 }) => (
   <Label htmlFor={value} className="chk_box">
-    <Input
-      type="checkbox"
-      id={value}
-      checked={checked}
-      onChange={onChange}
-    />
+    <Input type="checkbox" id={value} checked={checked} onChange={onChange} />
     <TextContainer>
       <Span className={checked ? 'on' : ''} />
       <Text textColor={textColor}>{text}</Text>

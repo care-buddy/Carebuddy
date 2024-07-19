@@ -1,9 +1,31 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
+
+interface StyledRadioProps {
+  activeOption?: 'active' | 'readOnly';
+}
+
+const activeOptions = {
+  active: css``,
+  readOnly: css`
+    border: 1px solid var(--color-grey-2);
+    cursor: not-allowed;
+    pointer-events: none;
+
+    &:checked:after {
+      background-color: var(--color-white);
+    }
+    &:focus,
+    &:focus-visible {
+      border-color: var(--color-grey-2);
+      box-shadow: 0 0 0 1px transparent;
+    }
+  `,
+};
 
 // 동적 스타일 지정 X 필요 시 생성
 // 기본 스타일을 여기서 지정: 기본 스타일 + 동적 스타일
-const StyledRadio = styled.input`
+const StyledRadio = styled.input<StyledRadioProps>`
   width: var(--font-size-ft-1);
   height: var(--font-size-ft-1);
   appearance: none;
@@ -36,18 +58,19 @@ const StyledRadio = styled.input`
     border-color: var(--color-green-main);
     box-shadow: 0 0 0 1px var(--color-green-main);
   }
+
+  ${(props) => props.activeOption && activeOptions[props.activeOption]}
 `;
 
-interface RadioProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  value: string;
-  checked: boolean;
-  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
-}
+interface RadioProps
+  extends StyledRadioProps,
+    React.InputHTMLAttributes<HTMLInputElement> {}
 
 const Radio: React.FC<RadioProps> = ({
   value,
   checked,
   onChange,
+  activeOption = 'active',
   //   types나 placeholder 등.. 동적으로 나머지 props 가져옴
   ...props
 }) => (
@@ -57,6 +80,7 @@ const Radio: React.FC<RadioProps> = ({
     checked={checked}
     name="radioGroup"
     onChange={onChange}
+    activeOption={activeOption}
     {...props}
   />
 );
