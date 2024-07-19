@@ -120,14 +120,14 @@ export { tempTerms };
 
 const dummyPosts = [
   {
-    _id: '6621f4ae536c1c27679a9df4',
+    _id: '6621f4ae536c1c27679a9f4',
     userId: {
       nickName: '김지연',
       profileImage: ['https://picsum.photos/200'],
       deletedAt: null,
     },
     communityId: {
-      _id: '66214eb084ee7839e29e8ac6',
+      _id: '66214eb084ee783e29e8ac6',
       category: 1,
       community: '뇌·신경',
       deletedAt: null,
@@ -141,7 +141,7 @@ const dummyPosts = [
     createdAt: '2024-04-19T04:35:58.458Z',
   },
   {
-    _id: '6621f4ae536c1c27679a9df4',
+    _id: '6621f4ae536c1c7679a9df4',
     userId: {
       nickName: '김지연',
       profileImage: ['https://picsum.photos/200'],
@@ -162,7 +162,7 @@ const dummyPosts = [
     createdAt: '2024-04-19T04:35:58.458Z',
   },
   {
-    _id: '6621f4ae536c1c27679a9df4',
+    _id: '662f4ae536c1c27679a9df4',
     userId: {
       nickName: '박유신',
       profileImage: ['https://picsum.photos/200'],
@@ -186,7 +186,7 @@ const dummyPosts = [
 
 const dummyGroups = [
   {
-    _id: '6621f4ae536c1c27679a9df4',
+    _id: '6621fae536c1c27679a9df4',
     userId: {
       nickName: '김지연',
       profileImage: ['https://picsum.photos/200'],
@@ -207,7 +207,7 @@ const dummyGroups = [
     createdAt: '2024-04-19T04:35:58.458Z',
   },
   {
-    _id: '6621f4ae536c1c27679a9df4',
+    _id: '662f4ae536c1c27679a9df4',
     userId: {
       nickName: '박유신',
       profileImage: ['https://picsum.photos/200'],

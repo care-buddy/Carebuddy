@@ -14,7 +14,6 @@ import PostCreate from '@/pages/PostCreate/index';
 import LinkButton from '@/components/common/LinkButton';
 // import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 
-
 import formatDate from '@/utils/formatDate';
 
 import type { PostData } from '@constants/tempInterface';
@@ -36,8 +35,8 @@ const mock = new MockAdapter(axiosInstance);
 
 mock.onGet('/api/posts').reply(200, dummyPosts); // 글 목록 받아오기, get 메서드
 mock
-.onPut(/\/api\/user\/\w+\/withdrawGroup/)
-.reply(200, '커뮤니티 탈퇴가 완료되었습니다.'); // 커뮤니티 탈퇴하기, put 메서드
+  .onPut(/\/api\/user\/\w+\/withdrawGroup/)
+  .reply(200, '커뮤니티 탈퇴가 완료되었습니다.'); // 커뮤니티 탈퇴하기, put 메서드
 
 // 작동 테스트용
 const tempGroup = [
@@ -67,6 +66,9 @@ const tempGroup = [
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
   const [posts, setPosts] = useState<PostData[] | null>(null);
+  const [filteredPosts, setFilteredPosts] = useState<PostData[] | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
+  const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
 
   // 글 작성 모달 닫기
   const handleCloseWriteModal = () => {
@@ -77,14 +79,14 @@ const CommunityFeed: React.FC = () => {
   const handleWithdrawalCommunity = async () => {
     if (confirm('커뮤니티를 탈퇴하시겠습니까?')) {
       try {
-        const userId = 'abc' // 임시
+        const userId = 'abc'; // 임시
         const response = await axiosInstance.put(
           `/user/${userId}/withdrawGroup`,
           {
             communityId: '6617c6acb39abf604bbe8dc2',
           }
         );
-        
+
         console.log('커뮤니티 탈퇴, 성공', response.data); // 임시
       } catch (error) {
         console.error('커뮤니티 탈퇴 실패', error); // 임시
@@ -100,19 +102,31 @@ const CommunityFeed: React.FC = () => {
         const response = await axiosInstance.get(`/posts`);
         console.log('Component mounted, making API call...'); // 임시
 
-        // 등록일 formatting
-        const formattedPosts = response.data.map((post: PostData) => ({
-          ...post,
-          createdAt: formatDate(post.createdAt),
-        }));
-
-        setPosts(formattedPosts);
+        setPosts(response.data);
       } catch (error) {
         console.error('게시글 목록 조회 실패', error); // 임시
       }
     };
     fetchData();
   }, []);
+
+  // 검색 로직
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  useEffect(() => {
+    const filteredPost: PostData[] | null = posts
+      ? posts.filter((post) => post.title.includes(searchTerm))
+      : null;
+    setFilteredPosts(filteredPost);
+
+  }, [searchTerm, posts]);
+
+  const handleSearchState = (value: boolean) => {
+    setIsSearching(value);
+  };
+
 
   return (
     <>
@@ -123,8 +137,10 @@ const CommunityFeed: React.FC = () => {
       />
       <SearchContainer>
         <Search
-          // onSearch={(value) => handleSearch(value)}
-          placeholder="검색할 게시글의 제목을 입력하세요"
+          onSearchTerm={(value) => handleSearch(value)}
+          onSearchState={handleSearchState}
+          searchState={isSearching}
+          placeholder={isSearching ? '' : '검색할 게시글의 제목을 입력하세요'}
         />
       </SearchContainer>
       <Container>
@@ -140,17 +156,29 @@ const CommunityFeed: React.FC = () => {
               />
             )}
           </FeedOptionContainer>
-          {posts?.map((post) => (
-            <FeedBox
-              key={post._id}
-              postId={post._id}
-              title={post.title}
-              content={post.content}
-              uploadedDate={post.createdAt}
-              nickname={post.userId.nickName}
-              profileSrc={post.userId.profileImage[0]}
-            />
-          ))}
+          {isSearching
+            ? filteredPosts?.map((post) => (
+                <FeedBox
+                  key={post._id}
+                  postId={post._id}
+                  title={post.title}
+                  content={post.content}
+                  uploadedDate={formatDate(post.createdAt)}
+                  nickname={post.userId.nickName}
+                  profileSrc={post.userId.profileImage[0]}
+                />
+              ))
+            : posts?.map((post) => (
+                <FeedBox
+                  key={post._id}
+                  postId={post._id}
+                  title={post.title}
+                  content={post.content}
+                  uploadedDate={formatDate(post.createdAt)}
+                  nickname={post.userId.nickName}
+                  profileSrc={post.userId.profileImage[0]}
+                />
+              ))}
         </FeedBoxContainer>
         <SidePanelContainer>
           <LinkButtonContainer>

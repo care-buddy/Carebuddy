@@ -9,7 +9,9 @@ import LikeAndCommentCount from '@/components/Post/LikesAndCommentCount';
 import CommentWritingBox from '@/components/Post/CommentWritingBox';
 import Comment from '@/components/Post/Comment';
 import TopBar from '@/components/common/TopBar';
-import Modal from '@/components/common/Modal';
+import Modal from '@/components/common/Modal/index';
+import PostCreate from '@/pages/PostCreate/index';
+import Button from '@/components/common/Button';
 
 import { LuThumbsUp, LuChevronLeft } from 'react-icons/lu';
 
@@ -18,7 +20,11 @@ import formatDateIncludeTime from '@/utils/formatDateIncludeTime';
 import type { PostData, CommentData } from '@constants/tempInterface';
 
 // 임시 데이터
-import { dummyPost, dummyComments, dummyNewComment } from '@constants/tempData';
+import {
+  dummyPost,
+  dummyComments,
+  // dummyNewComment
+} from '@constants/tempData';
 
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
@@ -87,7 +93,7 @@ interface PostProps {
 const Post: React.FC<PostProps> = () => {
   const [post, setPost] = useState<PostData | null>(null);
   const [comments, setComments] = useState<CommentData[] | null>(null);
-  const [isPostModalOpen, setIsPostModalOpen] = useState(false); // 글 작성
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
   // 댓글 등록 API
   const handleWrittenComment = async (comment: string) => {
@@ -145,8 +151,8 @@ const Post: React.FC<PostProps> = () => {
 
   // 글 수정 버튼 클릭
   const handlePostEdit = () => {
-    // 글 수정 모달 열기 -> 글 수정 모달 만들어진지 확인 후 작업
-    setIsPostModalOpen((prevState) => !prevState);
+    // // 글 수정 모달 열기 -> 글 수정 모달 만들어진지 확인 후 작업
+    // setIsPostModalOpen((prevState) => !prevState);
   };
 
   // 글 삭제 버튼 클릭
@@ -163,6 +169,15 @@ const Post: React.FC<PostProps> = () => {
         console.error(error, '글 삭제에 실패했습니다');
       }
     }
+  };
+
+  // 글 수정 모달
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
   };
 
   // 댓글 수정 버튼 클릭
@@ -194,10 +209,17 @@ const Post: React.FC<PostProps> = () => {
             <ActionButton
               buttonBorder="border-solid"
               direction="horizonal"
-              onEdit={handlePostEdit}
+              onEdit={handleEditClick}
               onDelete={handlePostDelete}
             />
-            {/* {isPostModalOpen && <Modal component={} />} */}
+            {isEditModalOpen && (
+              <Modal
+                title="글 수정하기"
+                value="수정"
+                component={<PostCreate />}
+                onClose={handleCloseEditModal}
+              />
+            )}
           </PostOption>
         </TitleContainer>
         <InformationContainer>

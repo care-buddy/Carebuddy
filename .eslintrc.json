@@ -59,7 +59,9 @@
     // 변수나 함수 정의 이전에 사용 불가능하도록 제한
     "no-use-before-define": "off",
     // alert,  confirm, prompt를 사용 불가능하도록 제한
-    "no-alert": "off"
+    "no-alert": "off",
+    // 전역 변수, 함수 등을 사용 불가능하도록 제한(alert, confirm, prompt, event 등 포함)
+    "no-restricted-globals": "off"
   },
   "settings": {
     "import/parsers": {
