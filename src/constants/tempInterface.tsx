@@ -3,36 +3,36 @@
 // 댓글
 export interface CommentData {
   userId: {
-    _id: '';
-    nickName: '';
-    profileImage: [''];
+    _id: string;
+    nickName: string;
+    profileImage: string[];
   };
-  text: '';
-  deletedAt: '';
-  _id: '';
-  createdAt: '';
+  text: string;
+  deletedAt: string;
+  _id: string;
+  createdAt: string;
 }
 
 // 게시글
 
 // 임시 - 추후에 type만 모아서 새로 정리 필요
 export interface PostData {
-  _id: '';
+  _id: string;
   userId: {
-    nickName: '';
-    profileImage: [''];
-    deletedAt: '';
+    nickName: string;
+    profileImage: string[];
+    deletedAt: string;
   };
   communityId: {
-    _id: '';
-    category: 0;
-    community: '';
-    deletedAt: '';
+    _id: string;
+    category: string | number;
+    community: string;
+    deletedAt: string;
   };
-  title: '';
-  likedUsers: ['', ''];
-  content: '';
-  deletedAt: '';
-  postImage: [''];
-  createdAt: '';
+  title: string;
+  likedUsers: string[];
+  content: string;
+  deletedAt: string;
+  postImage: string[];
+  createdAt: string;
 }

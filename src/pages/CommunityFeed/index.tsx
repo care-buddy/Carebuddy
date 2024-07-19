@@ -65,8 +65,8 @@ const tempGroup = [
 
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
-  const [posts, setPosts] = useState<PostData[] | null>(null);
-  const [filteredPosts, setFilteredPosts] = useState<PostData[] | null>(null);
+  const [posts, setPosts] = useState<PostData[] | null>(null); // 게시글 목록
+  const [filteredPosts, setFilteredPosts] = useState<PostData[] | null>(null); // 검색된 게시글 목록
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
 
@@ -115,18 +115,16 @@ const CommunityFeed: React.FC = () => {
     setSearchTerm(value);
   };
 
+  const handleSearchState = (value: boolean) => {
+    setIsSearching(value);
+  };
+
   useEffect(() => {
     const filteredPost: PostData[] | null = posts
       ? posts.filter((post) => post.title.includes(searchTerm))
       : null;
     setFilteredPosts(filteredPost);
-
   }, [searchTerm, posts]);
-
-  const handleSearchState = (value: boolean) => {
-    setIsSearching(value);
-  };
-
 
   return (
     <>

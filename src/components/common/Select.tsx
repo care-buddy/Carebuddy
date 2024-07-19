@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components';
 interface StyledSelectProps {
   selectStyle?: 'round' | 'square';
   selectSize?: 'sm' | 'md' | 'bg';
-  onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const selectStyles = {

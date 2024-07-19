@@ -30,7 +30,11 @@ mock.onGet('/api/posts').reply(200, dummyPosts);
 
 const GlobalSearch: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
-  const [posts, setPosts] = useState<PostData[] | null>(null);
+  const [posts, setPosts] = useState<PostData[] | null>(null); // 게시글 목록
+  // const [selectedPosts, setSelectedPosts] = useState<PostData[] | null>(null) // select로 선택된 게시글 목록
+  const [filteredPosts, setFilteredPosts] = useState<PostData[] | null>(null); // 검색된 게시글 목록
+  const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
+  const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
 
   // 글 작성 모달
   const handleCloseWriteModal = () => {
@@ -48,13 +52,13 @@ const GlobalSearch: React.FC = () => {
     { value: 'eyes', label: '눈 / 피부 / 귀' },
   ];
 
-  // 데이터 받기
+  // 게시글 조회 API
   useEffect(() => {
     const fetchData = async () => {
       // 게시글 목록
       try {
         const response = await axiosInstance.get(`/posts`);
-        console.log('Component mounted, making API call...'); // 임시
+        // console.log('Component mounted, making API call...'); // 임시
 
         // 등록일 formatting
         const formattedPosts = response.data.map((post: PostData) => ({
@@ -63,11 +67,27 @@ const GlobalSearch: React.FC = () => {
         }));
         setPosts(formattedPosts);
       } catch (error) {
-        console.error('게시글 목록 조회 실패', error); // 임시
+        // console.error('게시글 목록 조회 실패', error); // 임시
       }
     };
     fetchData();
   }, []);
+
+  // 검색 로직
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  const handleSearchState = (value: boolean) => {
+    setIsSearching(value);
+  };
+
+  useEffect(() => {
+    const filteredPost: PostData[] | null = posts
+      ? posts.filter((post) => post.title.includes(searchTerm))
+      : null;
+    setFilteredPosts(filteredPost);
+  }, [searchTerm, posts]);
 
   return (
     <>
@@ -75,7 +95,14 @@ const GlobalSearch: React.FC = () => {
       <Container>
         <BorderContainer>
           <SearchContainer>
-            <Search placeholder="검색어를 입력해주세요" />
+            <Search
+              onSearchTerm={(value) => handleSearch(value)}
+              onSearchState={handleSearchState}
+              searchState={isSearching}
+              placeholder={
+                isSearching ? '' : '검색할 게시글의 제목을 입력하세요'
+              }
+            />
           </SearchContainer>
           <FeedOptionContainer>
             <SelectContainer>
@@ -98,22 +125,33 @@ const GlobalSearch: React.FC = () => {
             )}
           </FeedOptionContainer>
           <FeedBoxContainer>
-            {posts &&
-              posts.map((post) => (
-                <FeedBox
-                  key={post._id}
-                  postId={post._id}
-                  title={post.title}
-                  content={post.content}
-                  uploadedDate={formatDate(post.createdAt)}
-                  nickname={post.userId.nickName}
-                  profileSrc={post.userId.profileImage[0]}
-                  communityName={post.communityId.community}
-                  communityCategory={
-                    post.communityId.category === 0 ? '강아지' : '고양이'
-                  }
-                />
-              ))}
+            {isSearching
+              ? filteredPosts?.map((post) => (
+                  <FeedBox
+                    key={post._id}
+                    postId={post._id}
+                    title={post.title}
+                    content={post.content}
+                    uploadedDate={formatDate(post.createdAt)}
+                    nickname={post.userId.nickName}
+                    profileSrc={post.userId.profileImage[0]}
+                    communityName={post.communityId.community}
+                    communityCategory={post.communityId.category === 0 ? '강아지' : '고양이'}
+                  />
+                ))
+              : posts?.map((post) => (
+                  <FeedBox
+                    key={post._id}
+                    postId={post._id}
+                    title={post.title}
+                    content={post.content}
+                    uploadedDate={formatDate(post.createdAt)}
+                    nickname={post.userId.nickName}
+                    profileSrc={post.userId.profileImage[0]}
+                    communityName={post.communityId.community}
+                    communityCategory={post.communityId.category === 0 ? '강아지' : '고양이'}
+                  />
+                ))}
           </FeedBoxContainer>
         </BorderContainer>
       </Container>
