@@ -7,16 +7,10 @@ import CommunityCard from '@/components/Community/CommunityCard';
 import Button from '@/components/common/Button';
 import TopBar from '@/components/common/TopBar';
 
+import type { CommunityData } from '@/constants/tempInterface';
+
 // 임시 데이터
 import { dummyCommunities } from '@constants/tempData';
-
-interface CommunityData {
-  _id: '';
-  category: 0;
-  community: '';
-  introduction: '';
-  deletedAt: null;
-}
 
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
@@ -25,15 +19,26 @@ const axiosInstance = axios.create({
 
 const mock = new MockAdapter(axiosInstance);
 
-mock.onGet('/api/communities').reply(200, dummyCommunities); // 글 목록 받아오기, get 메서드
+mock.onGet('/api/communities').reply(200, dummyCommunities); // 커뮤니티 목록 받아오기, get 메서드
+mock
+  .onPut(/\/api\/user\/\w+\/joinGroup/)
+  .reply(200, '그룹 가입이 완료되었습니다.'); // 그룹 가입, put 메서드
 
 const Community: React.FC = () => {
-  const [species, setSpecies] = useState<boolean>(true); // 종 버튼(true가 강아지)
-  const [communities, setCommunities] = useState<CommunityData[] | null>(null);
+  const [category, setCategory] = useState<number>(0); // 종 버튼(0이 강아지)
+  const [communities, setCommunities] = useState<CommunityData[] | null>(null); // 커뮤니티 목록
 
   // 종 버튼 클릭 핸들러
-  const handleSpecies = () => {
-    setSpecies((prevState) => !prevState);
+  const handleDogCategory = () => {
+    if (category === 1) {
+      setCategory(0);
+    }
+  };
+
+  const handleCatCategory = () => {
+    if (category === 0) {
+      setCategory(1);
+    } 
   };
 
   useEffect(() => {
@@ -41,7 +46,6 @@ const Community: React.FC = () => {
       // 커뮤니티 목록
       try {
         const response = await axiosInstance.get(`/communities`);
-        console.log('Component mounted, making API call...', response.data); // 임시
 
         setCommunities(response.data);
       } catch (error) {
@@ -51,33 +55,54 @@ const Community: React.FC = () => {
     fetchData();
   }, []);
 
+  const handleJoinButtonClick = async () => {
+    try {
+      const userId = 'abs' // 임시
+      const response = await axiosInstance.put(
+        `/user/${userId}/joinGroup`,
+        {
+          communityId: '6617c6acb39abf604bbe8dc2',
+        }
+      );
+      console.log('커뮤니티 가입, 성공', response.data)
+    } catch (error) {
+      console.error('커뮤니티 탈퇴 실패', error)
+    }
+  };
+
+  // 유저 정보로 가입된 그룹 확인해서 joined 정보 넣기
+
   return (
     <>
       <TopBar category="커뮤니티" title="모든 커뮤니티" />
       <ButtonContainer>
         <Button
-          buttonStyle={species ? 'square-green' : 'square-white'}
+          buttonStyle={category === 0 ? 'square-green' : 'square-white'}
           buttonSize="lg"
-          onClick={handleSpecies}
+          onClick={handleDogCategory}
         >
           강아지
         </Button>
         <Button
-          buttonStyle={!species ? 'square-green' : 'square-white'}
+          buttonStyle={category === 1 ? 'square-green' : 'square-white'}
           buttonSize="lg"
-          onClick={handleSpecies}
+          onClick={handleCatCategory}
         >
           고양이
         </Button>
       </ButtonContainer>
       <CardContainer>
-        {communities?.map((community) => (
-          <CommunityCard
-            key={community._id}
-            name={community.community}
-            introduction={community.introduction}
-          />
-        ))}
+        {communities
+          ?.filter((community) => community.category === category)
+          .map((community) => (
+            <CommunityCard
+              key={community._id}
+              name={community.community}
+              introduction={community.introduction}
+              onButtonClick={handleJoinButtonClick}
+              joined={true} // 가입 여부를 어떻게 확인해야하는지 모름. 왜냐면 
+            />
+          ))}
       </CardContainer>
     </>
   );

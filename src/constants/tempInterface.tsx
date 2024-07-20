@@ -36,3 +36,12 @@ export interface PostData {
   postImage: string[];
   createdAt: string;
 }
+
+// 커뮤니티
+export interface CommunityData {
+  _id: string;
+  category: number;
+  community: string;
+  introduction: string;
+  deletedAt: null | string;
+}
