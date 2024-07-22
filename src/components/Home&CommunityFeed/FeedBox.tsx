@@ -8,9 +8,6 @@ import CommunityCategory from '@components/GlobalSearch/CommunityCategory';
 import formatDate from '@/utils/formatDate';
 import processedContentForFeedBox from '@/utils/processedContentForFeedBox';
 
-// 임시 데이터
-import { tempLikeCount, tempCommentCount } from '@constants/tempData';
-
 type FeedBoxProps = {
   postId: string;
   title: string;
@@ -20,6 +17,8 @@ type FeedBoxProps = {
   uploadedDate: string;
   communityName?: string;
   communityCategory?: string;
+  likeCount?: number;
+  commentCount?: number;
 };
 
 const FeedBox: React.FC<FeedBoxProps> = ({
@@ -31,6 +30,8 @@ const FeedBox: React.FC<FeedBoxProps> = ({
   postId,
   communityName,
   communityCategory,
+  likeCount,
+  commentCount
 }) => {
   // 커뮤니티일 때만 설정
   const [isSearchResult, setIsSearchResult] = useState(false);
@@ -59,8 +60,8 @@ const FeedBox: React.FC<FeedBoxProps> = ({
           )}
         </LeftContainer>
         <LikeAndCommentCount
-          likeCount={tempLikeCount}
-          commentCount={tempCommentCount}
+          likeCount={likeCount}
+          commentCount={commentCount}
         />
       </TitleContainer>
       <Content>

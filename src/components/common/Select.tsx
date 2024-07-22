@@ -36,6 +36,7 @@ const StyledSelect = styled.select<StyledSelectProps>`
   padding: 8px 12px;
   color: var(--color-grey-1);
   line-height: 1.2;
+
   ${(props) => props.selectStyle && selectStyles[props.selectStyle]}
   ${(props) => props.selectSize && selectSizes[props.selectSize]}
 `;

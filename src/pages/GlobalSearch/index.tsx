@@ -45,7 +45,6 @@ const GlobalSearch: React.FC = () => {
       // 게시글 목록
       try {
         const response = await axiosInstance.get(`/posts`);
-        // console.log('Component mounted, making API call...'); // 임시
 
         // 등록일 formatting
         const formattedPosts = response.data.map((post: PostData) => ({

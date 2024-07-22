@@ -1,19 +1,5 @@
 import React, { useState } from 'react';
 
-// 로그인 모달 테스트용
-import SmallModal from '@/components/common/SmallModal';
-import Login from '@/components/Login/Login';
-
-// 동물 등록 모달 테스트용
-// import Button from '@/components/common/Button';
-import Modal from '@/components/common/Modal';
-import PetRegister from '@/components/PetRegister/PetRegister';
-
-// 동물 수정 모달 테스트용
-// import Button from '@/components/common/Button';
-// import Modal from '@/components/common/Modal';
-// import PetRegister from '@/components/PetRegister/PetRegister';
-
 // 일반 회원가입 모달 테스트용
 // import Button from '@components/common/Button';
 // import SmallModal from '@/components/common/SmallModal';
@@ -36,16 +22,7 @@ import ForgotPassword from '@/components/Recovery/ForgotPassword';
 
 
 // 함수 안
-  // 로그인 모달 관련 상태&함수
-  const [modalOpen1, setModalOpen1] = useState(false);
 
-  const handleOpenModal1 = () => {
-    setModalOpen1(true);
-  };
-
-  const handleCloseModal1 = () => {
-    setModalOpen1(false);
-  };
 
   // const handleFormSubmit = () => {
   //   // console.log('Form data:', formData);
@@ -82,56 +59,6 @@ import ForgotPassword from '@/components/Recovery/ForgotPassword';
   };
 
   // const handleFormSubmit = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
-
-  // 동물 등록 모달 관련 상태&함수
-  const [modalOpen2, setModalOpen2] = useState(false);
-  // const [formData, setFormData] = useState<FormData>({
-  //   name: '',
-  //   age: 0,
-  //   weight: 0,
-  //   gender: '',
-  //   species: '',
-  //   neutered: '',
-  // });
-
-  const handleOpenModal2 = () => {
-    setModalOpen2(true);
-  };
-
-  const handleCloseModal2 = () => {
-    setModalOpen2(false);
-  };
-
-  // const handleFormSubmit2 = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
-
-  // 동물 정보 수정 모달 관련 상태&함수
-  const [modalOpen3, setModalOpen3] = useState(false);
-  // const [formData, setFormData] = useState<FormData>({
-  //   name: '',
-  //   age: 0,
-  //   weight: 0,
-  //   gender: '',
-  //   species: '',
-  //   neutered: '',
-  // });
-
-  const handleOpenModal3 = () => {
-    setModalOpen3(true);
-  };
-
-  const handleCloseModal3 = () => {
-    setModalOpen3(false);
-  };
-
-  // const handleFormSubmit3 = () => {
   //   // console.log('Form data:', formData);
   //   // 모달 닫기
   //   handleCloseModal();
@@ -190,45 +117,7 @@ import ForgotPassword from '@/components/Recovery/ForgotPassword';
   // };
 
 // JSX안
-<TopBar category="반려동물 건강 관리 서비스" title="Carebuddy" />
-<h1>모달 테스트 구역시작</h1>
-{/* 로그인 */}
-<Button onClick={handleOpenModal1}>로그인 모달</Button>
-{modalOpen1 && (
-  <SmallModal onClose={handleCloseModal1} component={<Login />} />
-)}
-{/* 동물등록 */}
-<Button onClick={handleOpenModal2}>동물 등록 모달</Button>
-{modalOpen2 && (
-  <Modal
-    onClose={handleCloseModal2}
-    title="동물 정보 등록"
-    value="등록"
-    component={
-      <PetRegister
-      // formData={formData}
-      // setFormData={setFormData}
-      />
-    }
-    // onHandleClick={handleFormSubmit2}
-  />
-)}
-{/* 동물 정보 수정 */}
-<Button onClick={handleOpenModal3}>동물 수정 모달</Button>
-{modalOpen3 && (
-  <Modal
-    onClose={handleCloseModal3}
-    title="동물 정보 수정"
-    value="수정"
-    component={
-      <PetRegister
-      // formData={formData}
-      // setFormData={setFormData}
-      />
-    }
-    // onHandleClick={handleFormSubmit3}
-  />
-)}
+
 {/* 일반 회원가입 */}
 <Button onClick={handleOpenModal4}>일반 회원가입 모달</Button>
 {modalOpen4 && (

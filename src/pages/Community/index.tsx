@@ -19,14 +19,18 @@ const axiosInstance = axios.create({
 
 const mock = new MockAdapter(axiosInstance);
 
-mock.onGet('/api/communities').reply(200, dummyCommunities); // 커뮤니티 목록 받아오기, get 메서드
+// mock.onGet('/api/communities').reply(200, dummyCommunities); // 커뮤니티 목록 받아오기, get 메서드
+mock.onGet('/api/communities').reply(500, '서버 오류 발생'); // 커뮤니티 목록 받아오기, get 메서드
+
 mock
   .onPut(/\/api\/user\/\w+\/joinGroup/)
   .reply(200, '그룹 가입이 완료되었습니다.'); // 그룹 가입, put 메서드
 
 const Community: React.FC = () => {
-  const [category, setCategory] = useState<number>(0); // 종 버튼(0이 강아지)
+  const [category, setCategory] = useState<number>(0); // 종 버튼(기본값 강아지)
   const [communities, setCommunities] = useState<CommunityData[] | null>(null); // 커뮤니티 목록
+  const [isLoading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
   // 종 버튼 클릭 핸들러
   const handleDogCategory = () => {
@@ -38,39 +42,54 @@ const Community: React.FC = () => {
   const handleCatCategory = () => {
     if (category === 0) {
       setCategory(1);
-    } 
+    }
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      // 커뮤니티 목록
-      try {
-        const response = await axiosInstance.get(`/communities`);
-
-        setCommunities(response.data);
-      } catch (error) {
-        console.error(error);
-      }
+    const fetchData = () => {
+      // 커뮤니티 목록을 가져오는 API 호출
+      axiosInstance
+        .get('/communities')
+        .then((response) => {
+          if (response.status === 200) {
+            setCommunities(response.data);
+          } else {
+            throw new Error('Failed to fetch data');
+          }
+        })
+        .catch((error) => {
+          setError(error);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
     };
+
     fetchData();
   }, []);
 
   const handleJoinButtonClick = async () => {
     try {
-      const userId = 'abs' // 임시
-      const response = await axiosInstance.put(
-        `/user/${userId}/joinGroup`,
-        {
-          communityId: '6617c6acb39abf604bbe8dc2',
-        }
-      );
-      console.log('커뮤니티 가입, 성공', response.data)
+      const userId = 'abs'; // 임시
+      const response = await axiosInstance.put(`/user/${userId}/joinGroup`, {
+        communityId: '6617c6acb39abf604bbe8dc2',
+      });
+      console.log('커뮤니티 가입, 성공', response.data);
     } catch (error) {
-      console.error('커뮤니티 탈퇴 실패', error)
+      console.error('커뮤니티 탈퇴 실패', error);
     }
   };
 
   // 유저 정보로 가입된 그룹 확인해서 joined 정보 넣기
+
+  // 로딩, 에러 처리
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <>
@@ -100,7 +119,7 @@ const Community: React.FC = () => {
               name={community.community}
               introduction={community.introduction}
               onButtonClick={handleJoinButtonClick}
-              joined={true} // 가입 여부를 어떻게 확인해야하는지 모름. 왜냐면 
+              joined={true} // 가입 여부를 어떻게 확인해야하는지 모름. 왜냐면
             />
           ))}
       </CardContainer>

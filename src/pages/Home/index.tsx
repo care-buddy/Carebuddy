@@ -87,7 +87,6 @@ const Home: React.FC = () => {
       // 게시글 목록
       try {
         const response = await axiosInstance.get(`/posts`);
-        // console.log('Component mounted, making API call...'); // 임시
 
         setPosts(response.data);
       } catch (error) {
@@ -197,6 +196,8 @@ const Home: React.FC = () => {
               communityCategory={
                 post.communityId.category === 0 ? '강아지' : '고양이'
               }
+              likeCount={post.likedUsers.length}
+              // commentCount={}
             />
           ))}
         </FeedBoxContainer>
@@ -244,3 +245,4 @@ const P = styled.p`
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-ft-1);
 `;
+

@@ -72,7 +72,7 @@ const CardContent = styled(Link)`
   color: var(--color-black);
   cursor: pointer;
   display: flex;
-  flex: 1; // 부모의 남은 공간 차지
+  flex: 1; 
 `;
 
 const IconContainer = styled.div`

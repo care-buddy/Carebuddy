@@ -59,9 +59,9 @@ const StyledBanner = styled.div`
 
 const Image = styled.img`
   position: relative;
-  top: 28%;
-  left: 55%;
-  // bottom: 0%;
+  top: 22%;
+  left: 58%;
+  bottom: 0px;
   width: 400px;
   height: auto;
   pointer-events: none;
