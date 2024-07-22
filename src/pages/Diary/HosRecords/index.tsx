@@ -123,7 +123,7 @@ const Icon = styled.div`
 const FadeInOut = css`
   &.fade-enter {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   &.fade-enter-active {
     opacity: 1;
@@ -138,7 +138,7 @@ const FadeInOut = css`
   }
   &.fade-exit-active {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
     transition:
       opacity 300ms,
       transform 500ms;
@@ -165,10 +165,21 @@ interface HosRecordsProps {
   formData: Record;
   setFormData: React.Dispatch<React.SetStateAction<Record>>;
 }
+const formatDate = (rowDate: Date) => {
+  const date = new Date(rowDate);
+
+  const year = date.getFullYear();
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const day = date.getDate().toString().padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+};
 
 const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const [checked, setChecked] = useState(!formData.isConsultation);
-  const [date, setDate] = useState('');
+  const [date, setDate] = useState(
+    formData.consultationDate ? formatDate(formData.consultationDate) : null
+  );
   const [time, setTime] = useState('');
 
   const [selectedOption, setSelectedOption] = useState<string>('아니오');
@@ -178,28 +189,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const [treatments, setTreatments] = useState<string[]>(formData.treatment);
   const [treatmentInput, setTreatmentInput] = useState('');
 
-  // console.log(formData);
-  // record 객체 초기화: 이 정보로 화면을 채워줄 것임
-  // 즉, 수정 모달인 경우에는 받아온 정보로 채워주고, 등록 모달이라면 빈 상태로 보여줄 것이므로 세팅을 해준다
-  // const [recordData, setRecordData] = useState({
-  //   doctorName: record.doctorName,
-  //   address: record.address,
-  //   consultationDate: record.consultationDate,
-  //   hospitalizationStatus: record.hospitalizationStatus,
-  //   disease: record.disease,
-  //   symptom: record.symptom,
-  //   treatment: record.treatment,
-  //   memo: record.memo,
-  // });
-
-  // console.log(record);
-  // useEffect(() => {
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     consultationDate: `${date} ${time}`,
-  //     hospitalizationStatus: selectedOption === '네' ? new Date() : null,
-  //   }));
-  // }, [date, time, selectedOption]);
+  console.log(formData);
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(e.target.checked);
@@ -217,6 +207,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
 
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
+
     setDate(value);
     setFormData((prevData) => ({
       ...prevData,
@@ -308,7 +299,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
           >
             <AnimatedContent>
               <Content>
-                <ContentTitle>상담 날짜를 입력해주세요.</ContentTitle>
+                <ContentTitle>진료 날짜를 입력해주세요.</ContentTitle>
                 <ContentBody>
                   <Input
                     type="date"

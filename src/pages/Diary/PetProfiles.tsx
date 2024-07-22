@@ -142,30 +142,28 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     setPetModalOpen(true);
   };
 
-  // mock.onGet('/api/buddies/1a').reply(200, dummyBuddy1);
-  // mock.onGet('/api/buddies/2b').reply(200, dummyBuddy2);
-
+  // 모킹 설정
+  mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
+  mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
   // 수정 모달
   const handleOpenPetEditModal = async (buddyId: string) => {
+    setLoading(true);
     try {
-      setLoading(true);
-      setPetEditModalOpen(true);
-
-      // 모킹 설정
-      mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
-      mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
+      // mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
+      // mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
 
       const response = await axiosInstance.get(`/buddies/${buddyId}`);
       setSelectedBuddy(response.data); // 가져온 반려동물 정보 설정, 수정(PUT) 요청 시 여기서 id를 가져올 수 있다
-      setLoading(false);
+      setPetEditModalOpen(true);
     } catch (error) {
       setError(error);
+      console.log(error);
       alert(
         '불러오는 데 오류 발생 다시 시도해주세요 오류메시지를 다시 설정해주세요'
       );
       setError(null);
+    } finally {
       setLoading(false);
-      setPetEditModalOpen(false);
     }
   };
 

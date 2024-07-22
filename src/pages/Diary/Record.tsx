@@ -165,14 +165,14 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
     setEditModalOpen(false);
   };
 
-  const formatDate = (rowDate: Date) => {
+  const formatDate = (rowDate: Date, slice: string) => {
     const date = new Date(rowDate);
 
     const year = date.getFullYear();
     const month = (date.getMonth() + 1).toString().padStart(2, '0');
     const day = date.getDate().toString().padStart(2, '0');
 
-    return `${year}/${month}/${day}`;
+    return `${year}${slice}${month}${slice}${day}`;
   };
 
   return (
@@ -182,7 +182,7 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
           <TbReportMedical className="big" />
         </Icon>
         <DiseaseTitle>{record.disease}</DiseaseTitle>
-        <Paragraph>{formatDate(record.consultationDate)}</Paragraph>
+        <Paragraph>{formatDate(record.createdAt, '/')}</Paragraph>
       </DeseaseName>
 
       <DiaryDetailsLeft>
@@ -193,25 +193,42 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
           <DiaryDetail>
             <DetailTitle>증상</DetailTitle>
             <Paragraph>
-              {record.symptom.length > 1 ? (
+              {record.symptom.length > 0 ? (
                 <>
-                  {record.symptom[0]}{' '}
-                  <Grey>외 {record.symptom.length - 1}개</Grey>
+                  {record.symptom[0]}
+                  {record.symptom[1] ? `, ${record.symptom[1]}` : ''}
+                  {record.symptom.length - 2 > 0 ? (
+                    <Grey> 외 {record.symptom.length - 2}개</Grey>
+                  ) : (
+                    ''
+                  )}
                 </>
               ) : (
-                record.symptom[0] ?? '증상 기록이 없어요'
+                record.symptom[0] ?? '증상 기록이 없습니다'
               )}
             </Paragraph>
           </DiaryDetail>
         </DiaryDetailContainer>
         <DiaryDetailContainer>
           <Icon>
-            <TbBuildingHospital />
+            <LuPill />
           </Icon>
           <DiaryDetail>
-            <DetailTitle>입원 여부</DetailTitle>
+            <DetailTitle>처방</DetailTitle>
             <Paragraph>
-              {record.hospitalizationStatus ? '입원 중' : '입원하지 않았어요'}
+              {record.treatment.length > 0 ? (
+                <>
+                  {record.treatment[0]}
+                  {record.treatment[1] ? `, ${record.treatment[1]}` : ''}
+                  {record.treatment.length - 2 > 0 ? (
+                    <Grey> 외 {record.treatment.length - 2}개</Grey>
+                  ) : (
+                    ''
+                  )}
+                </>
+              ) : (
+                record.symptom[0] ?? '처방 기록이 없습니다'
+              )}
             </Paragraph>
           </DiaryDetail>
         </DiaryDetailContainer>
@@ -221,7 +238,7 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
           </Icon>
           <DiaryDetail>
             <DetailTitle>보호자 메모</DetailTitle>
-            <Paragraph>{record.memo ?? '작성한 메모가 없어요.'}</Paragraph>
+            <Paragraph>{record.memo ?? '작성한 메모가 없습니다'}</Paragraph>
           </DiaryDetail>
         </DiaryDetailContainer>
       </DiaryDetailsLeft>
@@ -245,30 +262,26 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
         )}
         <DiaryDetailContainer>
           <Icon>
-            <LuPill />
+            <LuStethoscope />
           </Icon>
           <DiaryDetail>
-            <DetailTitle>처방</DetailTitle>
+            <DetailTitle>진료 날짜</DetailTitle>
             <Paragraph>
-              {record.treatment.length > 1 ? (
-                <>
-                  {record.treatment[0]}{' '}
-                  <Grey>외 {record.treatment.length - 1}개</Grey>
-                </>
-              ) : (
-                record.treatment[0] ?? '처방 기록이 없어요'
-              )}
+              {record.consultationDate
+                ? formatDate(record.consultationDate, '/')
+                : '진단 기록이 없습니다'}
             </Paragraph>
           </DiaryDetail>
         </DiaryDetailContainer>
+
         <DiaryDetailContainer>
           <Icon>
-            <LuStethoscope />
+            <TbBuildingHospital />
           </Icon>
           <DiaryDetail>
             <DetailTitle>동물병원</DetailTitle>
             <Paragraph>
-              {record.address ?? '방문 기록이 없어요.'}
+              {record.address ?? '진단 기록이 없습니다'}
               <Doctor> {record.doctorName ?? ''}</Doctor>
             </Paragraph>
           </DiaryDetail>
