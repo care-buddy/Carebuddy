@@ -59,7 +59,7 @@ export const dummyRecord: Record[] = [
     disease: '감기2',
     symptom: [],
     treatment: [],
-    memo: '메모메모',
+    memo: '두 줄짜리 \n메모입니다. ',
     deletedAt: null,
     createdAt: new Date('2022-04-08T07:00:00.000Z'),
     updatedAt: new Date('2024-04-08T07:00:00.000Z'),

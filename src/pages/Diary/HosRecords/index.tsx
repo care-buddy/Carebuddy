@@ -149,18 +149,6 @@ const AnimatedContent = styled.div`
   ${FadeInOut}
 `;
 
-// 임시
-interface FormData {
-  doctorName?: string;
-  consultationDate?: string;
-  address?: string;
-  disease?: string;
-  symptom?: string;
-  treatment?: string;
-  memo?: string;
-  hospitalizationStatus?: Date | null;
-}
-
 interface HosRecordsProps {
   formData: Record;
   setFormData: React.Dispatch<React.SetStateAction<Record>>;
@@ -168,32 +156,27 @@ interface HosRecordsProps {
 
 const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const [checked, setChecked] = useState(!formData.isConsultation);
-  // const [date, setDate] = useState(
-  //   formData.consultationDate ? formatDate(formData.consultationDate) : null
-  // );
 
   const [date, setDate] = useState(
     formData.consultationDate ? new Date(formData.consultationDate) : null
   );
-  console.log(date);
-  // const [time, setTime] = useState('');
 
-  const [selectedOption, setSelectedOption] = useState<string>('아니오');
+  const [selectedOption, setSelectedOption] = useState<string>(
+    formData.hospitalizationStatus ? '네' : '아니오'
+  );
 
   const [symptoms, setSymptoms] = useState<string[]>(formData.symptom);
   const [symptomInput, setSymptomInput] = useState('');
   const [treatments, setTreatments] = useState<string[]>(formData.treatment);
   const [treatmentInput, setTreatmentInput] = useState('');
 
-  console.log(formData);
-
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(e.target.checked);
-    // 모달을 끄면 저장되지 않아야 하기 때문에 setFormDate 바로 해주지 않는다
-    // setFormData((prevData) => ({
-    //   ...prevData,
-    //   isConsultation: checked,
-    // }));
+
+    setFormData((prevData) => ({
+      ...prevData,
+      isConsultation: checked,
+    }));
   };
 
   const handleInputChange = (
@@ -209,6 +192,11 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
+    // input value에 직접적으로 null을 넣어주면 안된다! 따라서, 핸들러에 예외사항 처리를 해준다
+    if (value === '') {
+      setDate(null);
+      return;
+    }
     const parseDate = new Date(value);
     setDate(parseDate);
     setFormData((prevData) => ({
@@ -217,31 +205,54 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
     }));
   };
 
-  // Time 제거
-  // const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { value } = e.target;
-  //   setTime(value);
-  //   setFormData((prevData) => ({
-  //     ...prevData,
-  //     consultationDate: `${date} ${value}`,
-  //   }));
-  // };
-
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSelectedOption(e.target.value);
+    const { value } = e.target;
+    // 라디오 버튼용 상태 설정
+    setSelectedOption(value);
+    setFormData((prevData) => ({
+      ...prevData,
+      hospitalizationStatus: value === '네',
+    }));
+  };
+
+  // 처방 및 증상 등 Array 형식으로 된 상태들을 업데이트해주는 함수
+  const updateArrayState = (
+    state: string[], // 업데이트할 state
+    setState: React.Dispatch<React.SetStateAction<string[]>>, // 업데이트할 state의 setState
+    stateInput: string, // 업데이트할 state의 input
+    setStateInput: React.Dispatch<React.SetStateAction<string>>,
+    formDataName: string // 업데이트 될 formData의 필드 명
+  ) => {
+    setState([...state, stateInput.trim()]);
+    setFormData((prevData) => ({
+      ...prevData,
+      [formDataName]: [...state, stateInput.trim()],
+    }));
+    setStateInput('');
   };
 
   const addSymptom = () => {
-    if (symptomInput) {
-      setSymptoms([...symptoms, symptomInput]);
+    // 증상 input에 입력된 경우에만 증상 배열에 입력한 증상 추가
+    if (symptomInput.trim() !== '') {
+      // 증상 태그 상태 설정
+      updateArrayState(
+        symptoms,
+        setSymptoms,
+        symptomInput,
+        setSymptomInput,
+        'symptom'
+      );
     }
-
-    setSymptomInput('');
   };
 
   const removeSymptom = (index: number) => {
-    // 삭제할 증상의 index만 제외하고, symptom을 업데이트
-    setSymptoms(symptoms.filter((_, i) => i !== index));
+    // 삭제할 증상의 index를 제외하고, symptom을 업데이트
+    const updatedSymptoms = symptoms.filter((_, i) => i !== index);
+    setSymptoms(updatedSymptoms);
+    setFormData((prevData) => ({
+      ...prevData,
+      symptom: updatedSymptoms,
+    }));
   };
 
   // 엔터 시 증상 추가
@@ -249,21 +260,38 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
     // 엔터를 눌렀는데, 비어있으면 추가 안함
     if (e.key === 'Enter' && symptomInput.trim() !== '') {
       // 입력한 증상으로 symptom 업데이트
-      setSymptoms([...symptoms, symptomInput.trim()]);
-      setSymptomInput('');
+      updateArrayState(
+        symptoms,
+        setSymptoms,
+        symptomInput,
+        setSymptomInput,
+        'symptom'
+      );
     }
   };
 
   const addTreatment = () => {
-    if (treatmentInput) {
-      setTreatments([...treatments, treatmentInput]);
+    // 증상 input에 입력된 경우에만 증상 배열에 입력한 증상 추가
+    if (treatmentInput.trim() !== '') {
+      // 증상 태그 상태 설정
+      updateArrayState(
+        treatments,
+        setTreatments,
+        treatmentInput,
+        setTreatmentInput,
+        'treatment'
+      );
     }
-    setTreatmentInput('');
   };
 
   const removeTreatment = (index: number) => {
     // 삭제할 증상의 index만 제외하고, symptom을 업데이트
-    setTreatments(treatments.filter((_, i) => i !== index));
+    const updatedTreatments = treatments.filter((_, i) => i !== index);
+    setTreatments(updatedTreatments);
+    setFormData((prevData) => ({
+      ...prevData,
+      treatment: updatedTreatments,
+    }));
   };
 
   // 엔터 시 증상 추가
@@ -271,8 +299,13 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
     // 엔터를 눌렀는데, 비어있으면 추가 안함
     if (e.key === 'Enter' && treatmentInput.trim() !== '') {
       // 입력한 증상으로 symptom 업데이트
-      setTreatments([...treatments, treatmentInput.trim()]);
-      setTreatmentInput('');
+      updateArrayState(
+        treatments,
+        setTreatments,
+        treatmentInput,
+        setTreatmentInput,
+        'treatment'
+      );
     }
   };
 
@@ -408,7 +441,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
             <ContentBody>
               {symptoms &&
                 symptoms.map((symptom, index) => (
-                  <div key={index}>
+                  <div>
                     <List>{symptom}</List>
                     <RemoveButton onClick={() => removeSymptom(index)}>
                       <Icon>
@@ -442,7 +475,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
             <ContentBody>
               {treatments &&
                 treatments.map((treatment, index) => (
-                  <div key={index}>
+                  <div>
                     <List>{treatment}</List>
                     <RemoveButton onClick={() => removeTreatment(index)}>
                       <Icon>

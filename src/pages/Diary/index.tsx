@@ -199,6 +199,7 @@ const Diary: React.FC = () => {
     fetchBuddiesData();
     // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
     if (selectedId) fetchRecordsData(selectedId);
+    setRecords(recordsData);
   }, [selectedId]);
 
   if (isLoading) {
@@ -238,6 +239,16 @@ const Diary: React.FC = () => {
   // 따라서 프로필이 있다면 selectedId 상태가 초기값이 null에서 id로 업데이트된다
   const handleSelectedId = (buddyId: string) => {
     setSelectedId(buddyId);
+  };
+
+  const handleUpdateRecord = (updatedRecord: Record) => {
+    if (recordsData) {
+      const updatedRecords = recordsData.map((record) =>
+        record._id === updatedRecord._id ? updatedRecord : record
+      );
+      setRecords(updatedRecords);
+    }
+    console.log(updatedRecord);
   };
 
   return (
@@ -286,6 +297,7 @@ const Diary: React.FC = () => {
                 <RecordWrapper
                   // 병원 기록 전달 전달
                   record={record}
+                  onUpdate={handleUpdateRecord}
                 />
               </ReportWrapper>
             ))

@@ -151,6 +151,7 @@ const Doctor = styled.span`
 
 interface Props {
   record: Record;
+  onUpdate: (updatedRecord: Record) => void;
 }
 
 const axiosInstance = axios.create({
@@ -158,9 +159,10 @@ const axiosInstance = axios.create({
   timeout: 5000, // 타임아웃 설정 (ms)
 });
 
-const RecordWrapper: React.FC<Props> = ({ record }) => {
+const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
   const mock = new MockAdapter(axiosInstance);
 
+  const [isLoading, setLoading] = useState(false);
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [formData, setFormData] = useState<Record>(record);
   // 모달을 닫았을 때 다시 백업 데이터로 세팅
@@ -186,62 +188,52 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
     return `${year}${slice}${month}${slice}${day}`;
   };
 
+  // PUT 요청 모킹
+  // 1. 가짜 PUT mock 생성
+  //  - 업데이트할 객체 생성
+  //  - 위 객체로 res 반환
+  mock.onPut(`/hospitals/${record._id}`).reply((config) => {
+    // put 요청 중 data만 추출, config.data가 문자열로 오기 때문에 추출을 위해 JSON 객체로 파싱해준다
+    const recordForm = JSON.parse(config.data);
+
+    // 업데이트된 정보의 객체를 만들어준다. 이 정보로 response를 보내줄 것임!
+    console.log(recordForm.doctorName);
+    const updatedRecord = {
+      _id: record._id,
+      doctorName: recordForm.doctorName,
+      address: recordForm.address,
+      isConsultation: recordForm.isConsultation,
+      consultationDate: recordForm.consultationDate,
+      hospitalizationStatus: recordForm.hospitalizationStatus,
+      disease: recordForm.disease,
+      symptom: recordForm.symptom,
+      treatment: recordForm.treatment,
+      memo: recordForm.memo,
+      createdAt: recordForm.createdAt,
+      deletedAt: recordForm.deletedAt,
+      updatedAt: new Date(),
+    };
+    return [200, updatedRecord];
+  });
+
   const handleEditSubmit = async () => {
-    console.log(formData);
-
-    // 가짜 PUT 요청 처리
-    // mock.onPut(`/buddies/${buddyId}`).reply((config) => {
-    //   // console.log('요청 정보:', config);
-    //   const formData = config.data;
-    //   // const entries = formData.entries();
-    //   // // eslint-disable-next-line no-restricted-syntax
-    //   // for (const [key, value] of entries) {
-    //   //   console.log(`${key}: ${value}`);
-    //   // }
-
-    //   const updatedBuddy = {
-    //     _id: buddyId,
-    //     name: formData.get('name'),
-    //     kind: formData.get('kind'),
-    //     age: formData.get('age'),
-    //     buddyImage: formData.get('buddyImage'),
-    //     sex: formData.get('sex'),
-    //     species: formData.get('species'),
-    //     isNeutered: formData.get('isNeutered'),
-    //     weight: formData.get('weight'),
-    //   };
-
-    //   // 여기서 필요한 처리를 수행 (예: 데이터 업데이트)
-
-    //   console.log(updatedBuddy.buddyImage);
-    //   return [200, updatedBuddy]; // 성공 응답 반환
-    // });
-
-    // axiosInstance
-    //   .put(`/buddies/${buddyId}`, formData)
-    //   .then((res) => {
-    //     // 응답으로 수정된 정보가 올 것
-    //     const updatedBuddy = res.data;
-    //     // 수정된 정보로 해당 버디 정보 업데이트
-    //     setSelectedBuddy(updatedBuddy);
-
-    //     // 버디 프로필들 중, 해당 id의 버디만 업데이트 프로필로 변경해준다.
-    //     const updatedProfiles = profiles.map((profile) => {
-    //       if (profile._id === buddyId) {
-    //         return updatedBuddy;
-    //       }
-    //       return profile;
-    //     });
-
-    //     // 프로필 상태를 업데이트 된 프로필로 변경
-    //     setProfiles(updatedProfiles);
-
-    //     handleClosePetEditModal();
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //     setError(error);
-    //   });
+    // 2. 위 정보로 상태 업데이트
+    try {
+      setLoading(true);
+      const response = await axiosInstance.put(
+        `/hospitals/${record._id}`,
+        formData
+      );
+      // 실제 API 붙인 뒤에도 필요 한지?
+      setFormData(response.data);
+      setBackupFormData(response.data);
+      onUpdate(response.data);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+      handleCloseEditModal();
+    }
   };
 
   return (
