@@ -42,9 +42,17 @@ const formats = [
 
 const PostCreate: React.FC = () => {
   const [editorContent, setEditorContent] = useState('');
+  const [selectedValue, setSelectedValue] = useState<string>('');
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectedValue(event.target.value);
+    // 여기에서 선택된 값을 사용하여 추가적인 로직을 구현할 수 있습니다.
+    console.log('선택된 값: ', event.target.value);
+  };
 
   const handleEditorChange = (content: string) => {
     setEditorContent(content);
+    console.log('내용: ', content)
   };
 
   return (
@@ -54,6 +62,8 @@ const PostCreate: React.FC = () => {
           selectStyle="square"
           selectSize="bg"
           options={SelectOptions}
+          value={selectedValue}
+          onChange={handleSelectChange}
         />
       </SelectWrapper>
       <InputWrapper>
