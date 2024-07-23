@@ -14,6 +14,8 @@ import {
 } from 'react-icons/lu';
 import ActionButton from '@/components/common/ActtionButton';
 import { Record } from '@/interfaces';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 import HosRecords from './HosRecords';
 
 const fadeIn = keyframes`
@@ -151,11 +153,19 @@ interface Props {
   record: Record;
 }
 
+const axiosInstance = axios.create({
+  baseURL: '/api', // 기본 URL 설정
+  timeout: 5000, // 타임아웃 설정 (ms)
+});
+
 const RecordWrapper: React.FC<Props> = ({ record }) => {
+  const mock = new MockAdapter(axiosInstance);
+
   const [editModalOpen, setEditModalOpen] = useState(false);
   const [formData, setFormData] = useState<Record>(record);
+  // 모달을 닫았을 때 다시 백업 데이터로 세팅
+  const [backupFormData, setBackupFormData] = useState<Record>(record);
 
-  console.log(record.symptom[0]);
   const handleOpenEditModal = () => {
     // 수정 모달 표시 여부를 관리하는 함수
     setEditModalOpen(!editModalOpen);
@@ -163,6 +173,7 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
 
   const handleCloseEditModal = () => {
     setEditModalOpen(false);
+    setFormData(backupFormData);
   };
 
   const formatDate = (rowDate: Date, slice: string) => {
@@ -173,6 +184,64 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
     const day = date.getDate().toString().padStart(2, '0');
 
     return `${year}${slice}${month}${slice}${day}`;
+  };
+
+  const handleEditSubmit = async () => {
+    console.log(formData);
+
+    // 가짜 PUT 요청 처리
+    // mock.onPut(`/buddies/${buddyId}`).reply((config) => {
+    //   // console.log('요청 정보:', config);
+    //   const formData = config.data;
+    //   // const entries = formData.entries();
+    //   // // eslint-disable-next-line no-restricted-syntax
+    //   // for (const [key, value] of entries) {
+    //   //   console.log(`${key}: ${value}`);
+    //   // }
+
+    //   const updatedBuddy = {
+    //     _id: buddyId,
+    //     name: formData.get('name'),
+    //     kind: formData.get('kind'),
+    //     age: formData.get('age'),
+    //     buddyImage: formData.get('buddyImage'),
+    //     sex: formData.get('sex'),
+    //     species: formData.get('species'),
+    //     isNeutered: formData.get('isNeutered'),
+    //     weight: formData.get('weight'),
+    //   };
+
+    //   // 여기서 필요한 처리를 수행 (예: 데이터 업데이트)
+
+    //   console.log(updatedBuddy.buddyImage);
+    //   return [200, updatedBuddy]; // 성공 응답 반환
+    // });
+
+    // axiosInstance
+    //   .put(`/buddies/${buddyId}`, formData)
+    //   .then((res) => {
+    //     // 응답으로 수정된 정보가 올 것
+    //     const updatedBuddy = res.data;
+    //     // 수정된 정보로 해당 버디 정보 업데이트
+    //     setSelectedBuddy(updatedBuddy);
+
+    //     // 버디 프로필들 중, 해당 id의 버디만 업데이트 프로필로 변경해준다.
+    //     const updatedProfiles = profiles.map((profile) => {
+    //       if (profile._id === buddyId) {
+    //         return updatedBuddy;
+    //       }
+    //       return profile;
+    //     });
+
+    //     // 프로필 상태를 업데이트 된 프로필로 변경
+    //     setProfiles(updatedProfiles);
+
+    //     handleClosePetEditModal();
+    //   })
+    //   .catch((error) => {
+    //     console.log(error);
+    //     setError(error);
+    //   });
   };
 
   return (
@@ -257,7 +326,7 @@ const RecordWrapper: React.FC<Props> = ({ record }) => {
             component={
               <HosRecords formData={formData} setFormData={setFormData} />
             }
-            onHandleClick={() => {}}
+            onHandleClick={handleEditSubmit}
           />
         )}
         <DiaryDetailContainer>

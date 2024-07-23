@@ -165,22 +165,18 @@ interface HosRecordsProps {
   formData: Record;
   setFormData: React.Dispatch<React.SetStateAction<Record>>;
 }
-const formatDate = (rowDate: Date) => {
-  const date = new Date(rowDate);
-
-  const year = date.getFullYear();
-  const month = (date.getMonth() + 1).toString().padStart(2, '0');
-  const day = date.getDate().toString().padStart(2, '0');
-
-  return `${year}-${month}-${day}`;
-};
 
 const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const [checked, setChecked] = useState(!formData.isConsultation);
+  // const [date, setDate] = useState(
+  //   formData.consultationDate ? formatDate(formData.consultationDate) : null
+  // );
+
   const [date, setDate] = useState(
-    formData.consultationDate ? formatDate(formData.consultationDate) : null
+    formData.consultationDate ? new Date(formData.consultationDate) : null
   );
-  const [time, setTime] = useState('');
+  console.log(date);
+  // const [time, setTime] = useState('');
 
   const [selectedOption, setSelectedOption] = useState<string>('아니오');
 
@@ -193,6 +189,11 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setChecked(e.target.checked);
+    // 모달을 끄면 저장되지 않아야 하기 때문에 setFormDate 바로 해주지 않는다
+    // setFormData((prevData) => ({
+    //   ...prevData,
+    //   isConsultation: checked,
+    // }));
   };
 
   const handleInputChange = (
@@ -208,21 +209,23 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
-    setDate(value);
+    const parseDate = new Date(value);
+    setDate(parseDate);
     setFormData((prevData) => ({
       ...prevData,
-      consultationDate: `${value} ${time}`,
+      consultationDate: parseDate,
     }));
   };
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value } = e.target;
-    setTime(value);
-    setFormData((prevData) => ({
-      ...prevData,
-      consultationDate: `${date} ${value}`,
-    }));
-  };
+  // Time 제거
+  // const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   const { value } = e.target;
+  //   setTime(value);
+  //   setFormData((prevData) => ({
+  //     ...prevData,
+  //     consultationDate: `${date} ${value}`,
+  //   }));
+  // };
 
   const handleRadioChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(e.target.value);
@@ -304,7 +307,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
                   <Input
                     type="date"
                     inputSize="sm"
-                    value={date}
+                    value={date ? date.toISOString().split('T')[0] : ''}
                     onChange={handleDateChange}
                     // activeOption={checked ? 'readOnly' : 'active'}
                   />
