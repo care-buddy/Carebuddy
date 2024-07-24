@@ -13,6 +13,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { tempProfileSrc } from '@constants/tempData';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
+import Loading from '@/components/common/Loading';
 import { CardsWrapper, Cards } from './card-components';
 import PetCard from './PetCard';
 
@@ -376,7 +377,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
           value="등록"
           component={
             isLoading ? (
-              <div>Loading...</div>
+              <Loading />
             ) : (
               <PetRegister
                 petData={null}
@@ -394,7 +395,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
           value="수정"
           component={
             isLoading ? (
-              <div>Loading...</div>
+              <Loading />
             ) : (
               <PetRegister
                 petData={selectedBuddy}

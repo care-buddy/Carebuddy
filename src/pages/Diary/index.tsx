@@ -9,6 +9,7 @@ import TopBar from '@/components/common/TopBar';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Record } from '@/interfaces';
+import Loading from '@/components/common/Loading';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
 import {
@@ -97,18 +98,6 @@ const ReportWrapper = styled.div`
 
 /* 다이어리 끝 */
 
-// 임시, 나중에 폼데이터 인터페이스 통합
-// interface FormData {
-//   doctorName?: string;
-//   consultationDate?: string;
-//   address?: string;
-//   disease?: string;
-//   symptom?: string;
-//   treatment?: string;
-//   memo?: string;
-//   hospitalizationStatus?: Date | null;
-// }
-
 interface BuddyProfile {
   _id: string;
   name: string;
@@ -133,17 +122,7 @@ const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [formData, setFormData] = useState<FormData | null>({
-    doctorName: '',
-    isConsultation: true,
-    consultationDate: null,
-    address: '',
-    disease: '',
-    symptom: '',
-    treatment: '',
-    memo: '',
-    hospitalizationStatus: null,
-  });
+  const [formData, setFormData] = useState<FormData | null>(null);
   // {
   // doctorName: '',
   // isConsultation: true,
@@ -206,7 +185,7 @@ const Diary: React.FC = () => {
   }, [selectedId]);
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (error) {
@@ -289,7 +268,7 @@ const Diary: React.FC = () => {
               title="병원 기록"
               value="등록"
               component={
-                <HosRecords formData={formData} setFormData={setFormData} />
+                <HosRecords formData={null} setFormData={setFormData} />
               }
               onHandleClick={handleFormSubmit}
             />

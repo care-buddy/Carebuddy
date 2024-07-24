@@ -155,19 +155,27 @@ interface HosRecordsProps {
 }
 
 const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
-  const [checked, setChecked] = useState(!formData.isConsultation);
+  const [checked, setChecked] = useState(
+    formData ? !formData.isConsultation : false
+  );
 
   const [date, setDate] = useState(
-    formData.consultationDate ? new Date(formData.consultationDate) : null
+    formData && formData.consultationDate
+      ? new Date(formData.consultationDate)
+      : ''
   );
 
   const [selectedOption, setSelectedOption] = useState<string>(
-    formData.hospitalizationStatus ? '네' : '아니오'
+    formData && formData.hospitalizationStatus ? '네' : '아니오'
   );
 
-  const [symptoms, setSymptoms] = useState<string[]>(formData.symptom);
+  const [symptoms, setSymptoms] = useState<string[]>(
+    formData ? formData.symptom : []
+  );
   const [symptomInput, setSymptomInput] = useState('');
-  const [treatments, setTreatments] = useState<string[]>(formData.treatment);
+  const [treatments, setTreatments] = useState<string[]>(
+    formData ? formData.treatment : []
+  );
   const [treatmentInput, setTreatmentInput] = useState('');
 
   const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,9 +200,9 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
   const handleDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value } = e.target;
 
-    // input value에 직접적으로 null을 넣어주면 안된다! 따라서, 핸들러에 예외사항 처리를 해준다
+    // input value에 직접적으로 null을 넣어주면 안된다! 따라서, 예외사항 처리를 해줘야한다
     if (value === '') {
-      setDate(null);
+      setDate('');
       return;
     }
     const parseDate = new Date(value);
@@ -340,7 +348,9 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
                   <Input
                     type="date"
                     inputSize="sm"
-                    value={date ? date.toISOString().split('T')[0] : ''}
+                    value={
+                      date ? new Date(date).toISOString().split('T')[0] : ''
+                    }
                     onChange={handleDateChange}
                     // activeOption={checked ? 'readOnly' : 'active'}
                   />
@@ -352,7 +362,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
                   <Input
                     name="address"
                     inputSize="sm"
-                    value={formData.address || ''}
+                    value={formData?.address || ''}
                     placeholder="병원명"
                     onChange={handleInputChange}
                     // activeOption={checked ? 'readOnly' : 'active'}
@@ -367,7 +377,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
                   <Input
                     name="doctorName"
                     inputSize="sm"
-                    value={formData.doctorName || ''}
+                    value={formData?.doctorName || ''}
                     placeholder="선생님 성함"
                     onChange={handleInputChange}
                     // activeOption={checked ? 'readOnly' : 'active'}
@@ -413,7 +423,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
               height="20px"
               placeholder="입력하여주세요."
               name="disease"
-              value={formData.disease || ''}
+              value={formData?.disease || ''}
               onChange={handleInputChange}
             />
             <ContentBody />
@@ -496,7 +506,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
             <TextArea
               placeholder="입력하여주세요."
               name="memo"
-              value={formData.memo || ''}
+              value={formData?.memo || ''}
               onChange={handleInputChange}
             />
           </Content>

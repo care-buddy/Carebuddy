@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import 'swiper/css';
 import 'swiper/css/pagination';
@@ -16,17 +16,18 @@ import ActionButton from '@/components/common/ActtionButton';
 import { Record } from '@/interfaces';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import Loading from '@/components/common/Loading';
 import HosRecords from './HosRecords';
 
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transition: opacity 0.5s ease-in-out;
-  }
-  to {
-    opacity: 1;
-  }
-`;
+// const fadeIn = keyframes`
+//   from {
+//     opacity: 0;
+//     transition: opacity 0.5s ease-in-out;
+//   }
+//   to {
+//     opacity: 1;
+//   }
+// `;
 
 /* 다이어리 */
 
@@ -128,7 +129,6 @@ const DiaryDetail = styled.div`
 `;
 
 const DetailTitle = styled.p`
-  /* width: 300px; */
   font-weight: var(--font-weight-bold);
 
   + p {
@@ -136,10 +136,6 @@ const DetailTitle = styled.p`
     margin-top: 4px;
     line-height: var(--font-size-hd-2);
     white-space: pre-wrap;
-
-    /* > span {
-      color: #7d7d7d;
-    } */
   }
 `;
 
@@ -197,7 +193,6 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
     const recordForm = JSON.parse(config.data);
 
     // 업데이트된 정보의 객체를 만들어준다. 이 정보로 response를 보내줄 것임!
-    console.log(recordForm.doctorName);
     const updatedRecord = {
       _id: record._id,
       doctorName: recordForm.doctorName,
@@ -213,6 +208,8 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
       deletedAt: recordForm.deletedAt,
       updatedAt: new Date(),
     };
+    console.log(updatedRecord.updatedAt);
+    // 확인용으로 return 해주지만, 실제로는 message와 id만 올 것임
     return [200, updatedRecord];
   });
 
@@ -220,14 +217,15 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
     // 2. 위 정보로 상태 업데이트
     try {
       setLoading(true);
-      const response = await axiosInstance.put(
-        `/hospitals/${record._id}`,
-        formData
-      );
+      /* 모킹에서는 res 받을 일이 없으므로 받지 않는다 */
+      // const response = await axiosInstance.put(
+      //   `/hospitals/${record._id}`,
+      //   formData
+      // );
       // 실제 API 붙인 뒤에도 필요 한지?
-      setFormData(response.data);
-      setBackupFormData(response.data);
-      onUpdate(response.data);
+      setFormData(formData);
+      setBackupFormData(formData);
+      onUpdate(formData);
     } catch (e) {
       console.log(e);
     } finally {
@@ -235,6 +233,8 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
       handleCloseEditModal();
     }
   };
+
+  if (isLoading) return <Loading />;
 
   return (
     <Report>
