@@ -12,13 +12,23 @@ interface StyledButtonProps {
     | 'square-grey'
     | 'link'
     | 'grey'
-    | 'black';
-  buttonSize?: 'sm' | 'md' | 'lg';
+    | 'black'
+    | 'middle-round-green';
+  buttonSize?: 'sm' | 'md' | 'lg' | 'fit';
 }
 
 const buttonStyles = {
   'round-green': css`
     border-radius: 20px;
+    background-color: var(--color-green-main);
+    color: white;
+    transition: all 0.5s;
+    &:hover {
+      background-color: #567760;
+    }
+  `,
+  'middle-round-green': css`
+    border-radius: 0.25rem;
     background-color: var(--color-green-main);
     color: white;
     transition: all 0.5s;
@@ -84,6 +94,10 @@ const buttonSizes = {
   lg: css`
     font-size: var(--font-size-hd-1);
   `,
+  fit: css`
+    width: 100%;
+    font-size: var(--font-size-md-1);
+  `,
 };
 
 // 정의된 스타일들을 props로 받아서 스타일링될 버튼 컴포넌트
@@ -97,10 +111,9 @@ const StyledButton = styled.button<StyledButtonProps>`
 `;
 
 // 스타일을 확장한 최종 버튼 컴포넌트의 props
-interface ButtonProps extends StyledButtonProps {
-  children: React.ReactNode;
-  onClick?: () => void;
-}
+interface ButtonProps
+  extends StyledButtonProps,
+    React.ButtonHTMLAttributes<HTMLButtonElement> {}
 
 const Button: React.FC<ButtonProps> = ({
   children,
