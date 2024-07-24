@@ -22,8 +22,8 @@ const Name = styled.p`
   line-height: 26px;
   text-align: center;
   margin-bottom: 6px;
-  transition: color 0.3s ease;
-  &.selectedPet {
+  transition: color 0.5s ease;
+  &.selected-card {
     color: var(--color-green-main);
   }
 `;
@@ -36,6 +36,10 @@ const Details = styled.p`
   text-align: center;
   color: #7d7d7d;
   margin: 0;
+  transition: color 0.5s ease;
+  &.selected-card {
+    /* color: var(--color-green-sub-1); */
+  }
 `;
 
 interface Buddy {
@@ -49,21 +53,29 @@ interface ProfileCardProps {
   buddy: Buddy;
   onEdit: () => void;
   onDelete: () => void;
+  onClick: () => void;
+  className: string;
 }
 
-const PetCard: React.FC<ProfileCardProps> = ({ buddy, onEdit, onDelete }) => (
-  <CardsWrapper>
+const PetCard: React.FC<ProfileCardProps> = ({
+  buddy,
+  onEdit,
+  onDelete,
+  onClick,
+  className,
+}) => (
+  <CardsWrapper className={className} onClick={onClick}>
+    <ActionButton
+      buttonBorder="border-none"
+      direction="vertical"
+      onDelete={onDelete}
+      onEdit={onEdit}
+    />
     <Cards>
-      <ActionButton
-        buttonBorder="border-none"
-        direction="vertical"
-        onDelete={onDelete}
-        onEdit={onEdit}
-      />
       {/* 버디 이미지를 추가하지 않았다면, 기본 이미지가 렌더링 */}
       <Photo src={buddy.buddyImage || DefaultPetProfileImg} />
-      <Name>{buddy.name}</Name>
-      <Details>
+      <Name className={className}>{buddy.name}</Name>
+      <Details className={className}>
         {buddy.kind} / {buddy.age}살
       </Details>
     </Cards>
