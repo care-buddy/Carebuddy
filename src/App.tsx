@@ -37,7 +37,7 @@ const router = createBrowserRouter([
       { path: 'userpage', element: <Userpage /> },
       { path: 'hosInfo', element: <HosInfo /> },
       { path: 'pharInfo', element: <PharInfo /> },
-      { path: 'globalSearch', element: <GlobalSearch /> },
+      { path: 'global-search', element: <GlobalSearch /> },
     ],
   },
   {

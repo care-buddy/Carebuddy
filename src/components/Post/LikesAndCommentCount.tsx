@@ -5,8 +5,8 @@ import styled from 'styled-components';
 import { LuThumbsUp, LuMessageSquare } from 'react-icons/lu';
 
 type LikeAndCommentCountProps = {
-  likeCount: number;
-  commentCount: number;
+  likeCount: number | undefined;
+  commentCount: number | undefined;
   // postId: string | null | undefined; // 임시. 사용안할지도?
 };
 

@@ -55,7 +55,6 @@ const Logo = styled.img`
 
 const Img = styled.img`
   width: 600px;
-  background-color: red;
 `;
 
 const TextContainer = styled.div`

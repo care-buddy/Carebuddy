@@ -1,33 +1,79 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 
 import TopBar from '@/components/common/TopBar';
 import Search from '@/components/common/Search';
-import Select from '@/components/common/Select';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
+import Modal from '@/components/common/Modal';
+import PostCreate from '@/pages/PostCreate/index';
+
+import formatDate from '@/utils/formatDate';
+
+import type { PostData } from '@constants/tempInterface';
 
 // 임시 데이터
-import {
-  tempTitle,
-  tempContent,
-  tempDate,
-  tempNickname,
-  tempProfileSrc,
-  tempPostId,
-  tempGroupArray1,
-} from '@constants/tempData';
+import { dummyPosts } from '@constants/tempData';
+
+const axiosInstance = axios.create({
+  baseURL: '/api', // 기본 URL 설정
+  timeout: 5000, // 타임아웃 설정 (ms)
+});
+
+const mock = new MockAdapter(axiosInstance);
+
+// 전체 게시글, 전체 그룹 목 API,
+mock.onGet('/api/posts').reply(200, dummyPosts);
 
 const GlobalSearch: React.FC = () => {
-  const SelectOptions = [
-    { value: 'dog', label: '강아지' },
-    { value: 'cat', label: '고양이' },
-  ];
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
+  const [posts, setPosts] = useState<PostData[] | null>(null); // 게시글 목록
+  const [filteredPosts, setFilteredPosts] = useState<PostData[] | null>(null); // 검색된 게시글 목록
+  const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
+  const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
 
-  const SelectGroupOptions = [
-    { value: 'group', label: '그룹' },
-    { value: 'eyes', label: '눈 / 피부 / 귀' },
-  ];
+  // 글 작성 모달
+  const handleCloseWriteModal = () => {
+    setIsWriteModalOpen(false);
+  };
+
+  // 게시글 조회 API
+  useEffect(() => {
+    const fetchData = async () => {
+      // 게시글 목록
+      try {
+        const response = await axiosInstance.get(`/posts`);
+
+        // 등록일 formatting
+        const formattedPosts = response.data.map((post: PostData) => ({
+          ...post,
+          createdAt: formatDate(post.createdAt),
+        }));
+        setPosts(formattedPosts);
+      } catch (error) {
+        // console.error('게시글 목록 조회 실패', error); // 임시
+      }
+    };
+    fetchData();
+  }, []);
+
+  // 검색 로직
+  const handleSearch = (value: string) => {
+    setSearchTerm(value);
+  };
+
+  const handleSearchState = (value: boolean) => {
+    setIsSearching(value);
+  };
+
+  useEffect(() => {
+    const filteredPost: PostData[] | null = posts
+      ? posts.filter((post) => post.title.includes(searchTerm))
+      : null;
+    setFilteredPosts(filteredPost);
+  }, [searchTerm, posts]);
 
   return (
     <>
@@ -35,51 +81,58 @@ const GlobalSearch: React.FC = () => {
       <Container>
         <BorderContainer>
           <SearchContainer>
-            <Search />
+            <Search
+              onSearchTerm={(value) => handleSearch(value)}
+              onSearchState={handleSearchState}
+              searchState={isSearching}
+              placeholder={
+                isSearching ? '' : '검색할 게시글의 제목을 입력하세요'
+              }
+            />
           </SearchContainer>
           <FeedOptionContainer>
-            <SelectContainer>
-              <P>분류:</P>
-              <Select
-                selectStyle="round"
-                selectSize="sm"
-                options={SelectOptions}
+            <WriteButton setIsWriteModalOpen={setIsWriteModalOpen} />
+            {isWriteModalOpen && (
+              <Modal
+                title="글 작성하기"
+                value="등록"
+                component={<PostCreate />}
+                onClose={handleCloseWriteModal}
               />
-              <Select selectStyle="round" options={SelectGroupOptions} />
-            </SelectContainer>
-            <WriteButton />
+            )}
           </FeedOptionContainer>
           <FeedBoxContainer>
-            <FeedBox
-              postId={tempPostId}
-              title={tempTitle}
-              content={tempContent}
-              uploadedDate={tempDate}
-              nickname={tempNickname}
-              profileSrc={tempProfileSrc}
-              communityName={tempGroupArray1.groupName}
-              communityCategory={tempGroupArray1.category}
-            />
-            <FeedBox
-              postId={tempPostId}
-              title={tempTitle}
-              content={tempContent}
-              uploadedDate={tempDate}
-              nickname={tempNickname}
-              profileSrc={tempProfileSrc}
-              communityName={tempGroupArray1.groupName}
-              communityCategory={tempGroupArray1.category}
-            />
-            <FeedBox
-              postId={tempPostId}
-              title={tempTitle}
-              content={tempContent}
-              uploadedDate={tempDate}
-              nickname={tempNickname}
-              profileSrc={tempProfileSrc}
-              communityName={tempGroupArray1.groupName}
-              communityCategory={tempGroupArray1.category}
-            />
+            {isSearching
+              ? filteredPosts?.map((post) => (
+                  <FeedBox
+                    key={post._id}
+                    postId={post._id}
+                    title={post.title}
+                    content={post.content}
+                    uploadedDate={formatDate(post.createdAt)}
+                    nickname={post.userId.nickName}
+                    profileSrc={post.userId.profileImage[0]}
+                    communityName={post.communityId.community}
+                    communityCategory={
+                      post.communityId.category === 0 ? '강아지' : '고양이'
+                    }
+                  />
+                ))
+              : posts?.map((post) => (
+                  <FeedBox
+                    key={post._id}
+                    postId={post._id}
+                    title={post.title}
+                    content={post.content}
+                    uploadedDate={formatDate(post.createdAt)}
+                    nickname={post.userId.nickName}
+                    profileSrc={post.userId.profileImage[0]}
+                    communityName={post.communityId.community}
+                    communityCategory={
+                      post.communityId.category === 0 ? '강아지' : '고양이'
+                    }
+                  />
+                ))}
           </FeedBoxContainer>
         </BorderContainer>
       </Container>
@@ -106,27 +159,26 @@ const SearchContainer = styled.div`
   height: 100px;
 `;
 
-const SelectContainer = styled.div`
-  display: flex;
-  align-items: center;
-  font-size: var(--font-size-sm-1);
+// const SelectContainer = styled.div`
+//   display: flex;
+//   align-items: center;
+//   font-size: var(--font-size-sm-1);
 
-  & > * {
-    margin-right: 10px;
-  }
-`;
+//   & > * {
+//     margin-right: 10px;
+//   }
+// `;
 
 const FeedOptionContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr auto;
-  justify-content: space-between;
+  display: flex;
+  justify-content: flex-end;
   padding-top: 8px;
 `;
 
-const P = styled.p`
-  font-weight: var(--font-weight-medium);
-  font-size: var(--font-size-ft-1);
-`;
+// const P = styled.p`
+//   font-weight: var(--font-weight-medium);
+//   font-size: var(--font-size-ft-1);
+// `;
 
 const FeedBoxContainer = styled.div`
   color: var(--color-grey-1);

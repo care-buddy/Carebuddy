@@ -1,13 +1,11 @@
-// 추후 이미지 업로드 + 로직 공통컴포넌트화
 // 디바운싱 적용 필요
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import Button from '@components/common/Button';
 import Input from '@components/common/Input';
-
-import { LuCamera } from 'react-icons/lu';
+import Button from '@components/common/Button';
+import ImageUploader from '@components/common/ImageUploader';
 
 import { Buddy } from '@/interfaces';
 
@@ -41,17 +39,6 @@ const PetRegister: React.FC<PetRegisterProps> = ({
     weight: petData?.weight ?? '',
     buddyImage: petData?.buddyImage ?? '',
   });
-
-  // 이미지 핸들러(화면상에서 보여줌 + 전송할 파일 설정)
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e?.target.files?.[0];
-
-    if (file) {
-      // setSelectedFile(file);
-      const imageUrl = URL.createObjectURL(file);
-      setSelectedFile(imageUrl);
-    }
-  };
 
   // formData - input 핸들러
   const handleInputChange = (
@@ -122,21 +109,11 @@ const PetRegister: React.FC<PetRegisterProps> = ({
       <Section>
         <Heading>프로필 등록</Heading>
         <ImageContainer>
-          <Img
-            src={selectedFile === undefined ? buddyImage : selectedFile}
-            alt="프로필 이미지"
+          <ImageUploader
+            transferFile={buddyImage}
+            selectFile={selectedFile}
+            onSelectFile={setSelectedFile}
           />
-          <LabelForFileInput>
-            <LuCamera />
-            <input
-              type="file"
-              id="profile"
-              name="profile"
-              accept="image/png, image/jpeg"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
-            />
-          </LabelForFileInput>
         </ImageContainer>
       </Section>
       <Section>
@@ -261,25 +238,4 @@ const ImageContainer = styled.div`
   display: flex;
   width: 170px;
   height: 160px;
-`;
-
-const Img = styled.img<{ src: string }>`
-  border-radius: 50%;
-  width: 150px;
-  height: 150px;
-`;
-
-const LabelForFileInput = styled.label`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  cursor: pointer;
-  color: var(--color-green-main);
-  padding: 8px 12px;
-  border-radius: 5px;
-
-  svg {
-    width: 40px;
-    height: 40px;
-  }
 `;

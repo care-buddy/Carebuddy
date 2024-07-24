@@ -1,311 +1,169 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
 
-import TopBar from '@/components/common/TopBar';
-import Button from '@components/common/Button';
+import { dummyPosts, dummyGroups, tempGroup } from '@constants/tempData';
+import type { PostData } from '@constants/tempInterface';
+import formatDate from '@/utils/formatDate';
+
+import Modal from '@/components/common/Modal';
+import Select from '@/components/common/Select';
+import PostCreate from '@/pages/PostCreate/index';
 import Banner from '@/components/Home&CommunityFeed/Banner';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
-import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
-import Select from '@/components/common/Select';
 
-// 로그인 모달 테스트용
-import SmallModal from '@/components/common/SmallModal';
-import Login from '@/components/Login/Login';
+const axiosInstance = axios.create({
+  baseURL: '/api',
+  timeout: 5000,
+});
 
-// 동물 등록 모달 테스트용
-// import Button from '@/components/common/Button';
-import Modal from '@/components/common/Modal';
-import PetRegister from '@/components/PetRegister/PetRegister';
+const mock = new MockAdapter(axiosInstance);
 
-// 동물 수정 모달 테스트용
-// import Button from '@/components/common/Button';
-// import Modal from '@/components/common/Modal';
-// import PetRegister from '@/components/PetRegister/PetRegister';
+// 무한 스크롤 개수
+const PAGE_SIZE = 5;
 
-// 일반 회원가입 모달 테스트용
-// import Button from '@components/common/Button';
-// import SmallModal from '@/components/common/SmallModal';
-import BasicRegistration from '@/components/Registration/BasicRegistration';
+mock.onGet('/posts').reply((config) => {
+  const { page = 1, pageSize = PAGE_SIZE } = config.params;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = page * pageSize;
+  const paginatedPosts = dummyPosts.slice(startIndex, endIndex);
+  const hasMore = endIndex < dummyPosts.length;
 
-// 카카오 회원가입 모달 테스트용
-// import Button from '@components/common/Button';
-// import SmallModal from '@/components/common/SmallModal';
-import KakaoRegistration from '@/components/Registration/KaKaoRegistration';
+  return [200, { data: paginatedPosts, hasMore }];
+});
 
-// 아이디 찾기 모달 테스트용
-// import Button from '@components/common/Button';
-// import SmallModal from '@/components/common/SmallModal';
-import ForgotEmail from '@/components/Recovery/ForgotEmail';
-
-// 비밀번호 찾기 모달 테스트용
-// import Button from '@components/common/Button';
-// import SmallModal from '@/components/common/SmallModal';
-import ForgotPassword from '@/components/Recovery/ForgotPassword';
-
-// 임시 데이터
-import {
-  tempTitle,
-  tempContent,
-  tempDate,
-  tempNickname,
-  tempProfileSrc,
-  tempPostId,
-  tempGroupArray1,
-} from '@constants/tempData';
+mock.onGet('/api/groups').reply(200, dummyGroups);
 
 const Home: React.FC = () => {
-  const tempGroup = (
-    <CommunityElement
-      key={tempGroupArray1.groupId}
-      groupId={tempGroupArray1.groupId}
-      name={tempGroupArray1.groupName}
-      introduction={tempGroupArray1.introduction}
-      memberCount={tempGroupArray1.memberCount}
-    />
-  );
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
+  const [posts, setPosts] = useState<PostData[]>([]); // 모든 게시물 상태
+  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시물 상태
+  const [category, setCategory] = useState<number | string>('category'); // 카테고리 필터 상태
+  const [community, setCommunity] = useState<string>('community'); // 커뮤니티 필터 상태
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+  const [page, setPage] = useState(1); // 현재 페이지 번호
+  const [hasMore, setHasMore] = useState(true); // 추가 로드 가능한지 여부
 
-  const SelectOptions = [
+  // 분류 카테고리 옵션
+  const SelectCategoryOptions = [
+    { value: 'category', label: '종' },
     { value: 'dog', label: '강아지' },
     { value: 'cat', label: '고양이' },
   ];
 
-  const SelectGroupOptions = [
-    { value: 'group', label: '그룹' },
-    { value: 'eyes', label: '눈 / 피부 / 귀' },
+  // 분류 커뮤니티 옵션
+  const SelectCommunityOptions = [
+    { value: 'community', label: '커뮤니티' },
+    { value: '눈 / 피부 / 귀', label: '눈 / 피부 / 귀' },
+    { value: '코', label: '코' },
+    { value: '뇌·신경', label: '뇌·신경' },
   ];
 
-  // 로그인 모달 관련 상태&함수
-  const [modalOpen1, setModalOpen1] = useState(false);
-
-  const handleOpenModal1 = () => {
-    setModalOpen1(true);
+  // 작성 모달 닫기 함수
+  const handleCloseWriteModal = () => {
+    setIsWriteModalOpen(false);
   };
 
-  const handleCloseModal1 = () => {
-    setModalOpen1(false);
+  // 초기 데이터 Fetch 함수
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get(`/posts`, {
+        params: { page, pageSize: PAGE_SIZE },
+      });
+
+      setPosts(response.data.data);
+      setHasMore(response.data.hasMore);
+      setPage(2);
+    } catch (error) {
+      console.error('게시글 목록 조회 실패', error);
+    }
+  }, []);
+
+  // 컴포넌트 마운트 시 초기 데이터 Fetch
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]); 
+
+  // 추가 게시물 로드 함수
+  const loadMorePosts = useCallback(async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await axiosInstance.get('/posts', {
+        params: { page, pageSize: PAGE_SIZE },
+      });
+
+      setPosts((prevPosts) => [...prevPosts, ...response.data.data]);
+      setPage((prevPage) => prevPage + 1);
+      setHasMore(response.data.hasMore);
+    } catch (error) {
+      console.error('추가 게시글 로드 실패', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, isLoading, hasMore]);
+
+  // 무한스크롤 관찰 대상 ref
+  const observerTarget = useRef<HTMLDivElement | null>(null);
+
+  // Intersection Observer 설정
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMorePosts();
+        }
+      },
+      { root: null, rootMargin: '100px', threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [hasMore, loadMorePosts]);
+
+  // 카테고리 및 커뮤니티에 따른 게시물 필터링 로직
+  useEffect(() => {
+    if (category !== 'category' || community !== 'community') {
+      const filteredPosts = posts.filter(
+        (post) =>
+          (category === 'category' || post.communityId.category === category) &&
+          (community === 'community' ||
+            post.communityId.community === community)
+      );
+      setSelectedPosts(filteredPosts);
+    } else {
+      setSelectedPosts(posts);
+    }
+  }, [posts, category, community]);
+
+  // 카테고리 옵션 변경 핸들러
+  const handleCategoryOptions = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setCategory(event.target.value);
   };
 
-  // const handleFormSubmit = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
-
-  // 회원가입 모달 관련 상태&함수
-  const [modalOpen4, setModalOpen4] = useState(false);
-
-  const handleOpenModal4 = () => {
-    setModalOpen4(true);
+  // 커뮤니티 옵션 변경 핸들러
+  const handleCommunityOptions = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setCommunity(event.target.value);
   };
-
-  const handleCloseModal4 = () => {
-    setModalOpen4(false);
-  };
-
-  // const handleFormSubmit = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
-
-  // 카카오 회원가입 모달 관련 상태&함수
-  const [modalOpen5, setModalOpen5] = useState(false);
-
-  const handleOpenModal5 = () => {
-    setModalOpen5(true);
-  };
-
-  const handleCloseModal5 = () => {
-    setModalOpen5(false);
-  };
-
-  // const handleFormSubmit = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
-
-  // 동물 등록 모달 관련 상태&함수
-  const [modalOpen2, setModalOpen2] = useState(false);
-  // const [formData, setFormData] = useState<FormData>({
-  //   name: '',
-  //   age: 0,
-  //   weight: 0,
-  //   gender: '',
-  //   species: '',
-  //   neutered: '',
-  // });
-
-  const handleOpenModal2 = () => {
-    setModalOpen2(true);
-  };
-
-  const handleCloseModal2 = () => {
-    setModalOpen2(false);
-  };
-
-  // const handleFormSubmit2 = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
-
-  // 동물 정보 수정 모달 관련 상태&함수
-  const [modalOpen3, setModalOpen3] = useState(false);
-  // const [formData, setFormData] = useState<FormData>({
-  //   name: '',
-  //   age: 0,
-  //   weight: 0,
-  //   gender: '',
-  //   species: '',
-  //   neutered: '',
-  // });
-
-  const handleOpenModal3 = () => {
-    setModalOpen3(true);
-  };
-
-  const handleCloseModal3 = () => {
-    setModalOpen3(false);
-  };
-
-  // const handleFormSubmit3 = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
-
-  // 이메일 찾기 모달 1
-  const [modalOpen6, setModalOpen6] = useState(false);
-  // const [formData, setFormData] = useState<FormData>({
-  //   name: '',
-  //   age: 0,
-  //   weight: 0,
-  //   gender: '',
-  //   species: '',
-  //   neutered: '',
-  // });
-
-
-  const handleOpenModal6 = () => {
-    setModalOpen6(true);
-  };
-
-  const handleCloseModal6 = () => {
-    setModalOpen6(false);
-  };
-
-  // const handleFormSubmit3 = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
-
-
-  // 패스워드 찾기 모달 1
-  const [modalOpen7, setModalOpen7] = useState(false);
-  // const [formData, setFormData] = useState<FormData>({
-  //   name: '',
-  //   age: 0,
-  //   weight: 0,
-  //   gender: '',
-  //   species: '',
-  //   neutered: '',
-  // });
-
-  const handleOpenModal7 = () => {
-    setModalOpen7(true);
-  };
-
-  const handleCloseModal7 = () => {
-    setModalOpen7(false);
-  };
-
-  // const handleFormSubmit3 = () => {
-  //   // console.log('Form data:', formData);
-  //   // 모달 닫기
-  //   handleCloseModal();
-  // };
 
   return (
     <>
-      <TopBar category="반려동물 건강 관리 서비스" title="Carebuddy" />
-      <h1>모달 테스트 구역시작</h1>
-      {/* 로그인 */}
-      <Button onClick={handleOpenModal1}>로그인 모달</Button>
-      {modalOpen1 && (
-        <SmallModal onClose={handleCloseModal1} component={<Login />} />
-      )}
-      {/* 동물등록 */}
-      <Button onClick={handleOpenModal2}>동물 등록 모달</Button>
-      {modalOpen2 && (
-        <Modal
-          onClose={handleCloseModal2}
-          title="동물 정보 등록"
-          value="등록"
-          component={
-            <PetRegister
-            // formData={formData}
-            // setFormData={setFormData}
-            />
-          }
-          // onHandleClick={handleFormSubmit2}
-        />
-      )}
-      {/* 동물 정보 수정 */}
-      <Button onClick={handleOpenModal3}>동물 수정 모달</Button>
-      {modalOpen3 && (
-        <Modal
-          onClose={handleCloseModal3}
-          title="동물 정보 수정"
-          value="수정"
-          component={
-            <PetRegister
-            // formData={formData}
-            // setFormData={setFormData}
-            />
-          }
-          // onHandleClick={handleFormSubmit3}
-        />
-      )}
-      {/* 일반 회원가입 */}
-      <Button onClick={handleOpenModal4}>일반 회원가입 모달</Button>
-      {modalOpen4 && (
-        <SmallModal
-          onClose={handleCloseModal4}
-          component={<BasicRegistration />}
-        />
-      )}
-      {/* 카카오 회원가입 */}
-      <Button onClick={handleOpenModal5}>카카오 회원가입 모달</Button>
-      {modalOpen5 && (
-        <SmallModal
-          onClose={handleCloseModal5}
-          component={<KakaoRegistration />}
-        />
-      )}
-      {/* 이메일 찾기 모달 1 */}
-      <Button onClick={handleOpenModal6}>이메일 찾기 모달 1</Button>
-      {modalOpen6 && (
-        <SmallModal
-          onClose={handleCloseModal6}
-          modalPaddingSize="sm"
-          component={<ForgotEmail />}
-        />
-      )}
-      {/* 비밀번호 찾기 모달  */}
-      <Button onClick={handleOpenModal7}>비밀번호 찾기 모달</Button>
-      {modalOpen7 && (
-        <SmallModal
-          onClose={handleCloseModal7}
-          modalPaddingSize="sm"
-          component={<ForgotPassword />}
-        />
-      )}
-
-      <h1>모달 테스트 구역 끝</h1>
       <Banner />
       <ContentContainer>
         <FeedBoxContainer>
@@ -315,22 +173,44 @@ const Home: React.FC = () => {
               <Select
                 selectStyle="round"
                 selectSize="sm"
-                options={SelectOptions}
+                options={SelectCategoryOptions}
+                onChange={handleCategoryOptions}
               />
-              <Select selectStyle="round" options={SelectGroupOptions} />
+              <Select
+                selectStyle="round"
+                options={SelectCommunityOptions}
+                onChange={handleCommunityOptions}
+              />
             </SelectContainer>
-            <WriteButton />
+            <WriteButton setIsWriteModalOpen={setIsWriteModalOpen} />
+            {isWriteModalOpen && (
+              <Modal
+                title="글 작성하기"
+                value="등록"
+                component={<PostCreate />}
+                onClose={handleCloseWriteModal}
+              />
+            )}
           </FeedOptionContainer>
-          <FeedBox
-            postId={tempPostId}
-            title={tempTitle}
-            content={tempContent}
-            uploadedDate={tempDate}
-            nickname={tempNickname}
-            profileSrc={tempProfileSrc}
-          />
+          {selectedPosts.map((post, index) => (
+            <FeedBox
+              key={post._id}
+              postId={post._id}
+              title={post.title}
+              content={post.content}
+              uploadedDate={formatDate(post.createdAt)}
+              nickname={post.userId.nickName}
+              profileSrc={post.userId.profileImage[0]}
+              communityName={post.communityId.community}
+              communityCategory={
+                post.communityId.category === 0 ? '강아지' : '고양이'
+              }
+              likeCount={post.likedUsers.length}
+              ref={index === selectedPosts.length - 1 ? observerTarget : null}
+            />
+          ))}
         </FeedBoxContainer>
-        <SidePanel name="추천 그룹 or 추천 커뮤니티" elementArray={tempGroup} />
+        <SidePanel name="추천 커뮤니티" elementArray={tempGroup} />
       </ContentContainer>
     </>
   );
@@ -343,7 +223,7 @@ const ContentContainer = styled.div`
   grid-template-columns: 70% 20%;
   justify-content: space-between;
   width: 100%;
-  margin-top: 80px;
+  margin-top: 40px;
 
   & > * {
     margin-bottom: 30px;

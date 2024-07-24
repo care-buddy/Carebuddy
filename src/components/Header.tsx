@@ -3,6 +3,9 @@ import React, { useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import logo from '@assets/carebuddyLogo.png';
 import { LuBell, LuUser2 } from 'react-icons/lu';
+
+import SmallModal from '@/components/common/SmallModal';
+import Login from '@/components/Login/Login';
 import Dropdown from './Dropdown';
 import Button from './common/Button';
 import Notification from './Notification';
@@ -129,6 +132,16 @@ const NotificationIcon = styled.div`
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false); 
+
+  // 로그인 관련 함수
+  const handleOpenLoginModal = () => {
+    setLoginModalOpen(true);
+  };
+
+  const handleCloseLoginModal = () => {
+    setLoginModalOpen(false);
+  };
 
   // 알림 관련 함수 (임시)
   const toggleNotification = () => {
@@ -243,9 +256,19 @@ const Header: React.FC = () => {
             <Link to="/mypage">
               <LuUser2 />
             </Link>
-            <Button buttonStyle="grey" buttonSize="sm">
+            <Button
+              buttonStyle="grey"
+              buttonSize="sm"
+              onClick={handleOpenLoginModal}
+            >
               로그인
             </Button>
+            {loginModalOpen && (
+              <SmallModal
+                onClose={handleCloseLoginModal}
+                component={<Login />}
+              />
+            )}
           </NotificationIcon>
         </NotificationWrapper>
       </Content>
