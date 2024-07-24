@@ -5,11 +5,28 @@ import Input from '@/components/common/Input';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const SelectWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const InputWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const EditorContainer = styled.div`
+  height: 350px;
+`;
 
 const SelectOptions = [
   { value: 'group', label: '그룹을 선택해주세요' },
-  { value: 'eyes', label: '눈 / 피부 / 귀' },
+  { value: 'skin', label: '눈 / 피부 / 귀' },
   { value: 'eyes', label: '눈 / 코 / 귀' },
+  { value: 'gastroesophageal', label: '위식도' },
 ];
 
 const modules = {
@@ -25,7 +42,7 @@ const formats = [
 ];
 
 interface PostCreateProps {
-  onChange: (data: { title?: string, content?: string, groupId?: string }) => void;
+  onChange?: (data: { title?: string, content?: string, groupId?: string }) => void;
 }
 
 const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
@@ -34,7 +51,9 @@ const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
   const [selectedValue, setSelectedValue] = useState<string>('');
 
   useEffect(() => {
-    onChange({ title, content: editorContent, groupId: selectedValue });
+    if (onChange) {
+      onChange({ title, content: editorContent, groupId: selectedValue });
+    }
   }, [title, editorContent, selectedValue, onChange]);
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -44,11 +63,12 @@ const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
 
   const handleEditorChange = (content: string) => {
     setEditorContent(content);
-    console.log('내용: ', content)
+    console.log('내용: ', content);
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(event.target.value);
+    console.log('제목: ', event.target.value);
   };
 
   return (
@@ -65,7 +85,6 @@ const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
       <InputWrapper>
         <Input
           inputSize='bg'
-          borderStyle='square'
           placeholder="제목을 입력해주세요."
           inputPadding='sm'
           value={title}
@@ -87,20 +106,3 @@ const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
 };
 
 export default PostCreate;
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const SelectWrapper = styled.div`
-  margin-bottom: 15px;
-`;
-
-const InputWrapper = styled.div`
-  margin-bottom: 15px;
-`;
-
-const EditorContainer = styled.div`
-  height: 350px;
-`;

@@ -15,15 +15,15 @@ import PostCreate from '@/pages/PostCreate/index';
 import TopBar from '@/components/common/TopBar';
 import Loading from '@/components/common/Loading';
 
-// user api Mock 설정
+// Mock API 설정
 const mock = new MockAdapter(axios, { delayResponse: 500 });
 
+// 초기 API 응답 설정
 mock.onGet('/api/user').reply(200, {
   email: 'carebuddy@naver.com',
   nickname: '케어버디',
   introduction: '소개글입니다^^',
   communityId: [
-    // id는 api 고유 id값이 아니라 map순환을 위해 임시 부여한 id를 의미함
     { id: '1', category: 0, community: '눈', createdAt: '2024-01-01' },
     { id: '2', category: 0, community: '위식도', createdAt: '2024-01-02' },
     { id: '3', category: 1, community: '중성화', createdAt: '2024-01-03' },
@@ -33,6 +33,13 @@ mock.onGet('/api/user').reply(200, {
     { title: '글제목입니다 ㅎㅎ' },
     { title: '동물이 최고야!!' },
   ]
+});
+
+// 소개글 업데이트 핸들러 추가
+mock.onPut('/api/user').reply((config) => {
+  console.log('받은 데이터:', JSON.parse(config.data)); // 수신 데이터 확인
+  const { introduction } = JSON.parse(config.data);
+  return [200, { introduction }];
 });
 
 const Container = styled.div`
@@ -151,43 +158,59 @@ const UserInfoContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
   </Container>
 );
 
-const handleSaveClick = () => {
-  alert('소개글이 저장되었습니다');
-};
+const ProfileContainer: React.FC<{ userData: UserData, onIntroductionChange: (newIntroduction: string) => void }> = ({ userData, onIntroductionChange }) => {
+  const [introduction, setIntroduction] = useState(userData.introduction);
 
-const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
-  <Container>
-    <UserContainer>
-      <ImgContainer>
-        <ImageBox><img src={defaultImg} alt="프로필 사진" /></ImageBox>
-        <LinkButton>프로필 사진 업로드 하기</LinkButton>
-      </ImgContainer>
-      <Info>
-        <List>
-          <Item>닉네임</Item>
-          <Input
-            inputSize='bg'
-            placeholder="입력하여주세요."
-            value={userData.nickname}
-          />
-        </List>
-        <List>
-          <Item>소개글</Item>
-          <Data>
-            <TextArea
-              size="md"
-              placeholder="소개글을 입력하세요"
-              value={userData.introduction}
+  const handleSaveClick = async () => {
+    try {
+      const response = await axios.put('/api/user', { introduction });
+      console.log('소개글 업데이트 응답:', response.data);
+      onIntroductionChange(introduction);
+      alert('소개글이 저장되었습니다');
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        console.error('Axios 오류:', error.response?.data || error.message);
+      } else {
+        console.error('일반 오류:', error);
+      }
+    }
+  };
+
+  return (
+    <Container>
+      <UserContainer>
+        <ImgContainer>
+          <ImageBox><img src={defaultImg} alt="프로필 사진" /></ImageBox>
+          <LinkButton>프로필 사진 업로드 하기</LinkButton>
+        </ImgContainer>
+        <Info>
+          <List>
+            <Item>닉네임</Item>
+            <Input
+              inputSize='bg'
+              placeholder="입력하여주세요."
+              value={userData.nickname}
             />
-          </Data>
-        </List>
-        <ButtonContainer>
-          <Button onClick={handleSaveClick}>저장하기</Button>
-        </ButtonContainer>
-      </Info>
-    </UserContainer>
-  </Container>
-);
+          </List>
+          <List>
+            <Item>소개글</Item>
+            <Data>
+              <TextArea
+                size="md"
+                placeholder="소개글을 입력하세요"
+                value={introduction}
+                onChange={(e) => setIntroduction(e.target.value)}
+              />
+            </Data>
+          </List>
+          <ButtonContainer>
+            <Button onClick={handleSaveClick}>저장하기</Button>
+          </ButtonContainer>
+        </Info>
+      </UserContainer>
+    </Container>
+  );
+};
 
 const Mypage: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
@@ -209,8 +232,9 @@ const Mypage: React.FC = () => {
       try {
         const response = await axios.get('/api/user');
         setUserData(response.data);
+        console.log(response.data);
       } catch (error) {
-        console.error('Error fetching user data:', error);
+        console.error('사용자 데이터 가져오기 오류:', error);
       } finally {
         setIsLoading(false);
       }
@@ -218,6 +242,20 @@ const Mypage: React.FC = () => {
 
     fetchData();
   }, []);
+
+  const handlePostSubmit = async (formData: { title?: string, content?: string, groupId?: string }) => {
+    try {
+      const response = await axios.post('/api/posts', formData);
+      console.log('게시물 생성됨:', response.data);
+      setIsModalOpen(false); // 모달 닫기
+    } catch (error) {
+      console.error('게시물 생성 오류:', error);
+    }
+  };
+
+  const handleIntroductionChange = (newIntroduction: string) => {
+    setUserData(prevData => ({ ...prevData, introduction: newIntroduction }));
+  };
 
   // 회원탈퇴 모달 함수
   const handleWithdrawClick = () => {
@@ -250,7 +288,7 @@ const Mypage: React.FC = () => {
 
   const contentItems = [
     { id: '1', content: '회원정보', component: <UserInfoContainer userData={userData} /> },
-    { id: '2', content: '프로필', component: <ProfileContainer userData={userData} /> },
+    { id: '2', content: '프로필', component: <ProfileContainer userData={userData} onIntroductionChange={handleIntroductionChange} /> },
     { id: '3', content: '반려동물 관리', component: <PetCardContainer /> },
     { id: '4', content: '작성 글 목록', component: <ListContainer communityPosts={userData.communityId} postIds={userData.postId} isLoading={isLoading} /> },
   ];
@@ -264,6 +302,7 @@ const Mypage: React.FC = () => {
           title='글 작성하기'
           value='등록'
           component={<PostCreate />}
+          onConfirm={handlePostSubmit}
           onClose={handleCloseWriteModal}
         />
       )}
