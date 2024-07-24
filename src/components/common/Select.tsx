@@ -4,10 +4,6 @@ import styled, { css } from 'styled-components';
 interface StyledSelectProps {
   selectStyle?: 'round' | 'square';
   selectSize?: 'sm' | 'md' | 'bg';
-<<<<<<< HEAD
-=======
-  onChange: (event: React.ChangeEvent<HTMLSelectElement>) => void;
->>>>>>> 29492beebc6eb6079b7549453c0ada293b96ee77
 }
 
 const selectStyles = {
@@ -36,7 +32,6 @@ const StyledSelect = styled.select<StyledSelectProps>`
   padding: 8px 12px;
   color: var(--color-grey-1);
   line-height: 1.2;
-
   ${(props) => props.selectStyle && selectStyles[props.selectStyle]}
   ${(props) => props.selectSize && selectSizes[props.selectSize]}
 `;
