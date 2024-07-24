@@ -10,7 +10,10 @@ import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
 import Input from '@/components/common/Input';
 import SmallModal from '@/components/common/SmallModal';
 import UserAsk from '@/pages/Mypage/UserAsk';
+import Modal from '@/components/common/Modal/index';
+import PostCreate from '@/pages/PostCreate/index';
 import TopBar from '@/components/common/TopBar';
+import Loading from '@/components/common/Loading';
 
 // user api Mock 설정
 const mock = new MockAdapter(axios, { delayResponse: 500 });
@@ -19,6 +22,17 @@ mock.onGet('/api/user').reply(200, {
   email: 'carebuddy@naver.com',
   nickname: '케어버디',
   introduction: '소개글입니다^^',
+  communityId: [
+    // id는 api 고유 id값이 아니라 map순환을 위해 임시 부여한 id를 의미함
+    { id: '1', category: 0, community: '눈', createdAt: '2024-01-01' },
+    { id: '2', category: 0, community: '위식도', createdAt: '2024-01-02' },
+    { id: '3', category: 1, community: '중성화', createdAt: '2024-01-03' },
+  ],
+  postId: [
+    { title: '안녕하세요' },
+    { title: '글제목입니다 ㅎㅎ' },
+    { title: '동물이 최고야!!' },
+  ]
 });
 
 const Container = styled.div`
@@ -87,8 +101,7 @@ const ImageBox = styled.div`
   }
 `;
 
-const Data = styled.span`
-`;
+const Data = styled.span``;
 
 const InfoContainer = styled.div`
   display: flex;
@@ -106,6 +119,19 @@ interface UserData {
   email: string;
   nickname: string;
   introduction: string;
+  communityId: CommunityPost[];
+  postId: PostId[];
+}
+
+interface CommunityPost {
+  id: string;
+  category: number;
+  community: string;
+  createdAt: string;
+}
+
+interface PostId {
+  title: string;
 }
 
 const UserInfoContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
@@ -168,15 +194,29 @@ const Mypage: React.FC = () => {
     email: '',
     nickname: '',
     introduction: '',
+    communityId: [],
+    postId: [],
   });
+
+  const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
   useEffect(() => {
-    axios.get('/api/user').then((response) => {
-      setUserData(response.data);
-    }).catch((error) => {
-      console.error('Error fetching user data:', error);
-    });
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const response = await axios.get('/api/user');
+        setUserData(response.data);
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   // 회원탈퇴 모달 함수
@@ -192,27 +232,62 @@ const Mypage: React.FC = () => {
     setIsModalOpen(false);
   };
 
+  const handleWriteClick = () => {
+    setIsWriteModalOpen(true);
+  };
+
+  const handleCloseWriteModal = () => {
+    setIsWriteModalOpen(false);
+  };
+
+  const handleEditClick = () => {
+    setIsEditModalOpen(true);
+  };
+
+  const handleCloseEditModal = () => {
+    setIsEditModalOpen(false);
+  };
 
   const contentItems = [
     { id: '1', content: '회원정보', component: <UserInfoContainer userData={userData} /> },
     { id: '2', content: '프로필', component: <ProfileContainer userData={userData} /> },
     { id: '3', content: '반려동물 관리', component: <PetCardContainer /> },
-    { id: '4', content: '작성 글 목록', component: <ListContainer /> },
+    { id: '4', content: '작성 글 목록', component: <ListContainer communityPosts={userData.communityId} postIds={userData.postId} isLoading={isLoading} /> },
   ];
 
   return (
     <Container>
       <TopBar category="회원 정보 수정" title="마이 페이지" />
-
-
-      {contentItems.map(item => (
-        <React.Fragment key={item.id}>
-          <Menu>
-            <Item>{item.content}</Item>
-          </Menu>
-          {item.component}
-        </React.Fragment>
-      ))}
+      <Button onClick={handleWriteClick}>글 작성하기 모달 임시</Button>
+      {isWriteModalOpen && (
+        <Modal
+          title='글 작성하기'
+          value='등록'
+          component={<PostCreate />}
+          onClose={handleCloseWriteModal}
+        />
+      )}
+      <Button onClick={handleEditClick}>글 수정하기 모달 임시</Button>
+      {isEditModalOpen && (
+        <Modal
+          title='글 수정하기'
+          value='수정'
+          component={<PostCreate />}
+          onClose={handleCloseEditModal}
+        />
+      )}
+      {isLoading ? (
+        <Loading /> // 로딩컴포넌트 불러온 곳
+      ) : (
+        contentItems.map(item => (
+          <React.Fragment key={item.id}>
+            <Menu>
+              <Item>{item.content}</Item>
+            </Menu>
+            {item.component}
+          </React.Fragment>
+        ))
+      )}
       <WithdrawContainer>
         <Withdraw onClick={handleWithdrawClick}>회원탈퇴</Withdraw>
       </WithdrawContainer>
