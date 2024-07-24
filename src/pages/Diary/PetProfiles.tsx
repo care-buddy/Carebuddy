@@ -214,7 +214,6 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   const handleFormSubmit = async () => {
     // 가짜 POST 요청 처리
     mock.onPost('/buddies').reply((config) => {
-      console.log('요청 정보:', config);
       const formData = config.data;
       // const entries = formData.entries();
       // Mock Post 확인용이므로 룰을 잠시 삭제

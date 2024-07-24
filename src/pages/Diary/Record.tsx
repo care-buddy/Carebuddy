@@ -254,7 +254,7 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
           <DiaryDetail>
             <DetailTitle>증상</DetailTitle>
             <Paragraph>
-              {record.symptom.length > 0 ? (
+              {record.symptom && record.symptom.length > 0 ? (
                 <>
                   {record.symptom[0]}
                   {record.symptom[1] ? `, ${record.symptom[1]}` : ''}
@@ -265,7 +265,7 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
                   )}
                 </>
               ) : (
-                record.symptom[0] ?? '증상 기록이 없습니다'
+                (record.symptom && record.symptom[0]) ?? '증상 기록이 없습니다'
               )}
             </Paragraph>
           </DiaryDetail>
@@ -277,7 +277,7 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
           <DiaryDetail>
             <DetailTitle>처방</DetailTitle>
             <Paragraph>
-              {record.treatment.length > 0 ? (
+              {record.treatment && record.treatment.length > 0 ? (
                 <>
                   {record.treatment[0]}
                   {record.treatment[1] ? `, ${record.treatment[1]}` : ''}
@@ -288,7 +288,8 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
                   )}
                 </>
               ) : (
-                record.symptom[0] ?? '처방 기록이 없습니다'
+                (record.treatment && record.treatment[0]) ??
+                '처방 기록이 없습니다'
               )}
             </Paragraph>
           </DiaryDetail>
@@ -342,8 +343,11 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
           <DiaryDetail>
             <DetailTitle>동물병원</DetailTitle>
             <Paragraph>
-              {record.address ?? '진단 기록이 없습니다'}
-              <Doctor> {record.doctorName ?? ''}</Doctor>
+              {record.address && `${record.address} `}
+              {!record.address && !record.doctorName && '병원 기록이 없습니다'}
+              <Doctor>
+                {record.doctorName ? `${record.doctorName} 선생님` : ''}
+              </Doctor>
             </Paragraph>
           </DiaryDetail>
         </DiaryDetailContainer>

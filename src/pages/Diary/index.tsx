@@ -10,14 +10,10 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Record } from '@/interfaces';
 import Loading from '@/components/common/Loading';
+import ValidationAlert from '@/components/common/ValidationAlert';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
-import {
-  dummyBuddies,
-  dummyBuddies2,
-  dummyRecord,
-  dummyRecord2,
-} from './dummyData';
+import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
 import RecordWrapper from './Record';
 
 const Wrapper = styled.div`
@@ -53,6 +49,10 @@ const DiaryWrapper = styled.div`
   margin-top: 100px;
   position: relative;
   margin-bottom: 10%;
+
+  box-shadow:
+    10px 5px 10px -5px rgba(0, 0, 0, 0.2),
+    0px 0 15px -5px rgba(0, 0, 0, 0.1);
 `;
 
 const NameInTitle = styled.h2`
@@ -122,18 +122,24 @@ const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
 
-  const [formData, setFormData] = useState<FormData | null>(null);
-  // {
-  // doctorName: '',
-  // isConsultation: true,
-  // consultationDate: null,
-  // address: '',
-  // disease: '',
-  // symptom: '',
-  // treatment: '',
-  // memo: '',
-  // hospitalizationStatus: null,
-  // }
+  const nullData: Record = {
+    _id: '',
+    doctorName: null,
+    address: null,
+    isConsultation: true,
+    consultationDate: null,
+    hospitalizationStatus: false,
+    disease: '',
+    symptom: [],
+    treatment: [],
+    memo: null,
+    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  // 기록 등록을 위한 Record 상태
+  const [formData, setFormData] = useState<Record>(nullData);
 
   const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
     null
@@ -144,7 +150,11 @@ const Diary: React.FC = () => {
   const [error, setError] = useState<Error | null>(null);
 
   // 반려동물 1마리의 병원 기록들을 저장할 상태
-  const [recordsData, setRecords] = useState<Record[] | null>(null);
+  const [recordsData, setRecords] = useState<Record[] | null>([]);
+
+  // 유효성 검사 알림 상태
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
 
   const fetchBuddiesData = async () => {
     // /api/buddies로 GET 요청 모킹
@@ -155,7 +165,7 @@ const Diary: React.FC = () => {
       setBuddiesData(response.data);
       setLoading(false);
     } catch (error) {
-      setError(error);
+      setError(error as Error);
       setLoading(false);
     }
   };
@@ -167,11 +177,10 @@ const Diary: React.FC = () => {
       mock.onGet('/hospitals/1a').reply(200, dummyRecord);
       mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
       const response = await axiosInstance.get(`/hospitals/${buddyId}`);
-      console.log(response.data);
       setRecords(response.data);
       setLoading(false);
     } catch (error) {
-      setError(error);
+      setError(error as Error);
       setLoading(false);
     }
   };
@@ -181,7 +190,9 @@ const Diary: React.FC = () => {
     fetchBuddiesData();
     // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
     if (selectedId) fetchRecordsData(selectedId);
-    setRecords(recordsData);
+    // setRecords(recordsData);
+    if (recordsData) setRecords(recordsData);
+    console.log(recordsData);
   }, [selectedId]);
 
   if (isLoading) {
@@ -208,13 +219,40 @@ const Diary: React.FC = () => {
 
   const handleCloseModal = () => {
     setModalOpen(false);
+    // 모달이 닫혔을 때, 기존 상태로 돌려줘야함
+    setFormData(nullData);
   };
 
   const handleFormSubmit = () => {
-    console.log('Form data:', formData);
+    // POST 요청 모킹
+    mock.onPost(`/hospitals`).reply((config) => {
+      console.log('요청 정보:', config);
+      const formData = JSON.parse(config.data);
 
-    // 모달 닫기
-    handleCloseModal();
+      const newRecord: Record = {
+        ...formData,
+        _id: String(Date.now()),
+      };
+
+      if (recordsData) {
+        setRecords([...recordsData, newRecord]);
+        console.log('등록');
+      } else setRecords([newRecord]);
+      return [200, { success: true, message: '병원 기록 등록 성공' }];
+    });
+    // console.log('Form data:', formData);
+    if (validateForm() && formData) {
+      console.log(formData);
+      axiosInstance
+        .post(`/hospitals`, formData)
+        .then((res) => {
+          console.log(res.data);
+          handleCloseModal();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else setShowAlert(true);
   };
 
   // PetProfiles가 마운트될 때, 버디프로필이 있다면 실행된다.
@@ -230,7 +268,27 @@ const Diary: React.FC = () => {
       );
       setRecords(updatedRecords);
     }
-    console.log(updatedRecord);
+  };
+
+  const validateForm = () => {
+    if (formData.disease === '') {
+      setAlertMessage('질병 정보를 입력해 주세요.');
+      return false;
+    }
+    // if (!checked && !date) {
+    //   setAlertMessage('진료 날짜를 입력해 주세요.');
+    //   return false;
+    // }
+    // if (!checked && !formData.address) {
+    //   setAlertMessage('병원 정보를 입력해 주세요.');
+    //   return false;
+    // }
+    // if (!checked && !formData.doctorName) {
+    //   setAlertMessage('수의사 성함을 입력해 주세요.');
+    //   return false;
+    // }
+
+    return true;
   };
 
   return (
@@ -268,13 +326,13 @@ const Diary: React.FC = () => {
               title="병원 기록"
               value="등록"
               component={
-                <HosRecords formData={null} setFormData={setFormData} />
+                <HosRecords formData={formData} setFormData={setFormData} />
               }
               onHandleClick={handleFormSubmit}
             />
           )}
           {recordsData ? (
-            recordsData.map((record, index) => (
+            recordsData.map((record) => (
               <ReportWrapper>
                 <RecordWrapper
                   // 병원 기록 전달 전달
@@ -290,6 +348,12 @@ const Diary: React.FC = () => {
           )}
         </DiaryWrapper>
       </Wrapper>
+      {showAlert && (
+        <ValidationAlert
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+        />
+      )}
     </>
   );
 };
