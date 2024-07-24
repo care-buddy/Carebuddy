@@ -12,7 +12,7 @@ const FooterContainer = styled.footer`
   justify-content: center;
   align-items: center;
   padding: 50px 0 20px 0;
-  margin-top: 40px;
+  margin-top: 30px;
 `;
 
 const Container = styled.div`
