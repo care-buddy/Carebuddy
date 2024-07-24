@@ -67,11 +67,14 @@ const NameInTitle = styled.h2`
 const DiaryTitle = styled.span``;
 
 const HorizontalLine = styled.div`
-  border-top: 3px solid var(--color-green-sub-2);
+  border-top: 2px solid var(--color-green-sub-2);
+  border-bottom: 2px solid var(--color-green-sub-2);
   top: 115px;
   left: 0;
   width: 100%;
   position: absolute;
+  /* 반응형 적용해보고 수정 */
+  height: 0.3rem;
 `;
 
 // 타이틀을 포함한 다이어리 컨테이너
