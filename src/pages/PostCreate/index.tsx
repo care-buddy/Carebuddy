@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Input from '@/components/common/Input';
@@ -40,19 +40,31 @@ const formats = [
   'bold', 'italic', 'underline', 'link', 'image'
 ];
 
-const PostCreate: React.FC = () => {
+interface PostCreateProps {
+  onChange: (data: { title?: string, content?: string, groupId?: string }) => void;
+}
+
+const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
+  const [title, setTitle] = useState<string>('');
   const [editorContent, setEditorContent] = useState('');
   const [selectedValue, setSelectedValue] = useState<string>('');
 
+  useEffect(() => {
+    onChange({ title, content: editorContent, groupId: selectedValue });
+  }, [title, editorContent, selectedValue, onChange]);
+
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedValue(event.target.value);
-    // 여기에서 선택된 값을 사용하여 추가적인 로직을 구현할 수 있습니다.
     console.log('선택된 값: ', event.target.value);
   };
 
   const handleEditorChange = (content: string) => {
     setEditorContent(content);
     console.log('내용: ', content)
+  };
+
+  const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(event.target.value);
   };
 
   return (
@@ -71,6 +83,8 @@ const PostCreate: React.FC = () => {
           inputSize='bg'
           placeholder="제목을 입력해주세요."
           inputPadding='sm'
+          value={title}
+          onChange={handleTitleChange}
         />
       </InputWrapper>
       <EditorContainer>
