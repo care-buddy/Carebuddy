@@ -1,7 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+
+import { dummyPosts, dummyGroups, tempGroup } from '@constants/tempData';
+import type { PostData } from '@constants/tempInterface';
+import formatDate from '@/utils/formatDate';
 
 import Modal from '@/components/common/Modal';
 import Select from '@/components/common/Select';
@@ -10,61 +14,47 @@ import Banner from '@/components/Home&CommunityFeed/Banner';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
-import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
-
-import formatDate from '@/utils/formatDate';
-
-import type { PostData } from '@constants/tempInterface';
-
-// 임시 데이터
-import { tempGroupArray1, dummyPosts, dummyGroups } from '@constants/tempData';
-
-const tempGroup = [
-  <CommunityElement
-    key={tempGroupArray1.groupId}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-  <CommunityElement
-    key={tempGroupArray1.groupId}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-  <CommunityElement
-    key={tempGroupArray1.groupId}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-];
 
 const axiosInstance = axios.create({
-  baseURL: '/api', // 기본 URL 설정
-  timeout: 5000, // 타임아웃 설정 (ms)
+  baseURL: '/api',
+  timeout: 5000,
 });
 
 const mock = new MockAdapter(axiosInstance);
 
-const Home: React.FC = () => {
-  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
-  const [posts, setPosts] = useState<PostData[] | null>(null);
-  const [selectedPosts, setSelectedPosts] = useState<PostData[] | null>(null); // select로 선택된 게시글 목록
-  const [category, setCategory] = useState<number | string>('category');
-  const [community, setCommunity] = useState<string>('community');
+// 무한 스크롤 개수
+const PAGE_SIZE = 5;
 
-  // select option
+mock.onGet('/posts').reply((config) => {
+  const { page = 1, pageSize = PAGE_SIZE } = config.params;
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = page * pageSize;
+  const paginatedPosts = dummyPosts.slice(startIndex, endIndex);
+  const hasMore = endIndex < dummyPosts.length;
+
+  return [200, { data: paginatedPosts, hasMore }];
+});
+
+mock.onGet('/api/groups').reply(200, dummyGroups);
+
+const Home: React.FC = () => {
+  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
+  const [posts, setPosts] = useState<PostData[]>([]); // 모든 게시물 상태
+  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시물 상태
+  const [category, setCategory] = useState<number | string>('category'); // 카테고리 필터 상태
+  const [community, setCommunity] = useState<string>('community'); // 커뮤니티 필터 상태
+  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
+  const [page, setPage] = useState(1); // 현재 페이지 번호
+  const [hasMore, setHasMore] = useState(true); // 추가 로드 가능한지 여부
+
+  // 분류 카테고리 옵션
   const SelectCategoryOptions = [
     { value: 'category', label: '종' },
     { value: 'dog', label: '강아지' },
     { value: 'cat', label: '고양이' },
   ];
 
-  // posts에서 options 추출하는 로직 설정해야함
+  // 분류 커뮤니티 옵션
   const SelectCommunityOptions = [
     { value: 'community', label: '커뮤니티' },
     { value: '눈 / 피부 / 귀', label: '눈 / 피부 / 귀' },
@@ -72,86 +62,105 @@ const Home: React.FC = () => {
     { value: '뇌·신경', label: '뇌·신경' },
   ];
 
-  // 글 작성 모달 닫기
+  // 작성 모달 닫기 함수
   const handleCloseWriteModal = () => {
     setIsWriteModalOpen(false);
   };
 
-  // 전체 게시글, 전체 그룹 목 API,
-  mock.onGet('/api/posts').reply(200, dummyPosts);
-  mock.onGet('/api/groups').reply(200, dummyGroups);
+  // 초기 데이터 Fetch 함수
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get(`/posts`, {
+        params: { page, pageSize: PAGE_SIZE },
+      });
 
-  // 게시글 목록 조회
-  useEffect(() => {
-    const fetchData = async () => {
-      // 게시글 목록
-      try {
-        const response = await axiosInstance.get(`/posts`);
-
-        setPosts(response.data);
-      } catch (error) {
-        console.error('게시글 목록 조회 실패', error); // 임시
-      }
-    };
-    fetchData();
+      setPosts(response.data.data);
+      setHasMore(response.data.hasMore);
+      setPage(2);
+    } catch (error) {
+      console.error('게시글 목록 조회 실패', error);
+    }
   }, []);
 
-  // posts가 업데이트 될 때 selectedPosts 업데이트
+  // 컴포넌트 마운트 시 초기 데이터 Fetch
   useEffect(() => {
-    setSelectedPosts(posts);
-  }, [posts]);
+    fetchData();
+  }, [fetchData]); 
 
-  // 카테고리 분류 선택
+  // 추가 게시물 로드 함수
+  const loadMorePosts = useCallback(async () => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
+    try {
+      const response = await axiosInstance.get('/posts', {
+        params: { page, pageSize: PAGE_SIZE },
+      });
+
+      setPosts((prevPosts) => [...prevPosts, ...response.data.data]);
+      setPage((prevPage) => prevPage + 1);
+      setHasMore(response.data.hasMore);
+    } catch (error) {
+      console.error('추가 게시글 로드 실패', error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [page, isLoading, hasMore]);
+
+  // 무한스크롤 관찰 대상 ref
+  const observerTarget = useRef<HTMLDivElement | null>(null);
+
+  // Intersection Observer 설정
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          loadMorePosts();
+        }
+      },
+      { root: null, rootMargin: '100px', threshold: 0.1 }
+    );
+
+    if (observerTarget.current) {
+      observer.observe(observerTarget.current);
+    }
+
+    return () => {
+      if (observerTarget.current) {
+        observer.unobserve(observerTarget.current);
+      }
+    };
+  }, [hasMore, loadMorePosts]);
+
+  // 카테고리 및 커뮤니티에 따른 게시물 필터링 로직
+  useEffect(() => {
+    if (category !== 'category' || community !== 'community') {
+      const filteredPosts = posts.filter(
+        (post) =>
+          (category === 'category' || post.communityId.category === category) &&
+          (community === 'community' ||
+            post.communityId.community === community)
+      );
+      setSelectedPosts(filteredPosts);
+    } else {
+      setSelectedPosts(posts);
+    }
+  }, [posts, category, community]);
+
+  // 카테고리 옵션 변경 핸들러
   const handleCategoryOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    if (event.target.value === 'dog') {
-      setCategory(0);
-    } else if (event.target.value === 'cat') {
-      setCategory(1);
-    } else {
-      setCategory('category');
-    }
+    setCategory(event.target.value);
   };
 
-  // 커뮤니티 분류 선택
+  // 커뮤니티 옵션 변경 핸들러
   const handleCommunityOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setCommunity(event.target.value);
   };
-
-  // select 로직
-  useEffect(() => {
-    if (posts !== null) {
-      // 둘 다 선택한 경우
-      if (category !== 'category' && community !== 'community') {
-        const filteredPost = posts.filter(
-          (post) =>
-            post.communityId.category === category &&
-            post.communityId.community === community
-        );
-        setSelectedPosts(filteredPost);
-      } else if (category !== 'category' && community === 'community') {
-        // 카테고리만 선택
-        const filteredPost = posts.filter(
-          (post) => post.communityId.category === category
-        );
-        setSelectedPosts(filteredPost);
-      } else if (category === 'category' && community !== 'community') {
-        // 커뮤니티만 선택
-        const filteredPost = posts.filter(
-          (post) => post.communityId.community === community
-        );
-        setSelectedPosts(filteredPost);
-      } else {
-        // 둘 다 선택하지 않은 경우
-        setSelectedPosts(posts);
-      }
-    } else {
-      setSelectedPosts(null);
-    }
-  }, [posts, category, community]);
 
   return (
     <>
@@ -183,7 +192,7 @@ const Home: React.FC = () => {
               />
             )}
           </FeedOptionContainer>
-          {selectedPosts?.map((post) => (
+          {selectedPosts.map((post, index) => (
             <FeedBox
               key={post._id}
               postId={post._id}
@@ -197,7 +206,7 @@ const Home: React.FC = () => {
                 post.communityId.category === 0 ? '강아지' : '고양이'
               }
               likeCount={post.likedUsers.length}
-              // commentCount={}
+              ref={index === selectedPosts.length - 1 ? observerTarget : null}
             />
           ))}
         </FeedBoxContainer>
@@ -245,4 +254,3 @@ const P = styled.p`
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-ft-1);
 `;
-
