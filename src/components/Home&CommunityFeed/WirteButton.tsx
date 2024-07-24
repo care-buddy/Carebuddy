@@ -1,15 +1,26 @@
 import React from 'react';
 import styled from 'styled-components';
 
-// 컴포넌트
 import Button from '@components/common/Button';
 
-const WriteButton: React.FC = () => (
-  <Container>
-    <P> 함께 나누고 싶은 이야기가 있나요?</P>
-    <Button buttonSize="sm">글 작성하기</Button>
-  </Container>
-);
+interface WriteButtonProps {
+  setIsWriteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const WriteButton: React.FC<WriteButtonProps> = ({ setIsWriteModalOpen }) => {
+  const handleWriteClick = () => {
+    setIsWriteModalOpen((prevState) => !prevState);
+  };
+
+  return (
+    <Container>
+      <P> 함께 나누고 싶은 이야기가 있나요?</P>
+      <Button buttonSize="sm" onClick={handleWriteClick}>
+        글 작성하기
+      </Button>
+    </Container>
+  );
+};
 
 export default WriteButton;
 

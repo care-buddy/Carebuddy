@@ -1,6 +1,7 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import React, { useState, ChangeEvent, FormEvent, useEffect } from 'react';
 import styled, { css } from 'styled-components';
-import { LuSearch } from 'react-icons/lu';
+
+import { LuSearch, LuX } from 'react-icons/lu';
 
 // 스타일을 정의하는 객체
 const searchSizes = {
@@ -52,40 +53,69 @@ const StyledInput = styled.input<StyledSearchProps>`
 
 interface SearchProps extends StyledSearchProps {
   placeholder?: string;
-  onSearch?: (value: string) => void;
+  onSearchTerm: (value: string) => void; // 검색어 설정
+  onSearchState: (value: boolean) => void; // 검색 상태 설정
+  searchState: boolean; // 검색 상태
 }
 
 const Search: React.FC<SearchProps> = ({
   searchSize = 'md',
   searchStyle = 'round',
-  onSearch,
+  onSearchTerm,
+  searchState,
+  onSearchState,
   ...props
 }) => {
-  // 임시: {...props} 사용으로 API 붙이면서 공통으로 사용하지 않을 가능성 높음
-  const [searchValue, setSearchValue] = useState('');
+  const [inputValue, setInputValue] = useState<string>(''); // 
 
+  // input value는 실시간 업데이트, 엔터나 돋보니 누르면 검색어 상위컴포넌트로 전송
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setSearchValue(e.target.value);
+    setInputValue(e.target.value);
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (
+    e: FormEvent<HTMLFormElement> | React.MouseEvent<SVGElement, MouseEvent>
+  ) => {
     e.preventDefault();
-    if (onSearch) {
-      onSearch(searchValue);
+
+    if (onSearchTerm) {
+      onSearchTerm(inputValue);
+    }
+    if (!searchState) {
+      onSearchState(true);
     }
   };
+
+  // x아이콘 클릭 시 & 검색어가 없어지면 검색 중인 상태에서 벗어남
+  const handleXIconClick = () => {
+    onSearchState(false);
+    setInputValue('');
+    onSearchTerm('');
+  };
+
+  useEffect(() => {
+    if (inputValue === '') {
+      onSearchState(false);
+    }
+  }, [inputValue, onSearchState]);
 
   return (
     <form onSubmit={handleSubmit}>
       <SearchBox searchSize={searchSize} searchStyle={searchStyle}>
         <StyledInput
           type="text"
+          value={inputValue}
           onChange={handleChange}
-          value={searchValue}
           searchSize={searchSize}
           {...props}
         />
-        <StyledIcon />
+        {searchState && (
+          <>
+            <StyledXIcon onClick={handleXIconClick} />
+            <P>|</P>
+          </>
+        )}
+        <StyledSearchIcon onClick={(e) => handleSubmit(e)} />
       </SearchBox>
     </form>
   );
@@ -93,9 +123,21 @@ const Search: React.FC<SearchProps> = ({
 
 export default Search;
 
-const StyledIcon = styled(LuSearch)`
-  font-size: 24px;
+const StyledXIcon = styled(LuX)`
+  font-size: var(--font-size-hd-2);
   margin-right: 4px;
+  color: var(--color-grey-1);
+  cursor: pointer;
+`;
+
+const P = styled.p`
+  font-size: var(--font-size-hd-2);
+  color: var(--color-grey-3);
+`;
+
+const StyledSearchIcon = styled(LuSearch)`
+  font-size: var(--font-size-hd-2);
+  margin: 0 4px;
   color: var(--color-grey-2);
   cursor: pointer;
 `;

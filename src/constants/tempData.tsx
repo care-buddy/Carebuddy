@@ -1,4 +1,7 @@
-// import profile from '@assets/profile.png'; // 임시
+import profile from '@assets/profile.png'; // 임시
+
+import React from 'react';
+import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 
 // FeedBox
 const tempTitle = '시험적의 예정되다 보내어.';
@@ -7,13 +10,14 @@ const tempContent = `계획할 인간과 땅이, 시간 된다 생각할까. 있
 엄마가 이왕이면 왕자를 사람과 대화나 지역으로 정열이, 간, 됩니다. 것 돈이 인선이 같이 모두 엄마는 데 거 대한다. 반드시 가속도에 가라앉히고 그, 같던, 선택할 가지는 당하다. 범부가 나에 벼농사를 혁명에 출세하고 본성을 사라지다.`;
 const tempDate = '2000.00.00';
 const tempNickname = '닉네임';
-// const tempProfile = profile;
+const tempProfile = profile;
 const tempProfileSrc = 'https://picsum.photos/200';
 const tempPostId = '123';
 const tempPanelName = '그룹 추천';
 const tempPanelElement = '사이드 패널 요소';
 
 export {
+  tempProfile,
   tempTitle,
   tempContent,
   tempDate,
@@ -31,7 +35,7 @@ const tempGroupArray1 = {
   groupName: '눈/코/귀',
   introduction: '그룹 설명',
   memberCount: 5,
-  category: '고양이'
+  category: '고양이',
 };
 
 const tempGroupArray2 = [
@@ -96,7 +100,11 @@ const tempCommunityName = `눈, 코, 귀`;
 const tempCommunityIntroduction = `유형을 좋다 배달을 따냐 처지가 노력에 있다. 현행법을 설날이라고, 국한되지 식량난도.`;
 const tempCommunityIntroduction2 = `유형을 좋다 배달을 따냐 처지가 노력에 있다. 현행법을 설날이라고, 국한되지 식량난도. 유형을 좋다 배달을 따냐 처지가 노력에 있다. 현행법을 설날이라고, 국한되지 식량난도.`;
 
-export { tempCommunityName, tempCommunityIntroduction, tempCommunityIntroduction2  };
+export {
+  tempCommunityName,
+  tempCommunityIntroduction,
+  tempCommunityIntroduction2,
+};
 
 // Registration
 
@@ -109,4 +117,1142 @@ PC통신, 스마트폰 앱, 무선 등을 이용하는 전자상거래에 대해
 ① "라이펫"은 이 약관의 내용과 상호 및 대표자 성명, 영업소 소재지 주소(소비자의 불만을 처리할 수 있는 곳의 주소를 포함), 전화번호, 모사전송번호, 전자우편주소, 사업자등록번호, 통신판매업 신고번호, 개인정보관리책임자등을 이용자가 쉽게 알 수 있도록 라이펫의 초기 서비스 화면(전면)에 게시합니다. 다만, 약관의 내용은 이용자가 연결화면을 통하여 볼 수 있도록 할 수 있습니다. ② "라이펫"은 이용자가 약관에 동의하기에 앞서 약관에 정하여져 있는 내용 중 청약철회, 배송책임, 환불조건 등과 같은 중요한 내용을 이용자가 이해할 수 있도록 별도의 연결화면 또는 팝업화면 등을 제공하여 이용자의 확인을 구하여야 합니다. ③ "라이펫"은 「전자상거래 등에서의 소비자보호에 관한 법률」, 「약관의 규제에 관한 법률」, 「전자문서 및 전자거래기본법」, 「전자금융거래법」, 「전자서명법」, 「정보통신망 이용촉진 및 정보보호 등에 관한 법률」, 「방문판매 등에 관한 법률」, 「소비자기본법」 등 관련 법을 위배하지 않는 범위에서 이 약관을 개정할 수 있습니다. ④ "라이펫"이 약관을 개정할 경우에는 적용일자 및 개정사유를 명시하여 현행약관과 함께 초기화면에 그 적용일자 7일 이전부터 적용일자 전일까지 공지합니다. 다만, 이용자에게 불리하게 약관내용을 변경하는 경우에는 최소한 30일 이상의 사전 유예기간을 두고 공지합니다. 이 경우 "라이펫"은 개정 전 내용과 개정 후 내용을 명확하게 비교하여 이용자가 알기 쉽도록 표시합니다. 
 `;
 
-export { tempTerms  };
+export { tempTerms };
+
+// 더미데이터
+
+const dummyPosts = [
+  {
+    _id: '6621f24ae536c12342342c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목1',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+  {
+    _id: '6621f4323ae5136c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목2',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+  {
+    _id: '6621f4ae536c1c762432479a9df4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee7839e29e8ac6',
+      category: 0,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목3',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+  {
+    _id: '662f4ae536c1c2767923434a9df4',
+    userId: {
+      nickName: '박유신',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee7839e29e8ac6',
+      category: 0,
+      community: '눈/피부/귀',
+      deletedAt: null,
+    },
+    title: '제목4',
+    likedUsers: ['1', '2'],
+    content:
+      '콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  }, {
+    _id: '6621f4ae5361c11c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목5',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5316c1c127679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목6',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '66211f4ae536c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목7',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c271679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목8',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c276.791a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목9',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '66211f4ae536c1c127679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목10',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae53d6c1c27679a19f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목11',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '1',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목12',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c217679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목13',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '66221f4ae536c1c27179a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목14',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621132132f4ae5136c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6', 
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목15',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5362c1c276793a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목16',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5136c1c227679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목17',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5361c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목18',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5361c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목19',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5316c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목20',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5361c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목21',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c27179a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목22',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c1327679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목23',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '66212f4ae5136c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목24',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c271679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목25',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5361c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목 26',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c271679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목27',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5361c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목28',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '122132132',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목29',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c121c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목30',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c127679a92f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null, 
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목31',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5361c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목32',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c217679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목33',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5316c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목34',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '62621f4ae536c1c127679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목35',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c271679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목36',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c276719a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목37',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c217679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목38',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c12c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목39',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5362c1c27679a92f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목40',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c271679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목41',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f41ae536c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목42',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f41ae536c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목43',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '2',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목44',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae5361c1c27679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목45',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '6621f4ae536c1c217679a9f4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목46',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },  {
+    _id: '1',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee783e29e8ac6',
+      category: 1,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '제목47',
+    likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  }
+];
+
+const dummyGroups = [
+  {
+    _id: '6621fae536c1c27679a9df4',
+    userId: {
+      nickName: '김지연',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee7839e29e8ac6',
+      category: 0,
+      community: '뇌·신경',
+      deletedAt: null,
+    },
+    title: '콘텐츠제목2', 
+    likedUsers: [],
+    content:
+      '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+  {
+    _id: '662f4ae536c1c27679a9df4',
+    userId: {
+      nickName: '박유신',
+      profileImage: ['https://picsum.photos/200'],
+      deletedAt: null,
+    },
+    communityId: {
+      _id: '66214eb084ee7839e29e8ac6',
+      category: 0,
+      community: '눈/피부/귀',
+      deletedAt: null,
+    },
+    title: '콘텐츠내용',
+    likedUsers: ['1', '2'],
+    content:
+      '콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11콘텐츠내용 11',
+    deletedAt: '2024-04-19T08:22:51.722Z',
+    postImage: ['https://picsum.photos/200'],
+    createdAt: '2024-04-19T04:35:58.458Z',
+  },
+];
+
+const dummyCommunities = [
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '가나다',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '라마바',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 0,
+    community: '사아자',
+    introduction: '위식도 관련 질환을 가진 강아지들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 1,
+    community: '차카타',
+    introduction: '위식도 관련 질환을 가진 고양이들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 1,
+    community: '파하',
+    introduction: '위식도 관련 질환을 가진 고양이들을 위한 그룹',
+    deletedAt: null,
+  },
+  {
+    _id: '66214eb084ee7839e29e8ac1',
+    category: 1,
+    community: '위식도',
+    introduction: '위식도 관련 질환을 가진 고양이들을 위한 그룹',
+    deletedAt: null,
+  },
+];
+
+const dummyPost = {
+  userId: {
+    _id: '661a0e5febec873b54de2ad1',
+    nickName: '김지연',
+    profileImage: ['https://picsum.photos/200'],
+    deletedAt: null,
+    createdAt: '2024-04-13T04:47:27.495Z',
+  },
+  communityId: {
+    _id: '66214eb084ee7839e29e8ac6',
+    category: 0,
+    community: '뇌·신경',
+  },
+  title: '시험적의 예정되다 보내어',
+  likedUsers: [],
+  content: `계획할 인간과 땅이, 시간 된다 생각할까. 있어 그런 악몽이 그럼 나다. 분야를 회장단에 발표하는 차례다 버드나무는 정리하여도, 벌이의 누구에 못한다. 또 아이가, 엄마가 이왕이면 왕자를 사람과 대화나 지역으로 정열이, 간, 됩니다. 것 돈이 인선이 같이 모두 엄마는 데 거 대한다. 반드시 가속도에 가라앉히고 그, 같던, 선택할 가지는 당하다. 범부가 나에 벼농사를 혁명에 출세하고 본성을 사라지다.
+
+엄마가 이왕이면 왕자를 사람과 대화나 지역으로 정열이, 간, 됩니다. 것 돈이 인선이 같이 모두 엄마는 데 거 대한다. 반드시 가속도에 가라앉히고 그, 같던, 선택할 가지는 당하다. 범부가 나에 벼농사를 혁명에 출세하고 본성을 사라지다.`,
+  deletedAt: '2024-04-19T08:22:51.722Z',
+  postImage: ['https://picsum.photos/200'],
+  createdAt: '2024-04-19T04:35:58.458Z',
+};
+
+const dummyComments = [
+  {
+    userId: {
+      _id: '661a0e5febec873b54de2ad1',
+      nickName: '댓글다는사람1',
+      profileImage: ['https://picsum.photos/200'],
+    },
+    text: '왕자병에서 두 냉증의 살피어요 있다 버려지다. 시정하다 대칭의 공감대가 미약하다 차든지 잡는다 뽑히다. 지난해에 계몽한지 자리의 온 주목의 올라오고 지정에 들어온다. 그는 본 엄격하기 대중화되다 치다 2,280,000원 자신이 남다. 모면하여 걸맞게 자유가 어떤 있고 보아야 작정을 모색합니다. 지르어야 알려지는 부각시킨 한 유월을 환하라 말씀, 여전히 한다.',
+    deletedAt: null,
+    _id: '6622362d30d4656920c08dd',
+    createdAt: '2024-04-19T09:15:25.992Z',
+  },
+  {
+    userId: {
+      _id: '661a0e5febec8b54de2ad1',
+      nickName: '댓글다는사람2',
+      profileImage: ['https://picsum.photos/200'],
+    },
+    text: '2번댓글ㄹ아러망러 글 잘봤습니다 !!',
+    deletedAt: null,
+    _id: '6622362d30d4656920c080dd',
+    createdAt: '2024-04-19T09:15:25.992Z',
+  },
+];
+
+const dummyNewComment = {
+  userId: {
+    _id: '661a0e5febec873b54de2ad1',
+    nickName: '새코멘트!',
+    profileImage: ['https://picsum.photos/200'],
+  },
+  text: '새코멘트 테스트를 위해 이렇게 글을 써봅니당',
+  deletedAt: null,
+  _id: '6622362d30d4656920c08dd',
+  createdAt: '2024-04-19T09:15:25.992Z',
+};
+
+export {
+  dummyPosts,
+  dummyGroups,
+  dummyCommunities,
+  dummyPost,
+  dummyComments,
+  dummyNewComment,
+};
+
+// tempGroup(컴포넌트까지)
+
+
+
+const tempGroup = [
+  <CommunityElement
+    key={tempGroupArray1.groupId + 1}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+  <CommunityElement
+    key={tempGroupArray1.groupId + 2}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+  <CommunityElement
+    key={tempGroupArray1.groupId + 3}
+    groupId={tempGroupArray1.groupId}
+    name={tempGroupArray1.groupName}
+    introduction={tempGroupArray1.introduction}
+    memberCount={tempGroupArray1.memberCount}
+  />,
+];
+
+export {tempGroup}

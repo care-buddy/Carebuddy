@@ -10,7 +10,94 @@ import {
 
 interface StyledActionButtonProps {
   buttonBorder: 'border-solid' | 'border-none';
+  buttonSize?: 'sm' | 'md';
 }
+
+interface ActionButtonProps extends StyledActionButtonProps {
+  direction?: string;
+  onEdit?: () => void; // 수정 버튼 클릭 이벤트 핸들러
+  onDelete?: () => void; // 삭제 버튼 클릭 이벤트 핸들러
+}
+
+const ActionButton: React.FC<ActionButtonProps> = ({
+  buttonBorder,
+  buttonSize = 'md',
+  direction='vertical',
+  onEdit,
+  onDelete,
+}) => {
+  const [isClicked, setIsClicked] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleClick = () => {
+    setIsClicked((prevState) => !prevState);
+    // setIsOpen((prevState) => !prevState);
+  };
+
+  const handleClickOutside = (event: MouseEvent) => {
+    if (
+      buttonRef.current &&
+      !buttonRef.current.contains(event.target as Node)
+    ) {
+      setIsClicked(false);
+    }
+  };
+  const handleEditClick = () => {
+    if (onEdit) {
+      onEdit(); // 수정 버튼 클릭 이벤트 핸들러 호출
+    }
+  };
+
+  const handleDeleteClick = () => {
+    if (onDelete) {
+      onDelete(); // 삭제 버튼 클릭 이벤트 핸들러 호출
+    }
+  };
+
+  useEffect(() => {
+    //  mousedown 이벤트는 버블링을 지원하지 않아, 상위 요소에서 이 공통 컴포넌트를 사용 시 클릭 이벤트를 감지할 수 없기 때문에,
+    //  버블링을 지원하는 click 이벤트를 사용합니다
+    document.addEventListener('click', handleClickOutside);
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <StyledActionButton
+      buttonBorder={buttonBorder}
+      buttonSize={buttonSize}
+      onClick={handleClick}
+      ref={buttonRef}
+    >
+      {direction === 'vertical' ? (
+        <StyledIconVertical />
+      ) : (
+        <StyledIconHorizontal />
+      )}
+      {isClicked && (
+        <OptionButtons>
+          <OptionItemEdit onClick={handleEditClick}>
+            <p>수정</p>
+            <Icon>
+              <LuPencil />
+            </Icon>
+          </OptionItemEdit>
+          <Hr />
+          <OptionItemDelete onClick={handleDeleteClick}>
+            <p>삭제</p>
+            <Icon>
+              <LuTrash2 />
+            </Icon>
+          </OptionItemDelete>
+        </OptionButtons>
+      )}
+    </StyledActionButton>
+  );
+};
+
+export default ActionButton;
+
 
 const buttonBorders = {
   'border-solid': css`
@@ -18,6 +105,17 @@ const buttonBorders = {
   `,
   'border-none': css`
     border: none;
+  `,
+};
+
+const buttonSizes = {
+  sm: css`
+    height: 20px;
+    width: 20px;
+  `,
+  md: css`
+    height: 35px;
+    width: 35px;
   `,
 };
 
@@ -29,11 +127,10 @@ const StyledActionButton = styled.button<StyledActionButtonProps>`
   align-items: center;
   background-color: transparent;
   color: var(--color-grey-2);
-  height: 35px;
-  width: 35px;
   margin-left: 10px;
   position: relative;
   ${(props) => props.buttonBorder && buttonBorders[props.buttonBorder]};
+  ${(props) => props.buttonSize && buttonSizes[props.buttonSize]};
 `;
 
 const StyledIconHorizontal = styled(LuMoreHorizontal)`
@@ -93,86 +190,3 @@ const Icon = styled.div`
     height: 100%;
   }
 `;
-
-interface ActionButtonProps extends StyledActionButtonProps {
-  direction: string;
-  onEdit?: () => void; // 수정 버튼 클릭 이벤트 핸들러
-  onDelete?: () => void; // 삭제 버튼 클릭 이벤트 핸들러
-}
-
-const ActionButton: React.FC<ActionButtonProps> = ({
-  buttonBorder,
-  direction,
-  onEdit,
-  onDelete,
-}) => {
-  const [isClicked, setIsClicked] = useState(false);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const handleClick = () => {
-    setIsClicked((prevState) => !prevState);
-    // setIsOpen((prevState) => !prevState);
-  };
-
-  const handleClickOutside = (event: MouseEvent) => {
-    if (
-      buttonRef.current &&
-      !buttonRef.current.contains(event.target as Node)
-    ) {
-      setIsClicked(false);
-    }
-  };
-  const handleEditClick = () => {
-    if (onEdit) {
-      onEdit(); // 수정 버튼 클릭 이벤트 핸들러 호출
-    }
-  };
-
-  const handleDeleteClick = () => {
-    if (onDelete) {
-      onDelete(); // 삭제 버튼 클릭 이벤트 핸들러 호출
-    }
-  };
-
-  useEffect(() => {
-    //  mousedown 이벤트는 버블링을 지원하지 않아, 상위 요소에서 이 공통 컴포넌트를 사용 시 클릭 이벤트를 감지할 수 없기 때문에,
-    //  버블링을 지원하는 click 이벤트를 사용합니다
-    document.addEventListener('click', handleClickOutside);
-    return () => {
-      document.removeEventListener('click', handleClickOutside);
-    };
-  }, []);
-
-  return (
-    <StyledActionButton
-      buttonBorder={buttonBorder}
-      onClick={handleClick}
-      ref={buttonRef}
-    >
-      {direction === 'vertical' ? (
-        <StyledIconVertical />
-      ) : (
-        <StyledIconHorizontal />
-      )}
-      {isClicked && (
-        <OptionButtons>
-          <OptionItemEdit onClick={handleEditClick}>
-            <p>수정</p>
-            <Icon>
-              <LuPencil />
-            </Icon>
-          </OptionItemEdit>
-          <Hr />
-          <OptionItemDelete onClick={handleDeleteClick}>
-            <p>삭제</p>
-            <Icon>
-              <LuTrash2 />
-            </Icon>
-          </OptionItemDelete>
-        </OptionButtons>
-      )}
-    </StyledActionButton>
-  );
-};
-
-export default ActionButton;
