@@ -2,16 +2,21 @@ import React from 'react';
 import styled from 'styled-components';
 
 type SidePanelProps = {
-  elementArray?: React.ReactNode;
+  elementArray?: Array<React.ReactNode>;
   name?: string;
 };
 
 const SidePanel: React.FC<SidePanelProps> = ({ name, elementArray }) => (
-    <StyledContainer>
-      <P>{name}</P>
-      <PanelElement>{elementArray}</PanelElement>
-    </StyledContainer>
-  );
+  <StyledContainer>
+    <P>{name}</P>
+    {elementArray?.map((element, index) => (
+      <>
+        <PanelElement>{element}</PanelElement>
+        {index === elementArray.length - 1 ? '' : <Hr />}
+      </>
+    ))}
+  </StyledContainer>
+);
 
 export default SidePanel;
 
@@ -30,4 +35,10 @@ const P = styled.p`
 
 const PanelElement = styled.div`
   cursor: pointer;
+`;
+
+const Hr = styled.hr`
+  border: 0;
+  border-top: 1px solid var(--color-grey-2);
+  margin: 8px 0;
 `;

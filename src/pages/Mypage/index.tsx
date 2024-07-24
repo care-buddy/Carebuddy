@@ -10,8 +10,6 @@ import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
 import Input from '@/components/common/Input';
 import SmallModal from '@/components/common/SmallModal';
 import UserAsk from '@/pages/Mypage/UserAsk';
-import Modal from '@/components/common/Modal/index';
-import PostCreate from '@/pages/PostCreate/index';
 import TopBar from '@/components/common/TopBar';
 
 // user api Mock 설정
@@ -172,8 +170,6 @@ const Mypage: React.FC = () => {
     introduction: '',
   });
   const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
-  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
   useEffect(() => {
     axios.get('/api/user').then((response) => {
@@ -196,21 +192,6 @@ const Mypage: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleWriteClick = () => {
-    setIsWriteModalOpen(true);
-  };
-
-  const handleCloseWriteModal = () => {
-    setIsWriteModalOpen(false);
-  };
-
-  const handleEditClick = () => {
-    setIsEditModalOpen(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
-  };
 
   const contentItems = [
     { id: '1', content: '회원정보', component: <UserInfoContainer userData={userData} /> },
@@ -222,24 +203,8 @@ const Mypage: React.FC = () => {
   return (
     <Container>
       <TopBar category="회원 정보 수정" title="마이 페이지" />
-      <Button onClick={handleWriteClick}>글 작성하기 모달 임시</Button>
-      {isWriteModalOpen && (
-        <Modal
-          title='글 작성하기'
-          value='등록'
-          component={<PostCreate />}
-          onClose={handleCloseWriteModal}
-        />
-      )}
-      <Button onClick={handleEditClick}>글 수정하기 모달 임시</Button>
-      {isEditModalOpen && (
-        <Modal
-          title='글 수정하기'
-          value='수정'
-          component={<PostCreate />}
-          onClose={handleCloseEditModal}
-        />
-      )}
+
+
       {contentItems.map(item => (
         <React.Fragment key={item.id}>
           <Menu>

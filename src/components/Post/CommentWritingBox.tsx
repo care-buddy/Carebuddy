@@ -1,35 +1,47 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// 임시 데이터
-import { tempCommentText } from '@constants/tempData';
+import LinkButton from '@components/common/LinkButton';
 
-// 컴포넌트
-import Button from '../common/Button';
+import useDebounce from '@hooks/useDebounce';
 
 type CommentWritingBoxProps = {
   nickname: string;
-  // onClick?: () => void; // 임시. 나중에 필수값으로 변경
+  onClick: (value: string) => void;
 };
 
 const CommentWritingBox: React.FC<CommentWritingBoxProps> = ({
   nickname,
-  // onClick,
-}) => (
-  <StyledCommentWritingBox>
-    <Nickname>{nickname}</Nickname>
-    <CommentBox
-      value={tempCommentText}
-      placeholder="댓글 내용을 입력하세요..."
-    />
-    <ButtonContainer>
-      <Button buttonStyle="link" buttonSize="sm">
-        등록하기
-      </Button>
-    </ButtonContainer>
-  </StyledCommentWritingBox>
-);
+  onClick,
+}) => {
+  const [comment, setComment] = useState<string>('');
 
+  const debouncedSetComment = useDebounce(300, setComment);
+
+  // 디바운싱 사용하여 작성중인 코멘트 업데이트
+  const handleUpdateComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    debouncedSetComment(e.target.value);
+  };
+
+  const handleButtonClick = () => {
+    onClick(comment);
+  };
+
+  return (
+    <StyledCommentWritingBox>
+      <Nickname>{nickname}</Nickname>
+      <CommentBox
+        placeholder="댓글 내용을 입력하세요..."
+        onChange={handleUpdateComment}
+      />
+      <ButtonContainer>
+        <LinkButton linkSize="sm" onClick={handleButtonClick}>
+          등록하기
+        </LinkButton>
+      </ButtonContainer>
+    </StyledCommentWritingBox>
+  );
+};
 export default CommentWritingBox;
 
 const StyledCommentWritingBox = styled.div`
@@ -37,15 +49,16 @@ const StyledCommentWritingBox = styled.div`
   flex-direction: column;
   border: 1px solid var(--color-grey-2);
   border-radius: 10px;
-  padding: 10px 15px;
+  padding: 16px 16px;
   position: relative;
   min-height: 120px;
   height: auto;
   margin: 20px 0;
+  box-sizing: border-box;
 `;
 
 const Nickname = styled.p`
-  margin-bottom: 5px;
+  margin-bottom: 10px;
 `;
 
 const CommentBox = styled.textarea`

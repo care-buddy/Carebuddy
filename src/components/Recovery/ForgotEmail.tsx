@@ -24,7 +24,7 @@ const ForgotEmail: React.FC = () => (
     <ForgotEmailButtonContainer>
       <Button buttonStyle="link" buttonSize="sm">
         정확한 아이디가 기억나지 않아요!
-      </Button>
+      </Button> // 링크 버튼으로 교체
     </ForgotEmailButtonContainer> */}
     {/* 정확한 아이디 기억 나지 않는다고 하면 보여줄 부분 */}
     {/* <Label htmlFor="radioYes">

@@ -5,22 +5,6 @@ import Input from '@/components/common/Input';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const SelectWrapper = styled.div`
-  margin-bottom: 15px;
-`;
-
-const InputWrapper = styled.div`
-  margin-bottom: 15px;
-`;
-
-const EditorContainer = styled.div`
-  height: 350px;
-`;
 
 const SelectOptions = [
   { value: 'group', label: '그룹을 선택해주세요' },
@@ -59,6 +43,7 @@ const PostCreate: React.FC = () => {
       <InputWrapper>
         <Input
           inputSize='bg'
+          borderStyle='square'
           placeholder="제목을 입력해주세요."
           inputPadding='sm'
         />
@@ -78,3 +63,20 @@ const PostCreate: React.FC = () => {
 };
 
 export default PostCreate;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const SelectWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const InputWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const EditorContainer = styled.div`
+  height: 350px;
+`;
