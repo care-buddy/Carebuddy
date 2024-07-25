@@ -22,7 +22,7 @@ const axiosInstance = axios.create({
 
 const mock = new MockAdapter(axiosInstance);
 
-// 무한 스크롤 개수
+// 무한스크롤로 보내줄 콘텐츠 개수
 const PAGE_SIZE = 5;
 
 mock.onGet('/posts').reply((config) => {
@@ -38,23 +38,26 @@ mock.onGet('/posts').reply((config) => {
 mock.onGet('/api/groups').reply(200, dummyGroups);
 
 const Home: React.FC = () => {
+  // 상태 정의
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
-  const [posts, setPosts] = useState<PostData[]>([]); // 모든 게시물 상태
-  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시물 상태
-  const [category, setCategory] = useState<number | string>('category'); // 카테고리 필터 상태
-  const [community, setCommunity] = useState<string>('community'); // 커뮤니티 필터 상태
-  const [isLoading, setIsLoading] = useState(false); // 로딩 상태
-  const [page, setPage] = useState(1); // 현재 페이지 번호
-  const [hasMore, setHasMore] = useState(true); // 추가 로드 가능한지 여부
+  const [posts, setPosts] = useState<PostData[]>([]); // 게시글 상태
+  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글 상태
+  const [category, setCategory] = useState<number | string>('category'); // 선택된 카테고리
+  const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
+  const [isLoading, setIsLoading] = useState(false); // 데이터 로딩 상태
+  const [page, setPage] = useState(1); // 현재 페이지 상태(무한스크롤)
+  const [hasMore, setHasMore] = useState(true); // 남은 데이터 여부(무한스크롤)
 
-  // 분류 카테고리 옵션
+
+
+  // 카테고리(종) 옵션
   const SelectCategoryOptions = [
     { value: 'category', label: '종' },
     { value: 'dog', label: '강아지' },
     { value: 'cat', label: '고양이' },
   ];
 
-  // 분류 커뮤니티 옵션
+  // 커뮤니티 옵션
   const SelectCommunityOptions = [
     { value: 'community', label: '커뮤니티' },
     { value: '눈 / 피부 / 귀', label: '눈 / 피부 / 귀' },
@@ -62,16 +65,16 @@ const Home: React.FC = () => {
     { value: '뇌·신경', label: '뇌·신경' },
   ];
 
-  // 작성 모달 닫기 함수
+  // 글 작성 모달 닫기 핸들러
   const handleCloseWriteModal = () => {
     setIsWriteModalOpen(false);
   };
 
-  // 초기 데이터 Fetch 함수
+  // 초기 게시글 데이터 가져오기 함수
   const fetchData = useCallback(async () => {
     try {
       const response = await axiosInstance.get(`/posts`, {
-        params: { page, pageSize: PAGE_SIZE },
+        params: { page: 1, pageSize: PAGE_SIZE },
       });
 
       setPosts(response.data.data);
@@ -82,16 +85,16 @@ const Home: React.FC = () => {
     }
   }, []);
 
-  // 컴포넌트 마운트 시 초기 데이터 Fetch
+  // 컴포넌트가 마운트 된 후 초기 데이터 가져오기
   useEffect(() => {
     fetchData();
-  }, [fetchData]); 
+  }, [fetchData]);
 
-  // 추가 게시물 로드 함수
+  // 초기 렌더링 이후 게시글 로드 함수
   const loadMorePosts = useCallback(async () => {
-    if (isLoading) return;
+    if (isLoading || !hasMore) return; // 로딩 중이거나 데이터 더 없으면 종료
 
-    setIsLoading(true);
+    setIsLoading(true); // 로딩 상태 설정
 
     try {
       const response = await axiosInstance.get('/posts', {
@@ -108,10 +111,8 @@ const Home: React.FC = () => {
     }
   }, [page, isLoading, hasMore]);
 
-  // 무한스크롤 관찰 대상 ref
   const observerTarget = useRef<HTMLDivElement | null>(null);
 
-  // Intersection Observer 설정
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -122,18 +123,18 @@ const Home: React.FC = () => {
       { root: null, rootMargin: '100px', threshold: 0.1 }
     );
 
-    if (observerTarget.current) {
-      observer.observe(observerTarget.current);
+    const target = observerTarget.current;
+    if (target) {
+      observer.observe(target);
     }
 
     return () => {
-      if (observerTarget.current) {
-        observer.unobserve(observerTarget.current);
+      if (target) {
+        observer.unobserve(target);
       }
     };
-  }, [hasMore, loadMorePosts]);
+  }, [selectedPosts, hasMore, loadMorePosts, observerTarget]);
 
-  // 카테고리 및 커뮤니티에 따른 게시물 필터링 로직
   useEffect(() => {
     if (category !== 'category' || community !== 'community') {
       const filteredPosts = posts.filter(
@@ -148,14 +149,12 @@ const Home: React.FC = () => {
     }
   }, [posts, category, community]);
 
-  // 카테고리 옵션 변경 핸들러
   const handleCategoryOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setCategory(event.target.value);
   };
 
-  // 커뮤니티 옵션 변경 핸들러
   const handleCommunityOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
