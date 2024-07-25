@@ -40,30 +40,14 @@ mock.onGet('/api/groups').reply(200, dummyGroups);
 const Home: React.FC = () => {
   // 상태 정의
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
-  const [posts, setPosts] = useState<PostData[]>([]); // 게시글 상태
-  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글 상태
+  const [posts, setPosts] = useState<PostData[]>([]); // 게시글 배열
+  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글 배열
   const [category, setCategory] = useState<number | string>('category'); // 선택된 카테고리
   const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
   const [isLoading, setIsLoading] = useState(false); // 데이터 로딩 상태
   const [page, setPage] = useState(1); // 현재 페이지 상태(무한스크롤)
   const [hasMore, setHasMore] = useState(true); // 남은 데이터 여부(무한스크롤)
-
-
-
-  // 카테고리(종) 옵션
-  const SelectCategoryOptions = [
-    { value: 'category', label: '종' },
-    { value: 'dog', label: '강아지' },
-    { value: 'cat', label: '고양이' },
-  ];
-
-  // 커뮤니티 옵션
-  const SelectCommunityOptions = [
-    { value: 'community', label: '커뮤니티' },
-    { value: '눈 / 피부 / 귀', label: '눈 / 피부 / 귀' },
-    { value: '코', label: '코' },
-    { value: '뇌·신경', label: '뇌·신경' },
-  ];
+  const [error, setError] = useState<Error | null>(null);
 
   // 글 작성 모달 닫기 핸들러
   const handleCloseWriteModal = () => {
@@ -81,7 +65,7 @@ const Home: React.FC = () => {
       setHasMore(response.data.hasMore);
       setPage(2);
     } catch (error) {
-      console.error('게시글 목록 조회 실패', error);
+      setError(error as Error);
     }
   }, []);
 
@@ -105,12 +89,13 @@ const Home: React.FC = () => {
       setPage((prevPage) => prevPage + 1);
       setHasMore(response.data.hasMore);
     } catch (error) {
-      console.error('추가 게시글 로드 실패', error);
+      setError(error as Error);
     } finally {
       setIsLoading(false);
     }
   }, [page, isLoading, hasMore]);
 
+  // 옵저버 설정
   const observerTarget = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -135,35 +120,84 @@ const Home: React.FC = () => {
     };
   }, [selectedPosts, hasMore, loadMorePosts, observerTarget]);
 
-  useEffect(() => {
-    if (category !== 'category' || community !== 'community') {
-      const filteredPosts = posts.filter(
-        (post) =>
-          (category === 'category' || post.communityId.category === category) &&
-          (community === 'community' ||
-            post.communityId.community === community)
-      );
-      setSelectedPosts(filteredPosts);
-    } else {
-      setSelectedPosts(posts);
-    }
-  }, [posts, category, community]);
+  // 카테고리(종) 옵션
+  const SelectCategoryOptions = [
+    { value: 'category', label: '종' },
+    { value: 0, label: '강아지' },
+    { value: 1, label: '고양이' },
+  ];
 
+  // 커뮤니티 옵션
+  const SelectCommunityOptions = [
+    { value: 'community', label: '커뮤니티' },
+    { value: '눈 / 피부 / 귀', label: '눈 / 피부 / 귀' },
+    { value: '코', label: '코' },
+    { value: '뇌·신경', label: '뇌·신경' },
+  ];
+
+  // 카테고리 옵션 핸들러
   const handleCategoryOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setCategory(event.target.value);
+    setCategory(Number(event.target.value)); // number 타입으로 변환
   };
 
+  // 커뮤니티 옵션 핸들러
   const handleCommunityOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setCommunity(event.target.value);
   };
 
+  // select 로직
+  useEffect(() => {
+    if (posts !== null) {
+      let filteredPosts = posts;
+
+      // 둘 다 선택한 경우
+      if (category !== 'category' && community !== 'community') {
+        filteredPosts = filteredPosts.filter(
+          (post) =>
+            post.communityId.category === category &&
+            post.communityId.community === community
+        );
+        setSelectedPosts(filteredPosts);
+      } else if (category !== 'category' && community === 'community') {
+        // 카테고리만 선택
+        filteredPosts = filteredPosts.filter(
+          (post) => post.communityId.category === category
+        );
+        setSelectedPosts(filteredPosts);
+      } else if (category === 'category' && community !== 'community') {
+        // 커뮤니티만 선택
+        filteredPosts = filteredPosts.filter(
+          (post) => post.communityId.community === community
+        );
+        setSelectedPosts(filteredPosts);
+      } else {
+        // 둘 다 선택하지 않은 경우
+        setSelectedPosts(filteredPosts);
+      }
+    } else {
+      setSelectedPosts([]);
+    }
+  }, [posts, category, community]);
+
+  useEffect(() => {
+    setPage(1); // select 옵션 변경 시 페이지 초기화
+    fetchData(); // 옵션 변경 시 페이지를 초기화하고 게시글을 다시 로드
+  }, [category, community]);
+
+  // 에러 처리
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
   return (
     <>
-      <Banner />
+      <Div>
+        <Banner />
+      </Div>
       <ContentContainer>
         <FeedBoxContainer>
           <FeedOptionContainer>
@@ -191,25 +225,33 @@ const Home: React.FC = () => {
               />
             )}
           </FeedOptionContainer>
-          {selectedPosts.map((post, index) => (
-            <FeedBox
-              key={post._id}
-              postId={post._id}
-              title={post.title}
-              content={post.content}
-              uploadedDate={formatDate(post.createdAt)}
-              nickname={post.userId.nickName}
-              profileSrc={post.userId.profileImage[0]}
-              communityName={post.communityId.community}
-              communityCategory={
-                post.communityId.category === 0 ? '강아지' : '고양이'
-              }
-              likeCount={post.likedUsers.length}
-              ref={index === selectedPosts.length - 1 ? observerTarget : null}
-            />
-          ))}
+          {selectedPosts.length === 0 ? (
+            <NoticeEmptyResult>
+              <p>해당하는 게시글이 없습니다.</p>
+            </NoticeEmptyResult>
+          ) : (
+            selectedPosts.map((post, index) => (
+              <FeedBox
+                key={post._id}
+                postId={post._id}
+                title={post.title}
+                content={post.content}
+                uploadedDate={formatDate(post.createdAt)}
+                nickname={post.userId.nickName}
+                profileSrc={post.userId.profileImage[0]}
+                communityName={post.communityId.community}
+                communityCategory={
+                  post.communityId.category === 0 ? '강아지' : '고양이'
+                }
+                likeCount={post.likedUsers.length}
+                ref={index === selectedPosts.length - 1 ? observerTarget : null}
+              />
+            ))
+          )}
         </FeedBoxContainer>
-        <SidePanel name="추천 커뮤니티" elementArray={tempGroup} />
+        <div>
+          <SidePanel name="추천 커뮤니티" elementArray={tempGroup} />
+        </div>
       </ContentContainer>
     </>
   );
@@ -217,25 +259,33 @@ const Home: React.FC = () => {
 
 export default Home;
 
+const Div = styled.div`
+  position: absolute; /* 레이아웃에 포함된 배너 밑 마진(상단바 자리)를 채우기 위함 */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 55vh;
+`;
+
 const ContentContainer = styled.div`
   display: grid;
   grid-template-columns: 70% 20%;
   justify-content: space-between;
   width: 100%;
-  margin-top: 40px;
-
-  & > * {
-    margin-bottom: 30px;
-  }
+  margin-top: 37vh; /* Div의 높이와 일치시켜 Div 바로 아래에 위치하도록 설정 - 임시*/
 `;
 
 const FeedBoxContainer = styled.div`
   color: var(--color-grey-1);
+  min-height: 30vh;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
 `;
 
 const FeedOptionContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  width: 100%;
   justify-content: space-between;
 `;
 
@@ -252,4 +302,14 @@ const SelectContainer = styled.div`
 const P = styled.p`
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-ft-1);
+`;
+
+const NoticeEmptyResult = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // background-color: yellow;
+  height: 100%;
+
+  font-size: var(--font-size-hd-2);
 `;

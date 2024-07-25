@@ -11,7 +11,7 @@ import Button from './common/Button';
 import Notification from './Notification';
 
 const Wrapper = styled.header`
-  position: fixed;
+  position: fixed; 
   top: 0;
   left: 0;
   width: 100%;

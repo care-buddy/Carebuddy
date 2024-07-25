@@ -51,20 +51,29 @@ const Banner: React.FC = () => (
 export default Banner;
 
 const StyledBanner = styled.div`
-  // position: absolute;
+  position: relative;
   background-color: var(--color-green-sub-2); // 임시. 추후 변경
   width: 100%;
-  height: 60vh;
+  height: 100%;
 `;
 
 const Image = styled.img`
-  position: relative;
-  top: 22%;
-  left: 58%;
-  bottom: 0px;
-  width: 400px;
-  height: auto;
+  position: absolute;
+  left: 70%; // 부모 요소의 가로 중앙에 정렬
+  bottom: 0; // 부모 요소의 하단에 정렬
+  transform: translateX(-50%); // 중앙 정렬 보정
+  width: 30vw;
   pointer-events: none;
+`;
+
+const TextContainer = styled.div`
+  position: absolute;
+  top: 36%;
+  left: 32%; // 부모 요소의 가로 중앙에 정렬
+  transform: translateX(-50%); // 중앙 정렬 보정
+  width: 30vw;
+  pointer-events: none;
+  // 임시 - 반응형으로 글자 크기 추가해야함
 `;
 
 const Row = styled.div`
@@ -75,16 +84,10 @@ const TypeWriterWrapper = styled.div`
   padding-left: 10px;
 `;
 
-const TextContainer = styled.div`
-  position: absolute;
-  top: 36%;
-  left: 14%;
-`;
-
 const StyledText = styled.div<TextProps>`
   display: flex;
-  font-size: ${(props) => props.fontSize || 'var(--font-size-lg-3)'};
-  font-weight: ${(props) => props.fontWeight || 'var(--font-weight-extrabold)'};
+  font-size: ${(props) => props.fontSize || 'var(--font-size-lg-2)'};
+  font-weight: ${(props) => props.fontWeight || 'var(--font-weight-bold)'};
   padding: 8px 0;
   color: ${(props) => props && props.color};
 `;

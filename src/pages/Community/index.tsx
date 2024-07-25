@@ -10,7 +10,7 @@ import TopBar from '@/components/common/TopBar';
 import type { CommunityData } from '@/constants/tempInterface';
 
 // 임시 데이터
-import { dummyCommunities } from '@constants/tempData';
+// import { dummyCommunities } from '@constants/tempData';
 
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
@@ -74,9 +74,9 @@ const Community: React.FC = () => {
       const response = await axiosInstance.put(`/user/${userId}/joinGroup`, {
         communityId: '6617c6acb39abf604bbe8dc2',
       });
-      console.log('커뮤니티 가입, 성공', response.data);
+      console.log('커뮤니티 가입, 성공', response.data); // 새로운 커뮤니티로 리다이렉트 해주기. 
     } catch (error) {
-      console.error('커뮤니티 탈퇴 실패', error);
+      setError(error as Error)
     }
   };
 
@@ -119,7 +119,7 @@ const Community: React.FC = () => {
               name={community.community}
               introduction={community.introduction}
               onButtonClick={handleJoinButtonClick}
-              joined={true} // 가입 여부를 어떻게 확인해야하는지 모름. 왜냐면
+              joined={true} // 가입 여부를 어떻게 확인해야하는지 모름. 
             />
           ))}
       </CardContainer>

@@ -4,6 +4,7 @@ import styled from 'styled-components';
 
 // absolute 사용을 위한 공간
 const Wrapper = styled.div`
+  // display: flex; // 임시로 추가
   width: 1024px;
   /* height: 80px; */
   font-size: var(--font-size-lg-2); //32
@@ -22,12 +23,10 @@ const Content = styled.div`
   width: 1024px;
   margin-left: auto;
   margin-right: auto;
-
 `;
 
 const Category = styled.div`
   font-size: 14px;
-
 `;
 
 const Title = styled.div`

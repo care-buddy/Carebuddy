@@ -2,6 +2,7 @@ import profile from '@assets/profile.png'; // 임시
 
 import React from 'react';
 import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
+import MemberElement from '@/components/Home&CommunityFeed/MemberElement';
 
 // FeedBox
 const tempTitle = '시험적의 예정되다 보내어.';
@@ -131,11 +132,11 @@ const dummyPosts = [
     },
     communityId: {
       _id: '66214eb084ee783e29e8ac6',
-      category: 1,
-      community: '뇌·신경',
+      category: 0,
+      community: '코',
       deletedAt: null,
     },
-    title: '제목1',
+    title: '제목1 - 강아지',
     likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
     content:
       '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
@@ -1230,7 +1231,6 @@ export {
 // tempGroup(컴포넌트까지)
 
 
-
 const tempGroup = [
   <CommunityElement
     key={tempGroupArray1.groupId + 1}
@@ -1256,3 +1256,32 @@ const tempGroup = [
 ];
 
 export {tempGroup}
+
+// tempGroupMember(커뮤니티피드)
+// 작동 테스트용
+
+const tempGroupMember = [
+  <MemberElement
+    key={tempMemberArray1.userId}
+    userId={tempMemberArray1.userId}
+    nickname={tempMemberArray1.nickname}
+    introduction={tempMemberArray1.introduction}
+    profileSrc={tempProfileSrc}
+  />,
+  <MemberElement
+    key={tempMemberArray1.userId}
+    userId={tempMemberArray1.userId}
+    nickname={tempMemberArray1.nickname}
+    introduction={tempMemberArray1.introduction}
+    profileSrc={tempProfileSrc}
+  />,
+  <MemberElement
+    key={tempMemberArray1.userId}
+    userId={tempMemberArray1.userId}
+    nickname={tempMemberArray1.nickname}
+    introduction={tempMemberArray1.introduction}
+    profileSrc={tempProfileSrc}
+  />,
+];
+
+export {tempGroupMember}
