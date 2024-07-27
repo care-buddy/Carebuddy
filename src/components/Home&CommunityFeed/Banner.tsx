@@ -52,7 +52,7 @@ export default Banner;
 
 const StyledBanner = styled.div`
   position: relative;
-  background-color: var(--color-green-sub-2); // 임시. 추후 변경
+  background-color: var(--color-green-sub-2); 
   width: 100%;
   height: 100%;
 `;

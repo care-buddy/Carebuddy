@@ -79,6 +79,8 @@ const GlobalStyles = createGlobalStyle`
     --color-green-main: #6D987A;
     --color-green-sub-1: #98B99C;
     --color-green-sub-2: #E0EAE1;
+    --color-green-sub-3: #F1F5F1;
+
     --color-beige-main: #EEEDE5;
     --color-beige-sub: #F7F6F2;
     --color-red-main: #E13C45;

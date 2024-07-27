@@ -11,7 +11,6 @@ import Comment from '@/components/Post/Comment';
 import TopBar from '@/components/common/TopBar';
 import Modal from '@/components/common/Modal/index';
 import PostCreate from '@/pages/PostCreate/index';
-import Button from '@/components/common/Button';
 
 import { LuThumbsUp, LuChevronLeft } from 'react-icons/lu';
 
@@ -39,7 +38,7 @@ mock.onPost(`/comments`).reply((config) => {
   // 댓글 등록 목 API
 
   const requestData = JSON.parse(config.data);
-  console.log('콘솔', { config, requestData });
+  // console.log('콘솔', { config, requestData });
 
   const responseData = {
     userId: {
@@ -59,7 +58,7 @@ mock.onPut(`/api/posts/:_id/d`).reply((config) => {
   // 글 삭제 목 API -> 완전하게 붙일 수 없음.
 
   const requestData = JSON.parse(config.data);
-  console.log('콘솔', { config, requestData });
+  // console.log('콘솔', { config, requestData });
 
   const responseData = {
     userId: {
@@ -112,9 +111,9 @@ const Post: React.FC<PostProps> = () => {
         setComments([newComment]);
       }
 
-      console.log(newComment, '댓글 등록에 성공했습니다');
+      // console.log(newComment, '댓글 등록에 성공했습니다');
     } catch (error) {
-      console.error(error, '댓글 등록에 실패했습니다');
+      // console.error(error, '댓글 등록에 실패했습니다');
     }
   };
 
@@ -150,23 +149,27 @@ const Post: React.FC<PostProps> = () => {
   }, []);
 
   // 글 수정 버튼 클릭
-  const handlePostEdit = () => {
-    // // 글 수정 모달 열기 -> 글 수정 모달 만들어진지 확인 후 작업
-    // setIsPostModalOpen((prevState) => !prevState);
-  };
+  // const handlePostEdit = () => {
+  //   // // 글 수정 모달 열기 -> 글 수정 모달 만들어진지 확인 후 작업
+  //   // setIsPostModalOpen((prevState) => !prevState);
+  // };
 
   // 글 삭제 버튼 클릭
   const handlePostDelete = async () => {
     if (confirm('정말로 글을 삭제하시겠습니까?')) {
       try {
-        const response = await axiosInstance.put(`/posts/:_id/d`, {
+        await axiosInstance.put(`/posts/:_id/d`, {
           postId: '포스트아이디',
           userId: '유저아이디',
         });
+        // const response = await axiosInstance.put(`/posts/:_id/d`, {
+        //   postId: '포스트아이디',
+        //   userId: '유저아이디',
+        // });
 
-        console.log(response);
+        // console.log(response);
       } catch (error) {
-        console.error(error, '글 삭제에 실패했습니다');
+        // console.error(error, '글 삭제에 실패했습니다');
       }
     }
   };

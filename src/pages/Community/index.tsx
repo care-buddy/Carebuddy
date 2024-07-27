@@ -71,10 +71,13 @@ const Community: React.FC = () => {
   const handleJoinButtonClick = async () => {
     try {
       const userId = 'abs'; // 임시
-      const response = await axiosInstance.put(`/user/${userId}/joinGroup`, {
+      // const response = await axiosInstance.put(`/user/${userId}/joinGroup`, {
+      //   communityId: '6617c6acb39abf604bbe8dc2',
+      // });
+      await axiosInstance.put(`/user/${userId}/joinGroup`, {
         communityId: '6617c6acb39abf604bbe8dc2',
       });
-      console.log('커뮤니티 가입, 성공', response.data); // 새로운 커뮤니티로 리다이렉트 해주기. 
+      // console.log('커뮤니티 가입, 성공', response.data); // 새로운 커뮤니티로 리다이렉트 해주기. 
     } catch (error) {
       setError(error as Error)
     }
@@ -119,7 +122,7 @@ const Community: React.FC = () => {
               name={community.community}
               introduction={community.introduction}
               onButtonClick={handleJoinButtonClick}
-              joined={true} // 가입 여부를 어떻게 확인해야하는지 모름. 
+              joined // 가입 여부를 어떻게 확인해야하는지 모름. 
             />
           ))}
       </CardContainer>

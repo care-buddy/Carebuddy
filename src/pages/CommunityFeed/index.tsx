@@ -5,6 +5,7 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
 import TopBar from '@/components/common/TopBar';
+import Loading from '@/components/common/Loading';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
@@ -58,12 +59,18 @@ const CommunityFeed: React.FC = () => {
     if (confirm('커뮤니티를 탈퇴하시겠습니까?')) {
       try {
         const userId = 'abc'; // 임시
-        const response = await axiosInstance.put(
+        await axiosInstance.put(
           `/user/${userId}/withdrawGroup`,
           {
             communityId: '6617c6acb39abf604bbe8dc2',
           }
         );
+        // const response = await axiosInstance.put(
+        //   `/user/${userId}/withdrawGroup`,
+        //   {
+        //     communityId: '6617c6acb39abf604bbe8dc2',
+        //   }
+        // );
 
         // 임시 - response 받아서 홈으로 리다이렉트 ? 어떻게 할지 안 정함
       } catch (error) {
@@ -123,6 +130,11 @@ const CommunityFeed: React.FC = () => {
   // 에러 처리
   if (error) {
     return <div>Error: {error.message}</div>;
+  }
+
+  // 로딩 처리
+  if (loading) {
+    return <Loading />;
   }
 
   // 복잡한 JSX코드 변수에 넣어 정리
