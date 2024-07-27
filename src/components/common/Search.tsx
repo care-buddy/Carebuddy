@@ -57,6 +57,7 @@ const StyledInput = styled.input<StyledSearchProps>`
 `;
 
 interface SearchProps extends StyledSearchProps {
+  initialValue?: string; // 검색창에 보여줄 초기값(쿼리스트링에서 가져옴)
   placeholder?: string;
   onSearchTerm: (value: string) => void; // 검색어 설정
   onSearchState: (value: boolean) => void; // 검색 상태 설정
@@ -64,6 +65,7 @@ interface SearchProps extends StyledSearchProps {
 }
 
 const Search: React.FC<SearchProps> = ({
+  initialValue = '',
   searchSize = 'md',
   searchStyle = 'round',
   onSearchTerm,
@@ -71,7 +73,12 @@ const Search: React.FC<SearchProps> = ({
   onSearchState,
   ...props
 }) => {
-  const [inputValue, setInputValue] = useState<string>(null);
+  const [inputValue, setInputValue] = useState<string>(initialValue);
+
+  // initialValue가 변경될 때 inputValue를 업데이트
+  useEffect(() => {
+    setInputValue(initialValue);
+  }, [initialValue]);
 
   // input value는 실시간 업데이트, 엔터나 돋보니 누르면 검색어 상위컴포넌트로 전송
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

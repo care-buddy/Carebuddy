@@ -80,18 +80,28 @@ const Header: React.FC = () => {
   // 검색 로직
   // 검색 상태 설정
   const handleSearchState = () => {
-    setIsSearching((prevState) => !prevState);
+    setSearchTerm('');
+    if (!isSearching) {
+      setIsSearching(true);
+    } else {
+      setIsSearching(false);
+    }
   };
 
   // 검색 창에서 엔터 입력 시 검색어
   const handleSearchResult = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
-      console.log('Enter key pressed:', e.currentTarget.value);
       setSearchTerm(e.currentTarget.value);
-      // 엔터 키를 눌렀을 때 처리할 로직을 여기에 작성
-      navigate(`global-search?searchTerm=${encodeURIComponent(searchTerm)}`);
     }
   };
+
+  useEffect(() => {
+    if (searchTerm !== ''){
+      navigate(`global-search?searchTerm=${encodeURIComponent(searchTerm)}`);
+      setIsSearching(false);
+      setSearchTerm('');
+    }
+  }, [searchTerm]);
 
   // 임시
   const InfoMenuItems = [

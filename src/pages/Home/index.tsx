@@ -11,6 +11,7 @@ import Modal from '@/components/common/Modal';
 import Select from '@/components/common/Select';
 import PostCreate from '@/pages/PostCreate/index';
 import Banner from '@/components/Home&CommunityFeed/Banner';
+import NoPostsFound from '@/components/common/NoPostsFound';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
@@ -226,9 +227,7 @@ const Home: React.FC = () => {
             )}
           </FeedOptionContainer>
           {selectedPosts.length === 0 ? (
-            <NoticeEmptyResult>
-              <p>해당하는 게시글이 없습니다.</p>
-            </NoticeEmptyResult>
+            <NoPostsFound>해당하는 게시글이 없습니다.</NoPostsFound>
           ) : (
             selectedPosts.map((post, index) => (
               <FeedBox
@@ -302,14 +301,4 @@ const SelectContainer = styled.div`
 const P = styled.p`
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-ft-1);
-`;
-
-const NoticeEmptyResult = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  // background-color: yellow;
-  height: 100%;
-
-  font-size: var(--font-size-hd-2);
 `;
