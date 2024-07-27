@@ -38,7 +38,7 @@ const GlobalSearch: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams(''); // 쿼리스트링 값(검색 값)
   const params = new URLSearchParams(searchParams); // 현재 쿼리 파라미터
 
-  // 글 작성 모달
+  // 글 작성 모달 닫기
   const handleCloseWriteModal = () => {
     setIsWriteModalOpen(false);
   };
@@ -193,11 +193,6 @@ const FeedOptionContainer = styled.div`
   justify-content: flex-end;
   padding-top: 8px;
 `;
-
-// const P = styled.p`
-//   font-weight: var(--font-weight-medium);
-//   font-size: var(--font-size-ft-1);
-// `;
 
 const FeedBoxContainer = styled.div`
   color: var(--color-grey-1);
