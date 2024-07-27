@@ -88,7 +88,7 @@ const CommunityFeed: React.FC = () => {
   }, []);
 
   // 검색 로직
-  const handleSearch = (value: string) => {
+  const handleSearchTerm = (value: string) => {
     setSearchTerm(value);
   };
 
@@ -117,7 +117,7 @@ const CommunityFeed: React.FC = () => {
       />
       <SearchContainer>
         <Search
-          onSearchTerm={(value) => handleSearch(value)}
+          onSearchTerm={(value) => handleSearchTerm(value)}
           onSearchState={handleSearchState}
           searchState={isSearching}
           placeholder={isSearching ? '' : '검색할 게시글의 제목을 입력하세요'}

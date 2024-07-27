@@ -10,7 +10,7 @@ import TopBar from '@/components/common/TopBar';
 import type { CommunityData } from '@/constants/tempInterface';
 
 // 임시 데이터
-// import { dummyCommunities } from '@constants/tempData';
+import { dummyCommunities } from '@constants/tempData';
 
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
@@ -19,8 +19,8 @@ const axiosInstance = axios.create({
 
 const mock = new MockAdapter(axiosInstance);
 
-// mock.onGet('/api/communities').reply(200, dummyCommunities); // 커뮤니티 목록 받아오기, get 메서드
-mock.onGet('/api/communities').reply(500, '서버 오류 발생'); // 커뮤니티 목록 받아오기, get 메서드
+mock.onGet('/api/communities').reply(200, dummyCommunities); // 커뮤니티 목록 받아오기, get 메서드
+// mock.onGet('/api/communities').reply(500, '서버 오류 발생'); // 커뮤니티 목록 받아오기, get 메서드
 
 mock
   .onPut(/\/api\/user\/\w+\/joinGroup/)

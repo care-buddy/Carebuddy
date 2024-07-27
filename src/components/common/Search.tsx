@@ -15,6 +15,11 @@ const searchSizes = {
     font-size: var(--font-size-sm);
     padding: 4px 8px;
   `,
+  xs: css`
+    width: 150px;
+    font-size: var(--font-size-sm-1);
+    padding: 2px 5px;
+  `,
 };
 
 const searchStyles = {
@@ -25,7 +30,7 @@ const searchStyles = {
 };
 
 interface StyledSearchProps {
-  searchSize?: 'sm' | 'md';
+  searchSize?: 'xs' | 'sm' | 'md';
   searchStyle?: 'round' | 'square';
 }
 
@@ -66,7 +71,7 @@ const Search: React.FC<SearchProps> = ({
   onSearchState,
   ...props
 }) => {
-  const [inputValue, setInputValue] = useState<string>(''); // 
+  const [inputValue, setInputValue] = useState<string>(null);
 
   // input value는 실시간 업데이트, 엔터나 돋보니 누르면 검색어 상위컴포넌트로 전송
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

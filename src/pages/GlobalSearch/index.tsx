@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
