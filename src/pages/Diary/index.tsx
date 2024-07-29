@@ -147,7 +147,7 @@ const Diary: React.FC = () => {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [, setError] = useState<Error | null>(null);
 
   // 반려동물 1마리의 병원 기록들을 저장할 상태
   const [recordsData, setRecords] = useState<Record[] | null>([]);
@@ -155,6 +155,9 @@ const Diary: React.FC = () => {
   // 유효성 검사 알림 상태
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState('');
+
+  //
+  const [hasRecords, setHasRecords] = useState(false);
 
   const fetchBuddiesData = async () => {
     // /api/buddies로 GET 요청 모킹
@@ -170,38 +173,44 @@ const Diary: React.FC = () => {
     }
   };
 
+  mock.onGet('/hospitals/1a').reply(200, dummyRecord);
+  mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
   const fetchRecordsData = async (buddyId: string) => {
     // /api/hospitals로 GET 요청 모킹
+    setLoading(true);
     try {
-      setLoading(true);
-      mock.onGet('/hospitals/1a').reply(200, dummyRecord);
-      mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
       const response = await axiosInstance.get(`/hospitals/${buddyId}`);
+
       setRecords(response.data);
-      setLoading(false);
     } catch (error) {
       setError(error as Error);
+    } finally {
       setLoading(false);
     }
   };
-
-  // 화면 첫 진입 시, 렌더링해올 데이터들 fetch
   useEffect(() => {
     fetchBuddiesData();
     // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
     if (selectedId) fetchRecordsData(selectedId);
-    // setRecords(recordsData);
-    if (recordsData) setRecords(recordsData);
-    console.log(recordsData);
   }, [selectedId]);
 
-  if (isLoading) {
-    return <Loading />;
-  }
+  useEffect(() => {
+    if (recordsData) {
+      // 모든 기록이 삭제된 경우에만(null이 아닌 경우) false를 반환
+      // 즉 false인 경우에는 기록이 없다는 안내 문구를 보여주면 된다.
+      const hasNonDeletedRecords = recordsData.some(
+        (record) => record.deletedAt === null
+      );
+      setHasRecords(hasNonDeletedRecords);
+    } else {
+      setHasRecords(false);
+    }
+    console.log(recordsData);
+  }, [recordsData]);
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  // if (error) {
+  //   return <div>Error: {error.message}</div>;
+  // }
 
   const handleSubmitBuddy = (newBuddy: BuddyProfile) => {
     if (buddiesData?.buddies) {
@@ -236,17 +245,14 @@ const Diary: React.FC = () => {
 
       if (recordsData) {
         setRecords([...recordsData, newRecord]);
-        console.log('등록');
       } else setRecords([newRecord]);
       return [200, { success: true, message: '병원 기록 등록 성공' }];
     });
-    // console.log('Form data:', formData);
+
     if (validateForm() && formData) {
-      console.log(formData);
       axiosInstance
         .post(`/hospitals`, formData)
-        .then((res) => {
-          console.log(res.data);
+        .then(() => {
           handleCloseModal();
         })
         .catch((error) => {
@@ -270,26 +276,82 @@ const Diary: React.FC = () => {
     }
   };
 
+  mock.onPut(`/hospitals/1r/d`).reply((config) => {
+    // 요청에서 데이터 추출
+    const deletedRecord = JSON.parse(config.data);
+
+    // 응답으로 삭제된 레코드 반환
+    return [200, deletedRecord];
+  });
+  mock.onPut(`/hospitals/2r/d`).reply((config) => {
+    // 요청에서 데이터 추출
+    const deletedRecord = JSON.parse(config.data);
+
+    // 응답으로 삭제된 레코드 반환
+    return [200, deletedRecord];
+  });
+  const handleDeleteRecord = async (recordId: string) => {
+    // 모킹된 삭제 PUT 요청 설정
+    mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
+      // 요청에서 데이터 추출
+      const deletedRecord = JSON.parse(config.data);
+
+      // 응답으로 삭제된 레코드 반환
+      return [200, deletedRecord];
+    });
+    if (window.confirm('삭제하시겠습니까?')) {
+      try {
+        // 현재 상태에서 삭제요청한 record를 찾음
+        if (recordsData) {
+          const updatedRecord = recordsData.find(
+            (record) => record._id === recordId
+          );
+
+          if (!updatedRecord) {
+            console.error('일치하는 레코드가 없습니다.');
+            return;
+          }
+
+          // 삭제된 레코드를 업데이트할 데이터 준비
+          const deletedRecord: Record = {
+            ...updatedRecord,
+            deletedAt: new Date(),
+          };
+
+          // 서버에 삭제 요청
+          await axiosInstance.put(`/hospitals/${recordId}/d`, deletedRecord);
+
+          // 상태 업데이트
+          setRecords((prevRecords) =>
+            prevRecords
+              ? prevRecords.map((record) =>
+                  record._id === recordId ? deletedRecord : record
+                )
+              : null
+          );
+        }
+      } catch (e) {
+        console.error(e);
+        setError(e as Error);
+      }
+    }
+  };
+
   const validateForm = () => {
+    if (!formData.isConsultation && formData.address === null) {
+      setAlertMessage('병원 정보를 입력해 주세요.');
+      return false;
+    }
+
     if (formData.disease === '') {
       setAlertMessage('질병 정보를 입력해 주세요.');
       return false;
     }
-    // if (!checked && !date) {
-    //   setAlertMessage('진료 날짜를 입력해 주세요.');
-    //   return false;
-    // }
-    // if (!checked && !formData.address) {
-    //   setAlertMessage('병원 정보를 입력해 주세요.');
-    //   return false;
-    // }
-    // if (!checked && !formData.doctorName) {
-    //   setAlertMessage('수의사 성함을 입력해 주세요.');
-    //   return false;
-    // }
 
     return true;
   };
+
+  if (isLoading) return <Loading />;
 
   return (
     <>
@@ -331,16 +393,20 @@ const Diary: React.FC = () => {
               onHandleClick={handleFormSubmit}
             />
           )}
-          {recordsData ? (
-            recordsData.map((record) => (
-              <ReportWrapper>
-                <RecordWrapper
-                  // 병원 기록 전달 전달
-                  record={record}
-                  onUpdate={handleUpdateRecord}
-                />
-              </ReportWrapper>
-            ))
+          {recordsData && hasRecords ? (
+            recordsData
+              // 삭제된 record는 렌더링하지 않음
+              .filter((record) => record.deletedAt === null)
+              .map((record) => (
+                <ReportWrapper key={record._id}>
+                  <RecordWrapper
+                    // 병원 기록 전달 전달
+                    record={record}
+                    onUpdate={handleUpdateRecord}
+                    onDelete={() => handleDeleteRecord(record._id)}
+                  />
+                </ReportWrapper>
+              ))
           ) : (
             <ReportWrapper className="noReport">
               <div>기록이 없습니다 안내문구</div>

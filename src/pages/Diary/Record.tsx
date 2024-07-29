@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
@@ -148,6 +148,7 @@ const Doctor = styled.span`
 interface Props {
   record: Record;
   onUpdate: (updatedRecord: Record) => void;
+  onDelete: () => void;
 }
 
 const axiosInstance = axios.create({
@@ -155,7 +156,7 @@ const axiosInstance = axios.create({
   timeout: 5000, // 타임아웃 설정 (ms)
 });
 
-const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
+const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
   const mock = new MockAdapter(axiosInstance);
 
   const [isLoading, setLoading] = useState(false);
@@ -208,7 +209,7 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
       deletedAt: recordForm.deletedAt,
       updatedAt: new Date(),
     };
-    console.log(updatedRecord.updatedAt);
+    console.log(updatedRecord);
     // 확인용으로 return 해주지만, 실제로는 message와 id만 올 것임
     return [200, updatedRecord];
   });
@@ -218,10 +219,7 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
     try {
       setLoading(true);
       /* 모킹에서는 res 받을 일이 없으므로 받지 않는다 */
-      // const response = await axiosInstance.put(
-      //   `/hospitals/${record._id}`,
-      //   formData
-      // );
+      await axiosInstance.put(`/hospitals/${record._id}`, formData);
       // 실제 API 붙인 뒤에도 필요 한지?
       setFormData(formData);
       setBackupFormData(formData);
@@ -308,7 +306,7 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate }) => {
         <ActionButton
           buttonBorder="border-none"
           direction="vertical"
-          onDelete={() => {}}
+          onDelete={onDelete}
           onEdit={handleOpenEditModal}
         />
         {editModalOpen && (
