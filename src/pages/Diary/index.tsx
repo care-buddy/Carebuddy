@@ -104,6 +104,7 @@ interface BuddyProfile {
   kind: string;
   age: number;
   buddyImage: string;
+  deletedAt: Date | null;
 }
 
 interface ProfilesWrapperProps {
@@ -277,31 +278,24 @@ const Diary: React.FC = () => {
   };
 
   mock.onPut(`/hospitals/1r/d`).reply((config) => {
-    // 요청에서 데이터 추출
     const deletedRecord = JSON.parse(config.data);
-
-    // 응답으로 삭제된 레코드 반환
     return [200, deletedRecord];
   });
   mock.onPut(`/hospitals/2r/d`).reply((config) => {
-    // 요청에서 데이터 추출
     const deletedRecord = JSON.parse(config.data);
 
-    // 응답으로 삭제된 레코드 반환
     return [200, deletedRecord];
   });
   const handleDeleteRecord = async (recordId: string) => {
-    // 모킹된 삭제 PUT 요청 설정
+    // 삭제 PUT 요청 설정
     mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
-      // 요청에서 데이터 추출
       const deletedRecord = JSON.parse(config.data);
 
-      // 응답으로 삭제된 레코드 반환
       return [200, deletedRecord];
     });
     if (window.confirm('삭제하시겠습니까?')) {
       try {
-        // 현재 상태에서 삭제요청한 record를 찾음
+        // id로 삭제 요청한 record를 찾음
         if (recordsData) {
           const updatedRecord = recordsData.find(
             (record) => record._id === recordId
@@ -312,7 +306,7 @@ const Diary: React.FC = () => {
             return;
           }
 
-          // 삭제된 레코드를 업데이트할 데이터 준비
+          // deletedAt을 업데이트한 레코드
           const deletedRecord: Record = {
             ...updatedRecord,
             deletedAt: new Date(),
@@ -321,7 +315,7 @@ const Diary: React.FC = () => {
           // 서버에 삭제 요청
           await axiosInstance.put(`/hospitals/${recordId}/d`, deletedRecord);
 
-          // 상태 업데이트
+          // 상태 업데이트: 삭제 요청한 id만 deletedRecord로 업데이트 해줌
           setRecords((prevRecords) =>
             prevRecords
               ? prevRecords.map((record) =>
@@ -338,7 +332,7 @@ const Diary: React.FC = () => {
   };
 
   const validateForm = () => {
-    if (!formData.isConsultation && formData.address === null) {
+    if (formData.isConsultation && formData.address === null) {
       setAlertMessage('병원 정보를 입력해 주세요.');
       return false;
     }

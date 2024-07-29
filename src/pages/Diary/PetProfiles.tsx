@@ -106,6 +106,7 @@ interface BuddyProfile {
   kind: string;
   age: number;
   buddyImage: string;
+  deletedAt: Date | null;
 }
 
 const axiosInstance = axios.create({
@@ -138,6 +139,8 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
   const [isLoading, setLoading] = useState(false);
   const [, setError] = useState<Error | null>(null);
+
+  const [hasProfiles, setHasProfiles] = useState(false);
 
   const handleOpenPetModal = () => {
     setPetModalOpen(true);
@@ -182,26 +185,81 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     setFormData(data);
   };
 
+  // const deleteProfile = async (buddyId: string) => {
+  //   // 가짜 DELETE 요청 처리
+  //   if (window.confirm('프로필 삭제 알림')) {
+  //     try {
+  //       mock
+  //         .onDelete(`/buddies/${buddyId}`)
+  //         .reply(200, { success: true, message: '반려동물 등록 성공' });
+
+  //       setLoading(true);
+
+  //       await axiosInstance.delete(`/buddies/${buddyId}`);
+
+  //       // filter 사용하여 현재 profiles 상태를 delete 요청한 프로필을 제외하여 다시 구성해줌
+  //       const updatedProfiles = profiles.filter(
+  //         (profile) => profile._id !== buddyId
+  //       );
+  //       setProfiles(updatedProfiles); // 상태 업데이트
+  //       // API 적용 시, 프로필 삭제 후 카드 선택 상태를 첫 번째 카드로 지정해주는 로직을 사용한다.
+  //       // 지금은 목데이터도 업데이트 되기 때문에 삭제만 해놓은 상태
+  //       // if (updatedProfiles.length > 0) setSelectedId(updatedProfiles[0]._id);
+
+  //       setLoading(false);
+  //     } catch (error) {
+  //       setError(error as Error);
+  //     }
+  //   }
+  // };
+
+  mock
+    .onPut(`/buddies/1a/d`)
+    .reply(200, { success: true, message: '반려동물 등록 성공' });
+
+  mock
+    .onPut(`/buddies/2b/d`)
+    .reply(200, { success: true, message: '반려동물 등록 성공' });
+
   const deleteProfile = async (buddyId: string) => {
     // 가짜 DELETE 요청 처리
+    mock
+      .onPut(`/buddies/${buddyId}/d`)
+      .reply(200, { success: true, message: '반려동물 등록 성공' });
+
     if (window.confirm('프로필 삭제 알림')) {
       try {
-        mock
-          .onDelete(`/buddies/${buddyId}`)
-          .reply(200, { success: true, message: '반려동물 등록 성공' });
-
         setLoading(true);
 
-        await axiosInstance.delete(`/buddies/${buddyId}`);
+        if (profiles) {
+          const filterdProfile = profiles.find(
+            (profile) => profile._id === buddyId
+          );
 
-        // filter 사용하여 현재 profiles 상태를 delete 요청한 프로필을 제외하여 다시 구성해줌
-        const updatedProfiles = profiles.filter(
-          (profile) => profile._id !== buddyId
-        );
-        setProfiles(updatedProfiles); // 상태 업데이트
-        // API 적용 시, 프로필 삭제 후 카드 선택 상태를 첫 번째 카드로 지정해주는 로직을 사용한다.
-        // 지금은 목데이터도 업데이트 되기 때문에 삭제만 해놓은 상태
-        // if (updatedProfiles.length > 0) setSelectedId(updatedProfiles[0]._id);
+          if (!filterdProfile) {
+            console.error('일치하는 반려동물이 없습니다.');
+            return;
+          }
+
+          const deletedProfile: BuddyProfile = {
+            ...filterdProfile,
+            deletedAt: new Date(),
+          };
+          console.log(deletedProfile);
+          await axiosInstance.put(`/buddies/${buddyId}/d`);
+
+          const updatedProfiles = profiles.map((profile) =>
+            profile._id === buddyId ? deletedProfile : profile
+          );
+
+          setProfiles(updatedProfiles);
+          console.log(profiles);
+        }
+
+        // setProfiles(updatedProfiles); // 상태 업데이트
+        // // API 적용 시, 프로필 삭제 후 카드 선택 상태를 첫 번째 카드로 지정해주는 로직을 사용한다.
+        // // 지금은 목데이터도 업데이트 되기 때문에 삭제만 해놓은 상태
+        // // if (updatedProfiles.length > 0) setSelectedId(updatedProfiles[0]._id);
 
         setLoading(false);
       } catch (error) {
@@ -227,6 +285,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
         kind: formData.get('kind'),
         age: formData.get('age'),
         buddyImage: formData.get('buddyImage'),
+        deletedAt: null,
       };
 
       setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
@@ -338,25 +397,27 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       >
         {/* 업데이트 된 상태도 렌더링 갱신시켜줘야하기 때문에, buddies가 아닌 profiles를 맵핑 */}
         {profiles &&
-          profiles.map((buddy, index) => (
-            <SwiperSlide key={buddy._id} virtualIndex={index}>
-              <PetCard
-                buddy={buddy}
-                onEdit={() => handleOpenPetEditModal(buddy._id)}
-                onDelete={() => {
-                  deleteProfile(buddy._id);
-                }}
-                onClick={() => {
-                  handleSelectedId(buddy._id);
-                }}
-                className={
-                  buddy._id === selectedId
-                    ? 'selected-card'
-                    : 'not-selected-card'
-                }
-              />
-            </SwiperSlide>
-          ))}
+          profiles
+            .filter((profile) => profile.deletedAt === null)
+            .map((buddy, index) => (
+              <SwiperSlide key={buddy._id} virtualIndex={index}>
+                <PetCard
+                  buddy={buddy}
+                  onEdit={() => handleOpenPetEditModal(buddy._id)}
+                  onDelete={() => {
+                    deleteProfile(buddy._id);
+                  }}
+                  onClick={() => {
+                    handleSelectedId(buddy._id);
+                  }}
+                  className={
+                    buddy._id === selectedId
+                      ? 'selected-card'
+                      : 'not-selected-card'
+                  }
+                />
+              </SwiperSlide>
+            ))}
 
         <SwiperSlide key={999} virtualIndex={999}>
           <CardsWrapper>
