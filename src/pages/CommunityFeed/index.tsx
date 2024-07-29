@@ -106,7 +106,8 @@ const CommunityFeed: React.FC = () => {
   // 검색 시 URL 변경
   const handleSearch = (newTerm: string) => {
     params.set('searchTerm', newTerm); // 'searchTerm' 파라미터의 값을 newTerm으로 설정
-    setSearchParams(params); // 쿼리 파라미터를 URL에 반영
+    setSearchParams(params); // 쿼리 파라미터를 URL에 반
+    setFilteredPosts(null); // 검색된 포스트 초기화
   };
 
   // URL 파라미터로부터 검색어를 가져옴
@@ -148,6 +149,7 @@ const CommunityFeed: React.FC = () => {
         uploadedDate={formatDate(post.createdAt)}
         nickname={post.userId.nickName}
         profileSrc={post.userId.profileImage[0]}
+        likeCount={post.likedUsers.length}
       />
     ));
 
@@ -162,6 +164,7 @@ const CommunityFeed: React.FC = () => {
           uploadedDate={formatDate(post.createdAt)}
           nickname={post.userId.nickName}
           profileSrc={post.userId.profileImage[0]}
+          likeCount={post.likedUsers.length}
         />
       ));
     }

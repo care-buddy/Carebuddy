@@ -73,6 +73,7 @@ const GlobalSearch: React.FC = () => {
   const handleSearch = (newTerm: string) => {
     params.set('searchTerm', newTerm); // 'searchTerm' 파라미터의 값을 newTerm으로 설정
     setSearchParams(params); // 쿼리 파라미터를 URL에 반영
+    setFilteredPosts(null); // 검색된 포스트 초기화
   };
 
   // URL 파라미터로부터 검색어를 가져옴
