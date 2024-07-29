@@ -37,18 +37,14 @@ const StyledSelect = styled.select<StyledSelectProps>`
 `;
 
 interface SelectProps extends StyledSelectProps {
-<<<<<<< HEAD
-  options: { value: string; label: string }[];
-  value?: string;  // 추가: 현재 선택된 값
-=======
   options: { value: string | number; label: string }[];
->>>>>>> 10df3171916c63ab414ea21ef779f2b62ce8bebd
+  value?: string;
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }
 
 const Select: React.FC<SelectProps> = ({
   options,
-  value,       // 추가: 현재 선택된 값
+  value,
   onChange,
   selectStyle = 'square',
   selectSize = 'md',
@@ -57,7 +53,7 @@ const Select: React.FC<SelectProps> = ({
   <StyledSelect
     selectStyle={selectStyle}
     selectSize={selectSize}
-    value={value}  // 추가: 현재 선택된 값
+    value={value}
     onChange={onChange}
     {...props}
   >
