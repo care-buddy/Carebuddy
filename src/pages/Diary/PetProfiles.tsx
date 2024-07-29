@@ -137,7 +137,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   );
 
   const [isLoading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [, setError] = useState<Error | null>(null);
 
   const handleOpenPetModal = () => {
     setPetModalOpen(true);
@@ -157,7 +157,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       setSelectedBuddy(response.data); // 가져온 반려동물 정보 설정, 수정(PUT) 요청 시 여기서 id를 가져올 수 있다
       setPetEditModalOpen(true);
     } catch (error) {
-      setError(error);
+      setError(error as Error);
       console.log(error);
       alert(
         '불러오는 데 오류 발생 다시 시도해주세요 오류메시지를 다시 설정해주세요'
@@ -205,7 +205,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
         setLoading(false);
       } catch (error) {
-        setError(error);
+        setError(error as Error);
       }
     }
   };

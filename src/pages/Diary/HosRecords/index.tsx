@@ -7,7 +7,6 @@ import TextArea from '@/components/common/TextArea';
 import { Record } from '@/interfaces';
 import { LuPlusCircle, LuMinusCircle } from 'react-icons/lu';
 import { CSSTransition } from 'react-transition-group';
-import ValidationAlert from '@/components/common/ValidationAlert';
 
 const Component = styled.div`
   display: flex;
