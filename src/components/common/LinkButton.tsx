@@ -97,7 +97,7 @@ const LinkButton: React.FC<LinkProps> = ({
         {children}
       </StyledLink>
     );
-  } else {
+  } 
     return (
       <StyledButton
         linkStyle={linkStyle}
@@ -108,7 +108,7 @@ const LinkButton: React.FC<LinkProps> = ({
         {children}
       </StyledButton>
     );
-  }
+  
 };
 
 

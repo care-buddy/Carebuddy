@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import Input from '@components/common/Input';
 import Button from '@components/common/Button';
-import Radio from '@components/common/Radio';
+// import Radio from '@components/common/Radio';
 
 const ForgotPassword: React.FC = () => (
   <Container>
