@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 import Input from '@components/common/Input';
 import Button from '@components/common/Button';
-import Radio from '@components/common/Radio';
+// import Radio from '@components/common/Radio';
 
 const ForgotEmail: React.FC = () => (
   <Container>
@@ -68,35 +68,35 @@ const LargeText = styled.p`
   padding-bottom: 16px;
 `;
 
-const LoginContainer = styled.div``;
+// const LoginContainer = styled.div``;
 
-const ForgotEmailButtonContainer = styled.div`
-  width: auto;
-`;
+// const ForgotEmailButtonContainer = styled.div`
+//   width: auto;
+// `;
 
-const GreyStyledP = styled.p`
-  color: var(--color-grey-1);
-`;
+// const GreyStyledP = styled.p`
+//   color: var(--color-grey-1);
+// `;
 
-const Label = styled.label`
-  margin-right: 1rem;
-  display: flex;
-  align-items: center;
-`;
+// const Label = styled.label`
+//   margin-right: 1rem;
+//   display: flex;
+//   align-items: center;
+// `;
 
-const Pre = styled.pre`
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  text-align: center;
-  line-height: 1.4;
-  color: var(--color-grey-1);
-  font-size: var(--font-size-ft-1);
-`;
+// const Pre = styled.pre`
+//   white-space: pre-wrap;
+//   word-wrap: break-word;
+//   text-align: center;
+//   line-height: 1.4;
+//   color: var(--color-grey-1);
+//   font-size: var(--font-size-ft-1);
+// `;
 
-const P = styled.p`
-  color: var(--color-black);
-  font-size: var(--font-size-ft-1);
-`;
+// const P = styled.p`
+//   color: var(--color-black);
+//   font-size: var(--font-size-ft-1);
+// `;
 
 const StyledInput = styled(Input)`
   width: 100%;

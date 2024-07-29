@@ -19,8 +19,8 @@ const axiosInstance = axios.create({
 
 const mock = new MockAdapter(axiosInstance);
 
-// mock.onGet('/api/communities').reply(200, dummyCommunities); // 커뮤니티 목록 받아오기, get 메서드
-mock.onGet('/api/communities').reply(500, '서버 오류 발생'); // 커뮤니티 목록 받아오기, get 메서드
+mock.onGet('/api/communities').reply(200, dummyCommunities); // 커뮤니티 목록 받아오기, get 메서드
+// mock.onGet('/api/communities').reply(500, '서버 오류 발생'); // 커뮤니티 목록 받아오기, get 메서드
 
 mock
   .onPut(/\/api\/user\/\w+\/joinGroup/)
@@ -71,12 +71,15 @@ const Community: React.FC = () => {
   const handleJoinButtonClick = async () => {
     try {
       const userId = 'abs'; // 임시
-      const response = await axiosInstance.put(`/user/${userId}/joinGroup`, {
+      // const response = await axiosInstance.put(`/user/${userId}/joinGroup`, {
+      //   communityId: '6617c6acb39abf604bbe8dc2',
+      // });
+      await axiosInstance.put(`/user/${userId}/joinGroup`, {
         communityId: '6617c6acb39abf604bbe8dc2',
       });
-      console.log('커뮤니티 가입, 성공', response.data);
+      // console.log('커뮤니티 가입, 성공', response.data); // 새로운 커뮤니티로 리다이렉트 해주기. 
     } catch (error) {
-      console.error('커뮤니티 탈퇴 실패', error);
+      setError(error as Error)
     }
   };
 
@@ -119,7 +122,7 @@ const Community: React.FC = () => {
               name={community.community}
               introduction={community.introduction}
               onButtonClick={handleJoinButtonClick}
-              joined={true} // 가입 여부를 어떻게 확인해야하는지 모름. 왜냐면
+              joined // 가입 여부를 어떻게 확인해야하는지 모름. 
             />
           ))}
       </CardContainer>
