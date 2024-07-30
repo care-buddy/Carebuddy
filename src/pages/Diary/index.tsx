@@ -145,6 +145,9 @@ const Diary: React.FC = () => {
   //
   const [hasRecords, setHasRecords] = useState(false);
 
+  const [isCheckSymptom, setCheckSymptom] = useState(false);
+  const [isCheckTreat, setCheckTreat] = useState(false);
+
   const fetchBuddiesData = async () => {
     // /api/buddies로 GET 요청 모킹
     try {
@@ -318,12 +321,22 @@ const Diary: React.FC = () => {
 
   const validateForm = () => {
     if (formData.isConsultation && formData.address === null) {
-      setAlertMessage('병원 정보를 입력해 주세요.');
+      setAlertMessage('병원 정보를 입력해주세요.');
       return false;
     }
 
     if (formData.disease === '') {
-      setAlertMessage('질병 정보를 입력해 주세요.');
+      setAlertMessage('질병 정보를 입력해주세요.');
+      return false;
+    }
+
+    if (isCheckSymptom) {
+      setAlertMessage('증상 내용을 추가하셨는지 확인해주세요.');
+      return false;
+    }
+
+    if (isCheckTreat) {
+      setAlertMessage('처방 내용을 추가하셨는지 확인해주세요.');
       return false;
     }
 
@@ -332,6 +345,7 @@ const Diary: React.FC = () => {
 
   if (isLoading) return <Loading />;
 
+  console.log(formData);
   return (
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
@@ -367,7 +381,12 @@ const Diary: React.FC = () => {
               title="병원 기록"
               value="등록"
               component={
-                <HosRecords formData={formData} setFormData={setFormData} />
+                <HosRecords
+                  formData={formData}
+                  setFormData={setFormData}
+                  setCheckTreat={setCheckTreat}
+                  setCheckSymptom={setCheckSymptom}
+                />
               }
               onHandleClick={handleFormSubmit}
             />

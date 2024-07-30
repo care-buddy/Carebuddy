@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 
 // 동적 스타일 props
 interface StyledInputProps {
-  inputSize?: 'sm' | 'md' | 'bg';
+  inputSize?: 'sm' | 'md' | 'lg' | 'bg';
   activeOption?: 'active' | 'readOnly';
   borderStyle?: 'round' | 'square';
   inputPadding?: 'default' | 'sm';
@@ -16,6 +16,9 @@ const inputSizes = {
   `,
   md: css`
     width: 180px;
+  `,
+  lg: css`
+    width: 210px;
   `,
   bg: css`
     width: 100%;
@@ -48,14 +51,13 @@ const inputPaddings = {
 };
 
 const placeholderColors = {
-  default: css`
-  `,
-  "light-grey": css`
-    &::placeholder{
-    color:var(--color-grey-2)
+  default: css``,
+  'light-grey': css`
+    &::placeholder {
+      color: var(--color-grey-2);
     }
-  `
-}
+  `,
+};
 
 // 기본 스타일을 여기서 지정: 기본 스타일 + 동적 스타일
 const StyledInput = styled.input<StyledInputProps>`
@@ -66,7 +68,8 @@ const StyledInput = styled.input<StyledInputProps>`
   ${(props) => props.activeOption && activeOptions[props.activeOption]}
   ${(props) => props.borderStyle && borderStyles[props.borderStyle]}
   ${(props) => props.inputPadding && inputPaddings[props.inputPadding]}
-  ${(props) => props.placeholderColor && placeholderColors[props.placeholderColor]}
+  ${(props) =>
+    props.placeholderColor && placeholderColors[props.placeholderColor]}
   outline: none;
 `;
 
@@ -80,7 +83,7 @@ const Input: React.FC<InputProps> = ({
   activeOption = 'active',
   borderStyle = 'round',
   inputPadding = 'default',
-  placeholderColor="default",
+  placeholderColor = 'default',
   //   types나 placeholder 등.. 동적으로 나머지 props 가져옴
   ...props
 }) => (
