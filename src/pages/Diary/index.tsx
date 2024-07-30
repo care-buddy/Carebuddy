@@ -8,7 +8,7 @@ import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Record } from '@/interfaces';
+import { Record, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import HosRecords from './HosRecords';
@@ -97,21 +97,6 @@ const ReportWrapper = styled.div`
 `;
 
 /* 다이어리 끝 */
-
-interface BuddyProfile {
-  _id: string;
-  name: string;
-  kind: string;
-  age: number;
-  buddyImage: string;
-  deletedAt: Date | null;
-}
-
-interface ProfilesWrapperProps {
-  name?: string;
-  buddies?: BuddyProfile[];
-  onSubmitBuddy: (newBuddy: BuddyProfile) => void;
-}
 
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정

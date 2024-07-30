@@ -28,3 +28,19 @@ export interface Record {
   updatedAt?: Date;
   deletedAt?: Date | null;
 }
+
+export interface BuddyProfile {
+  _id: string;
+  name: string;
+  kind: string;
+  age: number;
+  buddyImage: string;
+  deletedAt: Date | null;
+}
+
+export interface ProfilesWrapperProps {
+  name?: string;
+  buddies?: BuddyProfile[];
+  onSubmitBuddy: (newBuddy: BuddyProfile) => void;
+  onBuddySelect: (buddyId: string) => void;
+}

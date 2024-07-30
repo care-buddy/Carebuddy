@@ -8,7 +8,7 @@ import { Pagination, Virtual } from 'swiper/modules';
 import { LuPlus } from 'react-icons/lu';
 import Modal from '@/components/common/Modal';
 import PetRegister from '@/components/PetRegister/PetRegister';
-import { Buddy } from '@/interfaces';
+import { Buddy, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { tempProfileSrc } from '@constants/tempData';
@@ -92,23 +92,6 @@ const dummyBuddy2: Buddy = {
   deletedAt: null,
 };
 
-interface ProfilesWrapperProps {
-  name?: string;
-  buddies?: BuddyProfile[];
-  onSubmitBuddy: (newBuddy: BuddyProfile) => void;
-  onBuddySelect: (buddyId: string) => void;
-}
-
-// 공통 인터페이스 통합하기
-interface BuddyProfile {
-  _id: string;
-  name: string;
-  kind: string;
-  age: number;
-  buddyImage: string;
-  deletedAt: Date | null;
-}
-
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
   timeout: 5000, // 타임아웃 설정 (ms)
@@ -139,8 +122,6 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
   const [isLoading, setLoading] = useState(false);
   const [, setError] = useState<Error | null>(null);
-
-  const [hasProfiles, setHasProfiles] = useState(false);
 
   const handleOpenPetModal = () => {
     setPetModalOpen(true);
