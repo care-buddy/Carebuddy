@@ -8,7 +8,7 @@ import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Record } from '@/interfaces';
+import { Record, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import HosRecords from './HosRecords';
@@ -98,20 +98,6 @@ const ReportWrapper = styled.div`
 
 /* 다이어리 끝 */
 
-interface BuddyProfile {
-  _id: string;
-  name: string;
-  kind: string;
-  age: number;
-  buddyImage: string;
-}
-
-interface ProfilesWrapperProps {
-  name?: string;
-  buddies?: BuddyProfile[];
-  onSubmitBuddy: (newBuddy: BuddyProfile) => void;
-}
-
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
   timeout: 5000, // 타임아웃 설정 (ms)
@@ -147,6 +133,8 @@ const Diary: React.FC = () => {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
+  // 화면 렌더링 시 버디와 로딩 상태를 공유할 경우, 버디만 렌더링 완료된 경우에 로딩 상태가 false가 되므로 분리한다.
+  const [isRecordLoading, setRecordLoading] = useState(false);
   const [, setError] = useState<Error | null>(null);
 
   // 반려동물 1마리의 병원 기록들을 저장할 상태
@@ -158,6 +146,9 @@ const Diary: React.FC = () => {
 
   //
   const [hasRecords, setHasRecords] = useState(false);
+
+  const [isCheckSymptom, setCheckSymptom] = useState(false);
+  const [isCheckTreat, setCheckTreat] = useState(false);
 
   const fetchBuddiesData = async () => {
     // /api/buddies로 GET 요청 모킹
@@ -177,7 +168,7 @@ const Diary: React.FC = () => {
   mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
   const fetchRecordsData = async (buddyId: string) => {
     // /api/hospitals로 GET 요청 모킹
-    setLoading(true);
+    setRecordLoading(true);
     try {
       const response = await axiosInstance.get(`/hospitals/${buddyId}`);
 
@@ -185,7 +176,8 @@ const Diary: React.FC = () => {
     } catch (error) {
       setError(error as Error);
     } finally {
-      setLoading(false);
+      // 로딩 상태 확인 완료
+      setRecordLoading(false);
     }
   };
   useEffect(() => {
@@ -277,31 +269,24 @@ const Diary: React.FC = () => {
   };
 
   mock.onPut(`/hospitals/1r/d`).reply((config) => {
-    // 요청에서 데이터 추출
     const deletedRecord = JSON.parse(config.data);
-
-    // 응답으로 삭제된 레코드 반환
     return [200, deletedRecord];
   });
   mock.onPut(`/hospitals/2r/d`).reply((config) => {
-    // 요청에서 데이터 추출
     const deletedRecord = JSON.parse(config.data);
 
-    // 응답으로 삭제된 레코드 반환
     return [200, deletedRecord];
   });
   const handleDeleteRecord = async (recordId: string) => {
-    // 모킹된 삭제 PUT 요청 설정
+    // 삭제 PUT 요청 설정
     mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
-      // 요청에서 데이터 추출
       const deletedRecord = JSON.parse(config.data);
 
-      // 응답으로 삭제된 레코드 반환
       return [200, deletedRecord];
     });
     if (window.confirm('삭제하시겠습니까?')) {
       try {
-        // 현재 상태에서 삭제요청한 record를 찾음
+        // id로 삭제 요청한 record를 찾음
         if (recordsData) {
           const updatedRecord = recordsData.find(
             (record) => record._id === recordId
@@ -312,16 +297,17 @@ const Diary: React.FC = () => {
             return;
           }
 
-          // 삭제된 레코드를 업데이트할 데이터 준비
+          // deletedAt을 업데이트한 레코드
           const deletedRecord: Record = {
             ...updatedRecord,
             deletedAt: new Date(),
           };
 
+          setLoading(true);
           // 서버에 삭제 요청
           await axiosInstance.put(`/hospitals/${recordId}/d`, deletedRecord);
 
-          // 상태 업데이트
+          // 상태 업데이트: 삭제 요청한 id만 deletedRecord로 업데이트 해줌
           setRecords((prevRecords) =>
             prevRecords
               ? prevRecords.map((record) =>
@@ -333,18 +319,31 @@ const Diary: React.FC = () => {
       } catch (e) {
         console.error(e);
         setError(e as Error);
+      } finally {
+        // 로딩 상태 확인 완료
+        setLoading(false);
       }
     }
   };
 
   const validateForm = () => {
-    if (!formData.isConsultation && formData.address === null) {
-      setAlertMessage('병원 정보를 입력해 주세요.');
+    if (formData.isConsultation && formData.address === null) {
+      setAlertMessage('병원 정보를 입력해주세요.');
       return false;
     }
 
     if (formData.disease === '') {
-      setAlertMessage('질병 정보를 입력해 주세요.');
+      setAlertMessage('질병 정보를 입력해주세요.');
+      return false;
+    }
+
+    if (isCheckSymptom) {
+      setAlertMessage('증상 내용을 추가하셨는지 확인해주세요.');
+      return false;
+    }
+
+    if (isCheckTreat) {
+      setAlertMessage('처방 내용을 추가하셨는지 확인해주세요.');
       return false;
     }
 
@@ -352,7 +351,9 @@ const Diary: React.FC = () => {
   };
 
   if (isLoading) return <Loading />;
+  if (isRecordLoading) return <Loading />;
 
+  console.log(formData);
   return (
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
@@ -388,7 +389,12 @@ const Diary: React.FC = () => {
               title="병원 기록"
               value="등록"
               component={
-                <HosRecords formData={formData} setFormData={setFormData} />
+                <HosRecords
+                  formData={formData}
+                  setFormData={setFormData}
+                  setCheckTreat={setCheckTreat}
+                  setCheckSymptom={setCheckSymptom}
+                />
               }
               onHandleClick={handleFormSubmit}
             />

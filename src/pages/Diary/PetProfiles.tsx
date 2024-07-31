@@ -8,7 +8,7 @@ import { Pagination, Virtual } from 'swiper/modules';
 import { LuPlus } from 'react-icons/lu';
 import Modal from '@/components/common/Modal';
 import PetRegister from '@/components/PetRegister/PetRegister';
-import { Buddy } from '@/interfaces';
+import { Buddy, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { tempProfileSrc } from '@constants/tempData';
@@ -92,22 +92,6 @@ const dummyBuddy2: Buddy = {
   deletedAt: null,
 };
 
-interface ProfilesWrapperProps {
-  name?: string;
-  buddies?: BuddyProfile[];
-  onSubmitBuddy: (newBuddy: BuddyProfile) => void;
-  onBuddySelect: (buddyId: string) => void;
-}
-
-// 공통 인터페이스 통합하기
-interface BuddyProfile {
-  _id: string;
-  name: string;
-  kind: string;
-  age: number;
-  buddyImage: string;
-}
-
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
   timeout: 5000, // 타임아웃 설정 (ms)
@@ -137,7 +121,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   );
 
   const [isLoading, setLoading] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
+  const [, setError] = useState<Error | null>(null);
 
   const handleOpenPetModal = () => {
     setPetModalOpen(true);
@@ -157,7 +141,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       setSelectedBuddy(response.data); // 가져온 반려동물 정보 설정, 수정(PUT) 요청 시 여기서 id를 가져올 수 있다
       setPetEditModalOpen(true);
     } catch (error) {
-      setError(error);
+      setError(error as Error);
       console.log(error);
       alert(
         '불러오는 데 오류 발생 다시 시도해주세요 오류메시지를 다시 설정해주세요'
@@ -182,30 +166,57 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     setFormData(data);
   };
 
+  mock
+    .onPut(`/buddies/1a/d`)
+    .reply(200, { success: true, message: '반려동물 삭제 성공' });
+
+  mock
+    .onPut(`/buddies/2b/d`)
+    .reply(200, { success: true, message: '반려동물 삭제 성공' });
+
   const deleteProfile = async (buddyId: string) => {
     // 가짜 DELETE 요청 처리
+    mock
+      .onPut(`/buddies/${buddyId}/d`)
+      .reply(200, { success: true, message: '반려동물 삭제 성공' });
+
     if (window.confirm('프로필 삭제 알림')) {
       try {
-        mock
-          .onDelete(`/buddies/${buddyId}`)
-          .reply(200, { success: true, message: '반려동물 등록 성공' });
-
         setLoading(true);
 
-        await axiosInstance.delete(`/buddies/${buddyId}`);
+        if (profiles) {
+          const filterdProfile = profiles.find(
+            (profile) => profile._id === buddyId
+          );
 
-        // filter 사용하여 현재 profiles 상태를 delete 요청한 프로필을 제외하여 다시 구성해줌
-        const updatedProfiles = profiles.filter(
-          (profile) => profile._id !== buddyId
-        );
-        setProfiles(updatedProfiles); // 상태 업데이트
-        // API 적용 시, 프로필 삭제 후 카드 선택 상태를 첫 번째 카드로 지정해주는 로직을 사용한다.
-        // 지금은 목데이터도 업데이트 되기 때문에 삭제만 해놓은 상태
-        // if (updatedProfiles.length > 0) setSelectedId(updatedProfiles[0]._id);
+          if (!filterdProfile) {
+            console.error('일치하는 반려동물이 없습니다.');
+            return;
+          }
+
+          const deletedProfile: BuddyProfile = {
+            ...filterdProfile,
+            deletedAt: new Date(),
+          };
+          console.log(deletedProfile);
+          await axiosInstance.put(`/buddies/${buddyId}/d`);
+
+          const updatedProfiles = profiles.map((profile) =>
+            profile._id === buddyId ? deletedProfile : profile
+          );
+
+          setProfiles(updatedProfiles);
+          console.log(profiles);
+        }
+
+        // setProfiles(updatedProfiles); // 상태 업데이트
+        // // API 적용 시, 프로필 삭제 후 카드 선택 상태를 첫 번째 카드로 지정해주는 로직을 사용한다.
+        // // 지금은 목데이터도 업데이트 되기 때문에 삭제만 해놓은 상태
+        // // if (updatedProfiles.length > 0) setSelectedId(updatedProfiles[0]._id);
 
         setLoading(false);
       } catch (error) {
-        setError(error);
+        setError(error as Error);
       }
     }
   };
@@ -227,6 +238,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
         kind: formData.get('kind'),
         age: formData.get('age'),
         buddyImage: formData.get('buddyImage'),
+        deletedAt: null,
       };
 
       setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
@@ -248,7 +260,6 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
   const handleEditSubmit = async () => {
     const buddyId = selectedBuddy?._id;
-
     // 가짜 PUT 요청 처리
     mock.onPut(`/buddies/${buddyId}`).reply((config) => {
       // console.log('요청 정보:', config);
@@ -269,6 +280,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
         species: formData.get('species'),
         isNeutered: formData.get('isNeutered'),
         weight: formData.get('weight'),
+        deletedAt: null,
       };
 
       // 여기서 필요한 처리를 수행 (예: 데이터 업데이트)
@@ -295,7 +307,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
         // 프로필 상태를 업데이트 된 프로필로 변경
         setProfiles(updatedProfiles);
-
+        console.log(profiles);
         handleClosePetEditModal();
       })
       .catch((error) => {
@@ -338,25 +350,27 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       >
         {/* 업데이트 된 상태도 렌더링 갱신시켜줘야하기 때문에, buddies가 아닌 profiles를 맵핑 */}
         {profiles &&
-          profiles.map((buddy, index) => (
-            <SwiperSlide key={buddy._id} virtualIndex={index}>
-              <PetCard
-                buddy={buddy}
-                onEdit={() => handleOpenPetEditModal(buddy._id)}
-                onDelete={() => {
-                  deleteProfile(buddy._id);
-                }}
-                onClick={() => {
-                  handleSelectedId(buddy._id);
-                }}
-                className={
-                  buddy._id === selectedId
-                    ? 'selected-card'
-                    : 'not-selected-card'
-                }
-              />
-            </SwiperSlide>
-          ))}
+          profiles
+            .filter((profile) => profile.deletedAt === null)
+            .map((buddy, index) => (
+              <SwiperSlide key={buddy._id} virtualIndex={index}>
+                <PetCard
+                  buddy={buddy}
+                  onEdit={() => handleOpenPetEditModal(buddy._id)}
+                  onDelete={() => {
+                    deleteProfile(buddy._id);
+                  }}
+                  onClick={() => {
+                    handleSelectedId(buddy._id);
+                  }}
+                  className={
+                    buddy._id === selectedId
+                      ? 'selected-card'
+                      : 'not-selected-card'
+                  }
+                />
+              </SwiperSlide>
+            ))}
 
         <SwiperSlide key={999} virtualIndex={999}>
           <CardsWrapper>

@@ -7,7 +7,6 @@ import TextArea from '@/components/common/TextArea';
 import { Record } from '@/interfaces';
 import { LuPlusCircle, LuMinusCircle } from 'react-icons/lu';
 import { CSSTransition } from 'react-transition-group';
-import ValidationAlert from '@/components/common/ValidationAlert';
 
 const Component = styled.div`
   display: flex;
@@ -17,6 +16,7 @@ const Component = styled.div`
 const Container = styled.div`
   display: flex;
   width: auto;
+  position: relative;
   border-bottom: 1px solid var(--color-grey-2);
   &.noBorder {
     border-bottom: none;
@@ -42,6 +42,12 @@ const BoxTitle = styled.div`
   margin: 20px 100px 20px 0;
   min-width: 32px;
   padding-left: 4px;
+
+  > span {
+    position: absolute;
+    left: 2.25rem;
+    font-size: var(--font-size-ft-1);
+  }
 `;
 
 const ContentTitle = styled.div`
@@ -150,12 +156,25 @@ const AnimatedContent = styled.div`
   ${FadeInOut}
 `;
 
+const Required = styled.span`
+  color: var(--color-red);
+  font-size: var(--font-size-sm-1);
+  vertical-align: top;
+`;
+
 interface HosRecordsProps {
   formData: Record;
   setFormData: React.Dispatch<React.SetStateAction<Record>>;
+  setCheckTreat: React.Dispatch<React.SetStateAction<boolean>>;
+  setCheckSymptom: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
+const HosRecords: React.FC<HosRecordsProps> = ({
+  formData,
+  setFormData,
+  setCheckTreat,
+  setCheckSymptom,
+}) => {
   const [checked, setChecked] = useState(
     formData ? !formData.isConsultation : false
   );
@@ -251,6 +270,8 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
         setSymptomInput,
         'symptom'
       );
+
+      setCheckSymptom(false);
     }
   };
 
@@ -290,6 +311,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
         setTreatmentInput,
         'treatment'
       );
+      setCheckTreat(false);
     }
   };
 
@@ -358,7 +380,9 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
                 </ContentBody>
               </Content>
               <Content>
-                <ContentTitle>진료받은 병원을 입력해주세요.</ContentTitle>
+                <ContentTitle>
+                  진료받은 병원을 입력해주세요.<Required>*</Required>
+                </ContentTitle>
                 <ContentBody>
                   <Input
                     name="address"
@@ -416,13 +440,15 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
       </Container>
 
       <Container>
-        <BoxTitle>질병</BoxTitle>
+        <BoxTitle>
+          질병<Required> *</Required>
+        </BoxTitle>
+
         <ContentCard>
           <Content>
-            {/* <ContentTitle> </ContentTitle> */}
             <Input
               height="20px"
-              placeholder="입력하여주세요."
+              placeholder="질병명을 입력해주세요"
               name="disease"
               value={formData?.disease || ''}
               onChange={handleInputChange}
@@ -438,10 +464,15 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
         <ContentCard>
           <Content>
             <Input
-              placeholder="입력하여주세요."
+              placeholder="리스트에 추가해주세요"
               name="symptom"
               value={symptomInput}
-              onChange={(e) => setSymptomInput(e.target.value)}
+              onChange={(e) => {
+                setSymptomInput(e.target.value);
+                if (e.target.value === null || e.target.value === '') {
+                  setCheckSymptom(false);
+                } else setCheckSymptom(true);
+              }}
               onKeyDown={handleSymptomKeyDown}
             />
             <AddButton onClick={addSymptom}>
@@ -472,10 +503,15 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
         <ContentCard>
           <Content>
             <Input
-              placeholder="입력하여주세요."
+              placeholder="리스트에 추가해주세요."
               name="treatment"
               value={treatmentInput}
-              onChange={(e) => setTreatmentInput(e.target.value)}
+              onChange={(e) => {
+                setTreatmentInput(e.target.value);
+                if (e.target.value === null || e.target.value === '') {
+                  setCheckTreat(false);
+                } else setCheckTreat(true);
+              }}
               onKeyDown={handleTreatmentKeyDown}
             />
             <AddButton onClick={addTreatment}>
@@ -506,7 +542,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({ formData, setFormData }) => {
         <ContentCard>
           <Content>
             <TextArea
-              placeholder="입력하여주세요."
+              placeholder="메모 내용을 입력해주세요."
               name="memo"
               value={formData?.memo || ''}
               onChange={handleInputChange}

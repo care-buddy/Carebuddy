@@ -17,17 +17,8 @@ import { Record } from '@/interfaces';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Loading from '@/components/common/Loading';
+import ValidationAlert from '@/components/common/ValidationAlert';
 import HosRecords from './HosRecords';
-
-// const fadeIn = keyframes`
-//   from {
-//     opacity: 0;
-//     transition: opacity 0.5s ease-in-out;
-//   }
-//   to {
-//     opacity: 1;
-//   }
-// `;
 
 /* 다이어리 */
 
@@ -165,6 +156,12 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
   // 모달을 닫았을 때 다시 백업 데이터로 세팅
   const [backupFormData, setBackupFormData] = useState<Record>(record);
 
+  // 유효성 검사 알림 상태
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+  const [isCheckSymptom, setCheckSymptom] = useState(false);
+  const [isCheckTreat, setCheckTreat] = useState(false);
+
   const handleOpenEditModal = () => {
     // 수정 모달 표시 여부를 관리하는 함수
     setEditModalOpen(!editModalOpen);
@@ -214,21 +211,59 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
     return [200, updatedRecord];
   });
 
+  const validateForm = () => {
+    if (formData.isConsultation && formData.address === '') {
+      setAlertMessage('병원 정보를 입력해 주세요.');
+      return false;
+    }
+
+    if (formData.disease === '') {
+      setAlertMessage('질병 정보를 입력해 주세요.');
+      return false;
+    }
+    if (isCheckSymptom) {
+      setAlertMessage('증상 내용을 추가하셨는지 확인해주세요.');
+      return false;
+    }
+
+    if (isCheckTreat) {
+      setAlertMessage('처방 내용을 추가하셨는지 확인해주세요.');
+      return false;
+    }
+
+    return true;
+  };
+
   const handleEditSubmit = async () => {
     // 2. 위 정보로 상태 업데이트
     try {
       setLoading(true);
       /* 모킹에서는 res 받을 일이 없으므로 받지 않는다 */
-      await axiosInstance.put(`/hospitals/${record._id}`, formData);
+      if (validateForm()) {
+        await axiosInstance.put(`/hospitals/${record._id}`, formData);
+        setFormData(formData);
+        setBackupFormData(formData);
+        onUpdate(formData);
+        handleCloseEditModal();
+      } else setShowAlert(true);
+
       // 실제 API 붙인 뒤에도 필요 한지?
-      setFormData(formData);
-      setBackupFormData(formData);
-      onUpdate(formData);
+
+      /* if (validateForm() && formData) {
+      axiosInstance
+        .post(`/hospitals`, formData)
+        .then(() => {
+          handleCloseModal();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else setShowAlert(true); */
     } catch (e) {
       console.log(e);
     } finally {
+      /* 로딩 컴포넌트가 화면 전체를 덮는 것을 확인 */
       setLoading(false);
-      handleCloseEditModal();
     }
   };
 
@@ -315,9 +350,20 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
             title="병원 기록 수정"
             value="수정"
             component={
-              <HosRecords formData={formData} setFormData={setFormData} />
+              <HosRecords
+                formData={formData}
+                setFormData={setFormData}
+                setCheckTreat={setCheckTreat}
+                setCheckSymptom={setCheckSymptom}
+              />
             }
             onHandleClick={handleEditSubmit}
+          />
+        )}
+        {showAlert && (
+          <ValidationAlert
+            message={alertMessage}
+            onClose={() => setShowAlert(false)}
           />
         )}
         <DiaryDetailContainer>

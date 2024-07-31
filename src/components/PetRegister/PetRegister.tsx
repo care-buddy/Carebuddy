@@ -105,116 +105,130 @@ const PetRegister: React.FC<PetRegisterProps> = ({
   }, [petInfo, selectedFile]);
 
   return (
-    <>
-      <Section>
-        <Heading>프로필 등록</Heading>
-        <ImageContainer>
-          <ImageUploader
-            transferFile={buddyImage}
-            selectFile={selectedFile}
-            onSelectFile={setSelectedFile}
-          />
-        </ImageContainer>
-      </Section>
-      <Section>
-        <Heading>반려동물 이름</Heading>
-        <Input
-          onChange={(e) => handleInputChange(e, 'name')}
-          placeholder="이름을 입력해주세요"
-          placeholderColor="light-grey"
-          defaultValue={petData?.name || ''}
-        />
-      </Section>
-      <Section>
-        <Heading>반려동물 성별</Heading>
-        <Button
-          buttonStyle={petInfo?.sex === 1 ? 'square-green' : 'square-white'}
-          buttonSize="sm"
-          onClick={() => handleClick('sex', 1)}
-        >
-          남자 아이
-        </Button>
-        <Button
-          buttonStyle={petInfo?.sex === 2 ? 'square-green' : 'square-white'}
-          buttonSize="sm"
-          onClick={() => handleClick('sex', 2)}
-        >
-          여자 아이
-        </Button>
-      </Section>
-      <Section>
-        <Heading>반려동물 종</Heading>
-        <Button
-          buttonStyle={petInfo.species === 0 ? 'square-green' : 'square-white'}
-          buttonSize="sm"
-          onClick={() => handleClick('species', 0)}
-        >
-          강아지
-        </Button>
-        <Button
-          buttonStyle={petInfo.species === 1 ? 'square-green' : 'square-white'}
-          buttonSize="sm"
-          onClick={() => handleClick('species', 1)}
-        >
-          고양이
-        </Button>
-      </Section>
-      <Section>
-        <Heading>품종</Heading>
-        <Input
-          onChange={(e) => handleInputChange(e, 'kind')}
-          placeholder="품종을 입력해주세요"
-          placeholderColor="light-grey"
-          defaultValue={petData?.kind || ''}
-        />
-      </Section>
-      <Section>
-        <Heading>반려동물 나이</Heading>
-        <Input
-          type="number"
-          onChange={(e) => handleInputChange(e, 'age')}
-          placeholder="나이를 입력해주세요"
-          placeholderColor="light-grey"
-          defaultValue={petData?.age || ''}
-        />
-      </Section>
-      <Section>
-        <Heading>중성화 여부</Heading>
-        <Button
-          buttonStyle={
-            petInfo.isNeutered === 0 ? 'square-green' : 'square-white'
-          }
-          buttonSize="sm"
-          onClick={() => handleClick('isNeutered', 0)}
-        >
-          중성화 전
-        </Button>
-        <Button
-          buttonStyle={
-            petInfo.isNeutered === 1 ? 'square-green' : 'square-white'
-          }
-          buttonSize="sm"
-          onClick={() => handleClick('isNeutered', 1)}
-        >
-          중성화 완료
-        </Button>
-      </Section>
+    <Wrapper>
+      <LeftSection>
+        <Section>
+          <Heading>프로필 등록</Heading>
+          <ImageContainer>
+            <ImageUploader
+              transferFile={buddyImage}
+              selectFile={selectedFile}
+              onSelectFile={setSelectedFile}
+            />
+          </ImageContainer>
+        </Section>
+      </LeftSection>
 
-      <Section>
-        <Heading>반려동물 체중</Heading>
-        <Input
-          type="number"
-          onChange={(e) => handleInputChange(e, 'weight')}
-          placeholder="체중을 입력해주세요"
-          placeholderColor="light-grey"
-          defaultValue={petData?.weight || ''}
-        />
-      </Section>
-    </>
+      <RightSection>
+        <Section>
+          <Heading>반려동물 이름</Heading>
+          <Input
+            onChange={(e) => handleInputChange(e, 'name')}
+            placeholder="이름을 입력해주세요"
+            placeholderColor="light-grey"
+            defaultValue={petData?.name || ''}
+          />
+        </Section>
+        <Section>
+          <Heading>반려동물 성별</Heading>
+          <Button
+            buttonStyle={petInfo?.sex === 1 ? 'square-green' : 'square-white'}
+            buttonSize="sm"
+            onClick={() => handleClick('sex', 1)}
+          >
+            남자 아이
+          </Button>
+          <Button
+            buttonStyle={petInfo?.sex === 2 ? 'square-green' : 'square-white'}
+            buttonSize="sm"
+            onClick={() => handleClick('sex', 2)}
+          >
+            여자 아이
+          </Button>
+        </Section>
+        <Section>
+          <Heading>반려동물 종</Heading>
+          <Button
+            buttonStyle={
+              petInfo.species === 0 ? 'square-green' : 'square-white'
+            }
+            buttonSize="sm"
+            onClick={() => handleClick('species', 0)}
+          >
+            강아지
+          </Button>
+          <Button
+            buttonStyle={
+              petInfo.species === 1 ? 'square-green' : 'square-white'
+            }
+            buttonSize="sm"
+            onClick={() => handleClick('species', 1)}
+          >
+            고양이
+          </Button>
+        </Section>
+        <Section>
+          <Heading>품종</Heading>
+          <Input
+            onChange={(e) => handleInputChange(e, 'kind')}
+            placeholder="품종을 입력해주세요"
+            placeholderColor="light-grey"
+            defaultValue={petData?.kind || ''}
+          />
+        </Section>
+        <Section>
+          <Heading>반려동물 나이</Heading>
+          <Input
+            type="number"
+            onChange={(e) => handleInputChange(e, 'age')}
+            placeholder="나이를 입력해주세요"
+            placeholderColor="light-grey"
+            defaultValue={petData?.age || ''}
+          />
+        </Section>
+        <Section>
+          <Heading>중성화 여부</Heading>
+          <Button
+            buttonStyle={
+              petInfo.isNeutered === 0 ? 'square-green' : 'square-white'
+            }
+            buttonSize="sm"
+            onClick={() => handleClick('isNeutered', 0)}
+          >
+            중성화 전
+          </Button>
+          <Button
+            buttonStyle={
+              petInfo.isNeutered === 1 ? 'square-green' : 'square-white'
+            }
+            buttonSize="sm"
+            onClick={() => handleClick('isNeutered', 1)}
+          >
+            중성화 완료
+          </Button>
+        </Section>
+
+        <Section>
+          <Heading>반려동물 체중</Heading>
+          <Input
+            type="number"
+            onChange={(e) => handleInputChange(e, 'weight')}
+            placeholder="체중을 입력해주세요"
+            placeholderColor="light-grey"
+            defaultValue={petData?.weight || ''}
+          />
+        </Section>
+      </RightSection>
+    </Wrapper>
   );
 };
 
 export default PetRegister;
+
+const Wrapper = styled.div``;
+
+const LeftSection = styled.div``;
+const RightSection = styled.div``;
 
 const Section = styled.div`
   padding-bottom: 20px;
