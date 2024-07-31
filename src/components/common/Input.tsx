@@ -60,7 +60,16 @@ const placeholderColors = {
 };
 
 // 기본 스타일을 여기서 지정: 기본 스타일 + 동적 스타일
-const StyledInput = styled.input<StyledInputProps>`
+const StyledInput = styled.input.withConfig({
+  shouldForwardProp: (prop) =>
+    ![
+      'inputSize',
+      'activeOption',
+      'borderStyle',
+      'inputPadding',
+      'placeholderColor',
+    ].includes(prop),
+})<StyledInputProps>`
   font-family: 'Pretendard-Regular', sans-serif;
   color: var(--color-black);
   border: 1px solid var(--color-grey-2);
