@@ -133,6 +133,8 @@ const Diary: React.FC = () => {
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
+  // 화면 렌더링 시 버디와 로딩 상태를 공유할 경우, 버디만 렌더링 완료된 경우에 로딩 상태가 false가 되므로 분리한다.
+  const [isRecordLoading, setRecordLoading] = useState(false);
   const [, setError] = useState<Error | null>(null);
 
   // 반려동물 1마리의 병원 기록들을 저장할 상태
@@ -166,7 +168,7 @@ const Diary: React.FC = () => {
   mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
   const fetchRecordsData = async (buddyId: string) => {
     // /api/hospitals로 GET 요청 모킹
-    setLoading(true);
+    setRecordLoading(true);
     try {
       const response = await axiosInstance.get(`/hospitals/${buddyId}`);
 
@@ -174,7 +176,8 @@ const Diary: React.FC = () => {
     } catch (error) {
       setError(error as Error);
     } finally {
-      setLoading(false);
+      // 로딩 상태 확인 완료
+      setRecordLoading(false);
     }
   };
   useEffect(() => {
@@ -300,6 +303,7 @@ const Diary: React.FC = () => {
             deletedAt: new Date(),
           };
 
+          setLoading(true);
           // 서버에 삭제 요청
           await axiosInstance.put(`/hospitals/${recordId}/d`, deletedRecord);
 
@@ -315,6 +319,9 @@ const Diary: React.FC = () => {
       } catch (e) {
         console.error(e);
         setError(e as Error);
+      } finally {
+        // 로딩 상태 확인 완료
+        setLoading(false);
       }
     }
   };
@@ -344,6 +351,7 @@ const Diary: React.FC = () => {
   };
 
   if (isLoading) return <Loading />;
+  if (isRecordLoading) return <Loading />;
 
   console.log(formData);
   return (

@@ -20,16 +20,6 @@ import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import HosRecords from './HosRecords';
 
-// const fadeIn = keyframes`
-//   from {
-//     opacity: 0;
-//     transition: opacity 0.5s ease-in-out;
-//   }
-//   to {
-//     opacity: 1;
-//   }
-// `;
-
 /* 다이어리 */
 
 const DiseaseTitle = styled.h2`
@@ -272,6 +262,7 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
     } catch (e) {
       console.log(e);
     } finally {
+      /* 로딩 컴포넌트가 화면 전체를 덮는 것을 확인 */
       setLoading(false);
     }
   };
