@@ -8,6 +8,7 @@ interface StyledInputProps {
   borderStyle?: 'round' | 'square';
   inputPadding?: 'default' | 'sm';
   placeholderColor?: 'default' | 'light-grey';
+  focusColor?: 'default' | 'green';
 }
 
 const inputSizes = {
@@ -59,6 +60,15 @@ const placeholderColors = {
   `,
 };
 
+const focusColors = {
+  default: css``,
+  green: css`
+    &:focus {
+      border: 1px solid var(--color-green-main);
+    }
+  `,
+};
+
 // 기본 스타일을 여기서 지정: 기본 스타일 + 동적 스타일
 const StyledInput = styled.input.withConfig({
   shouldForwardProp: (prop) =>
@@ -68,17 +78,21 @@ const StyledInput = styled.input.withConfig({
       'borderStyle',
       'inputPadding',
       'placeholderColor',
+      'focusColor',
     ].includes(prop),
 })<StyledInputProps>`
   font-family: 'Pretendard-Regular', sans-serif;
   color: var(--color-black);
   border: 1px solid var(--color-grey-2);
+  transition: all 0.3s;
+
   ${(props) => props.inputSize && inputSizes[props.inputSize]}
   ${(props) => props.activeOption && activeOptions[props.activeOption]}
   ${(props) => props.borderStyle && borderStyles[props.borderStyle]}
   ${(props) => props.inputPadding && inputPaddings[props.inputPadding]}
   ${(props) =>
     props.placeholderColor && placeholderColors[props.placeholderColor]}
+    ${(props) => props.focusColor && focusColors[props.focusColor]}
   outline: none;
 `;
 
@@ -93,6 +107,7 @@ const Input: React.FC<InputProps> = ({
   borderStyle = 'round',
   inputPadding = 'default',
   placeholderColor = 'default',
+  focusColor = 'default',
   //   types나 placeholder 등.. 동적으로 나머지 props 가져옴
   ...props
 }) => (
@@ -102,6 +117,7 @@ const Input: React.FC<InputProps> = ({
     borderStyle={borderStyle}
     inputPadding={inputPadding}
     placeholderColor={placeholderColor}
+    focusColor={focusColor}
     {...props}
   />
 );

@@ -121,16 +121,17 @@ const PetRegister: React.FC<PetRegisterProps> = ({
 
       <RightSection>
         <Section>
-          <Heading>반려동물 이름</Heading>
+          <Heading>이름</Heading>
           <Input
             onChange={(e) => handleInputChange(e, 'name')}
             placeholder="이름을 입력해주세요"
-            placeholderColor="light-grey"
             defaultValue={petData?.name || ''}
+            inputPadding="sm"
+            focusColor="green"
           />
         </Section>
         <Section>
-          <Heading>반려동물 성별</Heading>
+          <Heading>성별</Heading>
           <Button
             buttonStyle={petInfo?.sex === 1 ? 'square-green' : 'square-white'}
             buttonSize="sm"
@@ -172,22 +173,24 @@ const PetRegister: React.FC<PetRegisterProps> = ({
           <Input
             onChange={(e) => handleInputChange(e, 'kind')}
             placeholder="품종을 입력해주세요"
-            placeholderColor="light-grey"
+            inputPadding="sm"
             defaultValue={petData?.kind || ''}
+            focusColor="green"
           />
         </Section>
         <Section>
-          <Heading>반려동물 나이</Heading>
+          <Heading>나이</Heading>
           <Input
             type="number"
             onChange={(e) => handleInputChange(e, 'age')}
             placeholder="나이를 입력해주세요"
-            placeholderColor="light-grey"
+            inputPadding="sm"
             defaultValue={petData?.age || ''}
+            focusColor="green"
           />
         </Section>
         <Section>
-          <Heading>중성화 여부</Heading>
+          <Heading>중성화</Heading>
           <Button
             buttonStyle={
               petInfo.isNeutered === 0 ? 'square-green' : 'square-white'
@@ -214,8 +217,9 @@ const PetRegister: React.FC<PetRegisterProps> = ({
             type="number"
             onChange={(e) => handleInputChange(e, 'weight')}
             placeholder="체중을 입력해주세요"
-            placeholderColor="light-grey"
+            inputPadding="sm"
             defaultValue={petData?.weight || ''}
+            focusColor="green"
           />
         </Section>
       </RightSection>
@@ -225,26 +229,27 @@ const PetRegister: React.FC<PetRegisterProps> = ({
 
 export default PetRegister;
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  display: flex;
+`;
 
 const LeftSection = styled.div``;
-const RightSection = styled.div``;
+const RightSection = styled.div`
+  margin-left: 5.5rem;
+`;
 
 const Section = styled.div`
-  padding-bottom: 20px;
+  padding-bottom: 1rem;
 
   & > * {
     margin-right: 10px;
-  }
-
-  input {
-    padding: 8px 6px;
   }
 `;
 
 const Heading = styled.p`
   padding: 12px 0;
   font-size: var(--font-size-md-2);
+  font-weight: var(--font-weight-bold);
 `;
 
 const ImageContainer = styled.div`
