@@ -34,6 +34,12 @@ const Content = styled.div`
   display: flex;
   flex-direction: column;
   position: relative;
+  transition: all 0.3s;
+  > textarea {
+    &:focus {
+      border: 1px solid var(--color-green-main);
+    }
+  }
 `;
 
 const BoxTitle = styled.div`
@@ -371,6 +377,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
                   <Input
                     type="date"
                     inputSize="sm"
+                    focusColor="green"
                     value={
                       date ? new Date(date).toISOString().split('T')[0] : ''
                     }
@@ -387,6 +394,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
                   <Input
                     name="address"
                     inputSize="sm"
+                    focusColor="green"
                     value={formData?.address || ''}
                     placeholder="병원명"
                     onChange={handleInputChange}
@@ -405,6 +413,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
                     value={formData?.doctorName || ''}
                     placeholder="선생님 성함"
                     onChange={handleInputChange}
+                    focusColor="green"
                     // activeOption={checked ? 'readOnly' : 'active'}
                   />
                 </ContentBody>
@@ -452,6 +461,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
               name="disease"
               value={formData?.disease || ''}
               onChange={handleInputChange}
+              focusColor="green"
               required
             />
             <ContentBody />
@@ -467,6 +477,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
               placeholder="리스트에 추가해주세요"
               name="symptom"
               value={symptomInput}
+              focusColor="green"
               onChange={(e) => {
                 setSymptomInput(e.target.value);
                 if (e.target.value === null || e.target.value === '') {
@@ -504,6 +515,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
           <Content>
             <Input
               placeholder="리스트에 추가해주세요."
+              focusColor="green"
               name="treatment"
               value={treatmentInput}
               onChange={(e) => {
