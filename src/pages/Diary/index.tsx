@@ -353,7 +353,6 @@ const Diary: React.FC = () => {
   if (isLoading) return <Loading />;
   if (isRecordLoading) return <Loading />;
 
-  console.log(formData);
   return (
     <>
       <TopBar category="건강관리" title="건강 다이어리" />

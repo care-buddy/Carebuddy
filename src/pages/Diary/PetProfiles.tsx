@@ -14,6 +14,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { tempProfileSrc } from '@constants/tempData';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import Loading from '@/components/common/Loading';
+import ValidationAlert from '@/components/common/ValidationAlert';
 import { CardsWrapper, Cards } from './card-components';
 import PetCard from './PetCard';
 
@@ -123,6 +124,10 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   const [isLoading, setLoading] = useState(false);
   const [, setError] = useState<Error | null>(null);
 
+  // 유효성 검사 알림 상태
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
   const handleOpenPetModal = () => {
     setPetModalOpen(true);
   };
@@ -164,6 +169,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   // 폼데이터가 변화할때마다 상태 업데이트
   const handleFormDataChange = (data: FormData) => {
     setFormData(data);
+    console.log(data);
   };
 
   mock
@@ -226,6 +232,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     // 가짜 POST 요청 처리
     mock.onPost('/buddies').reply((config) => {
       const formData = config.data;
+      // post 요청 확인 용 코드입니다.
       // const entries = formData.entries();
       // Mock Post 확인용이므로 룰을 잠시 삭제
       // eslint-disable-next-line no-restricted-syntax
@@ -246,16 +253,21 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       return [200, { success: true, message: '반려동물 등록 성공' }];
     });
 
-    axiosInstance
-      .post('/buddies', formData)
-      .then((res) => {
-        console.log(res.data);
+    if (validateForm() && formData) {
+      setLoading(true);
+      axiosInstance
+        .post('/buddies', formData)
+        .then((res) => {
+          console.log(res.data);
 
-        handleClosePetModal();
-      })
-      .catch((error) => {
-        setError(error);
-      });
+          handleClosePetModal();
+        })
+        .catch((error) => {
+          setError(error);
+        })
+        // 로딩 처리 확인
+        .finally(() => setLoading(false));
+    } else setShowAlert(true);
   };
 
   const handleEditSubmit = async () => {
@@ -264,6 +276,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     mock.onPut(`/buddies/${buddyId}`).reply((config) => {
       // console.log('요청 정보:', config);
       const formData = config.data;
+      // put 요청 확인용 코드입니다.
       // const entries = formData.entries();
       // // eslint-disable-next-line no-restricted-syntax
       // for (const [key, value] of entries) {
@@ -283,37 +296,39 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
         deletedAt: null,
       };
 
-      // 여기서 필요한 처리를 수행 (예: 데이터 업데이트)
-
-      console.log(updatedBuddy.buddyImage);
       return [200, updatedBuddy]; // 성공 응답 반환
     });
 
-    axiosInstance
-      .put(`/buddies/${buddyId}`, formData)
-      .then((res) => {
-        // 응답으로 수정된 정보가 올 것
-        const updatedBuddy = res.data;
-        // 수정된 정보로 해당 버디 정보 업데이트
-        setSelectedBuddy(updatedBuddy);
+    if (validateForm() && formData) {
+      // 로딩 처리 확인
+      setLoading(true);
+      axiosInstance
+        .put(`/buddies/${buddyId}`, formData)
+        .then((res) => {
+          // 응답으로 수정된 정보가 올 것
+          const updatedBuddy = res.data;
+          // 수정된 정보로 해당 버디 정보 업데이트
+          setSelectedBuddy(updatedBuddy);
 
-        // 버디 프로필들 중, 해당 id의 버디만 업데이트 프로필로 변경해준다.
-        const updatedProfiles = profiles.map((profile) => {
-          if (profile._id === buddyId) {
-            return updatedBuddy;
-          }
-          return profile;
-        });
+          // 버디 프로필들 중, 해당 id의 버디만 업데이트 프로필로 변경해준다.
+          const updatedProfiles = profiles.map((profile) => {
+            if (profile._id === buddyId) {
+              return updatedBuddy;
+            }
+            return profile;
+          });
 
-        // 프로필 상태를 업데이트 된 프로필로 변경
-        setProfiles(updatedProfiles);
-        console.log(profiles);
-        handleClosePetEditModal();
-      })
-      .catch((error) => {
-        console.log(error);
-        setError(error);
-      });
+          // 프로필 상태를 업데이트 된 프로필로 변경
+          setProfiles(updatedProfiles);
+
+          handleClosePetEditModal();
+        })
+        .catch((error) => {
+          console.log(error);
+          setError(error);
+        })
+        .finally(() => setLoading(false));
+    } else setShowAlert(true);
   };
 
   const handleSelectedId = (buddyId: string) => {
@@ -334,6 +349,41 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     // 반려동물 프로필이 있거나 변경된 경우 상위 컴포넌트에 전달
     if (selectedId) onBuddySelect(selectedId);
   }, [buddies, selectedId]);
+
+  const validateForm = () => {
+    // 체중을 제외한 유효성 검사
+    if (formData) {
+      if (formData.get('name') === '' || formData.get('name') === null) {
+        setAlertMessage('이름을 입력해주세요.');
+        return false;
+      }
+      // formData는 문자열로 전송
+      if (formData.get('sex') === 'null') {
+        setAlertMessage('성별을 선택해주세요.');
+        return false;
+      }
+      if (formData.get('species') === 'null') {
+        setAlertMessage('종을 선택해주세요.');
+        return false;
+      }
+      if (formData.get('kind') === '') {
+        setAlertMessage('품종을 입력해주세요.');
+        return false;
+      }
+      if (formData.get('age') === '') {
+        setAlertMessage('나이를 입력해주세요.');
+        return false;
+      }
+      if (formData.get('isNeutered') === 'null') {
+        setAlertMessage('중성화 여부를 선택해주세요.');
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  if (isLoading) return <Loading />;
 
   return (
     <div>
@@ -417,6 +467,12 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
             )
           }
           onHandleClick={handleEditSubmit}
+        />
+      )}
+      {showAlert && (
+        <ValidationAlert
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
         />
       )}
     </div>
