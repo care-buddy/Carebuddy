@@ -29,7 +29,14 @@ const DiseaseTitle = styled.h2`
   margin-left: 10px;
 `;
 
-const Paragraph = styled.p``;
+const Paragraph = styled.p`
+  /* 3줄 초과 시 말줄임표로 표현 */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+`;
 
 const Grey = styled.span`
   color: var(--color-grey-1);
@@ -112,11 +119,13 @@ const DiaryDetailContainer = styled.div`
 
 const DiaryDetail = styled.div`
   margin-left: 15px;
-  margin-bottom: 30px;
-  /* margin-right: 250px; */
+  margin-bottom: 1.7rem;
   width: 100%;
   display: flex;
   flex-direction: column;
+  &.memo {
+    margin-bottom: 1rem;
+  }
 `;
 
 const DetailTitle = styled.p`
@@ -331,7 +340,7 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
           <Icon>
             <LuMessageSquarePlus />
           </Icon>
-          <DiaryDetail>
+          <DiaryDetail className="memo">
             <DetailTitle>보호자 메모</DetailTitle>
             <Paragraph>{record.memo ?? '작성한 메모가 없습니다'}</Paragraph>
           </DiaryDetail>
