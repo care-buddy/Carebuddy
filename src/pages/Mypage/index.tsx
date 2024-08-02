@@ -37,8 +37,14 @@ mock.onGet('/api/user').reply(200, {
 
 mock.onPut('/api/user').reply((config) => {
   const { nickname, introduction, profileImage } = JSON.parse(config.data);
-  console.log('받은 데이터:', { nickname, introduction, profileImage });
+  // console.log('받은 데이터:', { nickname, introduction, profileImage });
   return [200, { nickname, introduction, profileImage }];
+});
+
+mock.onPost('/api/posts').reply((config) => {
+  const { title, content, groupId } = JSON.parse(config.data);
+  console.log('게시물 생성:', { title, content, groupId });
+  return [200, { title, content, groupId }];
 });
 
 const Container = styled.div`
@@ -104,6 +110,8 @@ const Mypage: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
+  const [formData, setFormData] = useState({ title: '', content: '', groupId: '' });
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
@@ -121,15 +129,18 @@ const Mypage: React.FC = () => {
     fetchData();
   }, []);
 
-  const handlePostSubmit = async (formData: { title?: string; content?: string; groupId?: string }) => {
+  const handlePostSubmit = async () => {
     try {
+      console.log('게시물 생성 요청 데이터:', formData);
       const response = await axios.post('/api/posts', formData);
       console.log('게시물 생성됨:', response.data);
-      setIsModalOpen(false); // 모달 닫기
+      alert('게시글 작성 완료');
+      // setIsWriteModalOpen(false);
     } catch (error) {
       console.error('게시물 생성 오류:', error);
     }
   };
+
 
   const handleIntroductionChange = (newIntroduction: string) => {
     setUserData((prevData) => ({ ...prevData, introduction: newIntroduction }));
@@ -183,6 +194,13 @@ const Mypage: React.FC = () => {
     setIsEditModalOpen(false);
   };
 
+  const handleFormDataChange = (data: { title?: string, content?: string, groupId?: string }) => {
+    setFormData(prevData => ({
+      ...prevData,
+      ...data
+    }));
+  };
+
   const contentItems = [
     { id: '1', content: '회원정보', component: <UserInfoContainer userData={userData} /> },
     { id: '2', content: '프로필', component: <ProfileContainer userData={userData} onIntroductionChange={handleIntroductionChange} onNicknameChange={handleNicknameChange} onProfileImageChange={handleProfileImageChange} /> },
@@ -193,19 +211,24 @@ const Mypage: React.FC = () => {
   return (
     <Container>
       <TopBar category="회원 정보 수정" title="마이 페이지" />
-      <Button onClick={handleWriteClick}>글 작성하기 모달 임시</Button>
+      <Button onClick={handleWriteClick}>글 작성하기</Button>
       {isWriteModalOpen && (
         <Modal
           title="글 작성하기"
           value="등록"
-          component={<PostCreate />}
-          onConfirm={handlePostSubmit}
+          component={<PostCreate formData={formData} onFormDataChange={handleFormDataChange} />}
           onClose={handleCloseWriteModal}
+          onHandleClick={handlePostSubmit}
         />
       )}
-      <Button onClick={handleEditClick}>글 수정하기 모달 임시</Button>
+      <Button onClick={handleEditClick}>글 수정하기</Button>
       {isEditModalOpen && (
-        <Modal title="글 수정하기" value="수정" component={<PostCreate />} onClose={handleCloseEditModal} />
+        <Modal
+          title="글 수정하기"
+          value="수정"
+          component={<PostCreate formData={formData} onFormDataChange={handleFormDataChange} />}
+          onClose={handleCloseEditModal}
+        />
       )}
       {isLoading ? (
         <Loading />

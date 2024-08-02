@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Input from '@/components/common/Input';
@@ -23,10 +23,10 @@ const EditorContainer = styled.div`
 `;
 
 const SelectOptions = [
-  { value: 'group', label: '그룹을 선택해주세요' },
-  { value: 'skin', label: '눈 / 피부 / 귀' },
-  { value: 'eyes', label: '눈 / 코 / 귀' },
-  { value: 'gastroesophageal', label: '위식도' },
+  { value: '', label: '그룹을 선택해주세요' },
+  { value: '6617c6acb39abf604bbe8dc8', label: '눈 / 피부 / 귀' },
+  { value: '6617c6acb39abf604bbe8dc9', label: '눈 / 코 / 귀' },
+  { value: '6617c6acb39abf604bbe8dc7', label: '위식도' },
 ];
 
 const modules = {
@@ -42,33 +42,21 @@ const formats = [
 ];
 
 interface PostCreateProps {
-  onChange?: (data: { title?: string, content?: string, groupId?: string }) => void;
+  formData: { title?: string, content?: string, groupId?: string };
+  onFormDataChange: (data: { title?: string, content?: string, groupId?: string }) => void;
 }
 
-const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
-  const [title, setTitle] = useState<string>('');
-  const [editorContent, setEditorContent] = useState('');
-  const [selectedValue, setSelectedValue] = useState<string>('');
-
-  useEffect(() => {
-    if (onChange) {
-      onChange({ title, content: editorContent, groupId: selectedValue });
-    }
-  }, [title, editorContent, selectedValue, onChange]);
-
+const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) => {
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setSelectedValue(event.target.value);
-    console.log('선택된 값: ', event.target.value);
+    onFormDataChange({ ...formData, groupId: event.target.value });
   };
 
   const handleEditorChange = (content: string) => {
-    setEditorContent(content);
-    console.log('내용: ', content);
+    onFormDataChange({ ...formData, content });
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(event.target.value);
-    console.log('제목: ', event.target.value);
+    onFormDataChange({ ...formData, title: event.target.value });
   };
 
   return (
@@ -78,7 +66,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
           selectStyle="square"
           selectSize="bg"
           options={SelectOptions}
-          value={selectedValue}
+          value={formData.groupId}
           onChange={handleSelectChange}
         />
       </SelectWrapper>
@@ -87,7 +75,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
           inputSize='bg'
           placeholder="제목을 입력해주세요."
           inputPadding='sm'
-          value={title}
+          value={formData.title}
           onChange={handleTitleChange}
         />
       </InputWrapper>
@@ -95,7 +83,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ onChange }) => {
         <ReactQuill
           placeholder='내용을 작성해주세요.'
           style={{ height: '300px' }}
-          value={editorContent}
+          value={formData.content}
           onChange={handleEditorChange}
           modules={modules}
           formats={formats}
