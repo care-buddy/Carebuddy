@@ -11,6 +11,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { Record, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
+import { LuPencilLine } from 'react-icons/lu';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
 import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
@@ -53,6 +54,12 @@ const DiaryWrapper = styled.div`
   box-shadow:
     10px 5px 10px -5px rgba(0, 0, 0, 0.2),
     0px 0 15px -5px rgba(0, 0, 0, 0.1);
+
+  > button {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
 `;
 
 const NameInTitle = styled.h2`
@@ -353,7 +360,6 @@ const Diary: React.FC = () => {
   if (isLoading) return <Loading />;
   if (isRecordLoading) return <Loading />;
 
-  console.log(formData);
   return (
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
@@ -381,7 +387,8 @@ const Diary: React.FC = () => {
           </NameInTitle>
           <HorizontalLine />
           <Button buttonStyle="square-green" onClick={handleOpenModal}>
-            기록하기
+            <LuPencilLine />
+            <span> 다이어리 작성하기</span>
           </Button>
           {modalOpen && (
             <Modal
