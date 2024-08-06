@@ -18,7 +18,6 @@ import TopBar from '@/components/common/TopBar';
 const mock = new MockAdapter(axios, { delayResponse: 500 });
 
 mock.onGet('/api/user').reply(200, {
-  email: 'carebuddy@naver.com',
   nickname: '케어버디',
   introduction: '소개글입니다^^',
   communityId: [
@@ -93,7 +92,6 @@ const ImageBox = styled.div`
 `;
 
 interface UserData {
-  email: string;
   nickname: string;
   introduction: string;
   communityId: CommunityPost[];
@@ -161,7 +159,7 @@ const Userpage: React.FC = () => {
 
   const contentItems = [
     { id: '1', content: '프로필', component: <ProfileContainer userData={userData} /> },
-    { id: '2', content: 'User의 반려동물', component: <PetCardContainer userData={userData} /> },
+    { id: '2', content: 'User의 반려동물', component: <PetCardContainer /> },
     { id: '3', content: '작성 글 목록', component: <ListContainer communityPosts={userData.communityId} postIds={userData.postId} isLoading={isLoading} /> },
   ];
 

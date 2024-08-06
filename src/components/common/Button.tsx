@@ -51,6 +51,10 @@ const buttonStyles = {
     background-color: transparent;
     color: black;
     border: solid 1px var(--color-grey-2);
+    transition: all 0.5s;
+    &:hover {
+      border: solid 1px var(--color-green-main);
+    }
   `,
   'square-grey': css`
     border-radius: 0;
