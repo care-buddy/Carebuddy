@@ -1,3 +1,6 @@
+// 댓글 등록이나 수정 같은 경우 각각의 컴포넌트가 API 요청까지 담당하도록 하는게 더 좋은 방법 같기도 함
+// 시간이 허락한다면 리팩토링 예정
+
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 // import { Link } from 'react-router-dom';
@@ -54,7 +57,7 @@ mock.onPost(`/comments`).reply((config) => {
 
   return [200, responseData];
 });
-mock.onPut(`/api/posts/:_id/d`).reply((config) => {
+mock.onPut(/\/posts\/\w+\/d/).reply((config) => {
   // 글 삭제 목 API -> 완전하게 붙일 수 없음.
 
   const requestData = JSON.parse(config.data);
@@ -67,13 +70,27 @@ mock.onPut(`/api/posts/:_id/d`).reply((config) => {
       profileImage: ['https://picsum.photos/200'],
     },
     text: requestData.text,
-    deletedAt: null,
+    deletedAt: '2024-04-19T09:15:25.992Z',
     _id: '6622362d30d4656920c08dd',
     createdAt: '2024-04-19T09:15:25.992Z',
   };
 
   return [200, responseData];
 });
+mock.onPut(/\/comments\/\w+/).reply(() => [
+  200,
+  {
+    success: true,
+    message: '댓글 수정이 성공적으로 완료되었습니다',
+  },
+]);
+mock.onPut(/\/comments\/\w+\/d/).reply(() => [
+  200,
+  {
+    success: true,
+    message: '댓글 삭제가 성공적으로 완료되었습니다',
+  },
+]);
 
 interface PostProps {
   // title?: string;
@@ -97,21 +114,23 @@ const Post: React.FC<PostProps> = () => {
   // 댓글 등록 API
   const handleWrittenComment = async (comment: string) => {
     try {
-      const response = await axiosInstance.post(`/comments`, {
-        postId: '1',
-        userId: '2',
-        text: comment,
-      });
+      if (comment !== '' && comment !== null) {
+        const response = await axiosInstance.post(`/comments`, {
+          postId: '1',
+          userId: '2',
+          text: comment,
+        });
 
-      const newComment = response.data;
+        const newComment = response.data;
 
-      if (comments) {
-        setComments([...comments, newComment]);
+        if (comments) {
+          setComments([...comments, newComment]);
+        } else {
+          setComments([newComment]);
+        }
       } else {
-        setComments([newComment]);
+        alert('댓글 내용을 입력해주세요.');
       }
-
-      // console.log(newComment, '댓글 등록에 성공했습니다');
     } catch (error) {
       // console.error(error, '댓글 등록에 실패했습니다');
     }
@@ -148,6 +167,59 @@ const Post: React.FC<PostProps> = () => {
     fetchData();
   }, []);
 
+  // 댓글 수정
+  const handleCommentEdit = async (
+    editingComment: string,
+    commentId: string
+  ) => {
+    try {
+      // 댓글 수정하는 API 전송
+      await axiosInstance.put(`/comments/${commentId}`, {
+        text: editingComment,
+      });
+
+      // 댓글 수정해서 setComments 배열에 넣기
+      setComments((prevComments) => {
+        if (prevComments === null) {
+          // prevComments가 null이면 바로 반환(오류 방지용)
+          return prevComments;
+        }
+
+        // prevComments가 null이 아닌 경우 map을 사용하여 수정된 댓글 반영
+        return prevComments.map((comment) =>
+          comment._id === commentId
+            ? { ...comment, text: editingComment }
+            : comment
+        );
+      });
+    } catch (error) {
+      console.error('댓글 수정 실패', error);
+    }
+  };
+
+  // 댓글 삭제
+  const handleCommentDelete = async (commentId: string) => {
+    try {
+      // 댓글 삭제 API 전송
+      await axiosInstance.put(`/comments/${commentId}/d`, {
+        deletedAt: 'O',
+      });
+
+      // comments 배열에서 댓글 삭제
+      setComments((prevComments) => {
+        if (prevComments === null) {
+          // prevComments가 null이면 바로 반환(오류 방지용)
+          return prevComments;
+        }
+
+        // prevComments에서 commentId와 일치하지 않는 댓글만 남김
+        return prevComments.filter((comment) => comment._id !== commentId);
+      });
+    } catch (error) {
+      console.error('댓글 삭제 실패', error);
+    }
+  };
+
   // 글 수정 버튼 클릭
   // const handlePostEdit = () => {
   //   // // 글 수정 모달 열기 -> 글 수정 모달 만들어진지 확인 후 작업
@@ -182,7 +254,6 @@ const Post: React.FC<PostProps> = () => {
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
   };
-
 
   return (
     <>
@@ -242,12 +313,13 @@ const Post: React.FC<PostProps> = () => {
           {comments?.map((comment) => (
             <Comment
               key={comment._id}
+              commentId={comment._id}
               text={comment.text}
               nickname={comment.userId.nickName}
               date={formatDateIncludeTime(comment.createdAt)}
               profileImg={comment.userId.profileImage[0]}
-              // onEdit={handleCommentEdit}
-              // onDelete={handleCommentDelete}
+              onEdit={handleCommentEdit}
+              onDelete={handleCommentDelete}
             />
           ))}
         </CommentContainer>

@@ -5,6 +5,7 @@ import LinkButton from '@/components/common/LinkButton';
 import ActionButton from '@/components/common/ActtionButton';
 
 import useDebounce from '@hooks/useDebounce';
+import { key } from 'localforage';
 
 type CommentProps = {
   // 닉네임, userId 둘 다 받아오는게 맞는지 모르겠음. recoil 적용 후 수정 - 임시
@@ -12,10 +13,10 @@ type CommentProps = {
   profileImg: string;
   nickname: string;
   date: string;
-  // onEdit: () => void;
-  // onDelete: () => void;
+  onEdit: (comment: string, commentId: string) => void;
+  onDelete: (comment: string,) => void;
   // userId: string;
-  // commentId: string | null | undefined;
+  commentId: string;
 };
 
 const Comment: React.FC<CommentProps> = ({
@@ -23,31 +24,34 @@ const Comment: React.FC<CommentProps> = ({
   profileImg,
   nickname,
   date,
-  // onEdit,
-  // onDelete,
+  onEdit,
+  onDelete,
   // userId,
-  // commentId,
+  commentId,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingComment, setEditingComment] = useState<string | null>(null);
 
   // 디바운싱 사용하여 작성중인 코멘트 업데이트
-  const handleUpdateComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    // debouncedSetEditingComment(e.target.value);
-  };
 
-  const handleButtonClick = () => {
-    // onClick(comment);
+  const debouncedSetEditingComment = useDebounce(300, setEditingComment);
+
+  const handleUpdateComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    debouncedSetEditingComment(e.target.value);
   };
 
   // 댓글 수정 버튼 클릭
-  const handleCommentEdit = () => {
+  const handleButtonClick = () => {
     setIsEditing((prevState) => !prevState);
+    if (editingComment) onEdit(editingComment, commentId);
   };
 
   // 댓글 삭제 버튼 클릭
   const handleCommentDelete = () => {
-    console.log('삭제 버튼 클릭');
+    if (confirm('댓글을 삭제하시겠습니까?')) {
+      console.log('삭제 버튼 클릭');
+      onDelete(commentId);
+    }
   };
 
   return (
@@ -63,7 +67,7 @@ const Comment: React.FC<CommentProps> = ({
             buttonBorder="border-none"
             buttonSize="sm"
             direction="horizonal"
-            onEdit={handleCommentEdit}
+            onEdit={handleButtonClick}
             onDelete={handleCommentDelete}
           />
         </Div>
@@ -72,7 +76,7 @@ const Comment: React.FC<CommentProps> = ({
           <>
             <EditContent onChange={handleUpdateComment}>{text}</EditContent>
             <ButtonContainer>
-              <LinkButton linkSize="sm" onClick={handleCommentEdit}>
+              <LinkButton linkSize="sm" onClick={handleButtonClick}>
                 수정하기
               </LinkButton>
             </ButtonContainer>
@@ -123,7 +127,9 @@ const EditContent = styled.textarea`
   height: 70px;
   resize: none;
   outline: none;
-  padding: 2px;
+  padding: 4px;
+  border: 1px solid var(--color-grey-2);
+  border-radius: 4px;
 `;
 
 const ButtonContainer = styled.div`

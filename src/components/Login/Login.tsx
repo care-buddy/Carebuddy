@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+// 임시
 // 로그인 코드 짜는 중(한참 미완성임), refresh 토큰 받아야 하고 모달 닫는 함수 인자로 받아야하고 남은 거 많음!
 
 import React, { useState } from 'react';
