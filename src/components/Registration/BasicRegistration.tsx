@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, InputHTMLAttributes } from 'react';
 import styled from 'styled-components';
 
 import Button from '@components/common/Button';
@@ -8,14 +8,46 @@ import LinkButton from '@components/common/LinkButton';
 
 import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 
-// 임시 데이터
 import { tempTerms } from '@constants/tempData';
 
 const BasicRegistration: React.FC = () => {
-  const [agreeChecked, setAgreeChecked] = useState(false);
-  const [agreeChecked2, setAgreeChecked2] = useState(false);
-  const [agreeChecked3, setAgreeChecked3] = useState(false);
+  const [agreeChecked, setAgreeChecked] = useState(false); // 모두 동의
+  const [agreeChecked2, setAgreeChecked2] = useState(false); // 동의1(만 14세 이상)
+  const [agreeChecked3, setAgreeChecked3] = useState(false); // 동의2(이용 약관)
   const [viewFullTerms, setViewFullTerms] = useState(false); // 전문 보기
+  const [emailVerification, setEmailVerification] = useState({
+    status: 'idle',
+  }); // 이메일 인증
+  const [formData, setFormData] = useState({
+    email: '',
+    nickName: '',
+    mobileNumber: '',
+  });
+
+  // 이메일 인증 핸들러(인증과정 이후 추가되어야 함)
+  const submitEmailVerification = () => {
+    if (emailVerification.status === 'idle' && formData.email !== '') {
+      setEmailVerification(
+        { status: 'inProgress' }
+        // 이메일 인증과정
+      );
+    }
+  };
+
+  // formData 핸들러 - 임시: 디바운싱 적용 or 가입하기 누를 때 할 때 다 가져오기
+  const handleFormData = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    name: string
+  ) => {
+    setFormData({
+      ...formData,
+      [name]: e.target.value,
+    });
+  };
+
+  useEffect(() => {
+    console.log(formData);
+  }, [formData]);
 
   // 체크박스 핸들러
   const handleCheckBoxChange = () => {
@@ -54,21 +86,24 @@ const BasicRegistration: React.FC = () => {
           <Input
             placeholder="이메일 형식으로 입력해주세요."
             placeholderColor="light-grey"
+            // onChange={handleEmailUpdate}
           />
           <Button buttonSize="sm" buttonStyle="square-grey">
             발송
           </Button>
         </EmailContainer>
-        <p>메일 발송하면 보이는 영역</p>
-        <EmailContainer>
-          <Input
-            placeholder="메일로 발송된 인증 번호를 입력해주세요."
-            placeholderColor="light-grey"
-          />
-          <Button buttonSize="sm" buttonStyle="square-grey">
-            인증
-          </Button>
-        </EmailContainer>
+        {emailVerification.status === 'inProgress' && (
+          <EmailContainer>
+            <Input
+              placeholder="메일로 발송된 인증 번호를 입력해주세요."
+              placeholderColor="light-grey"
+              onChange={(e) => handleFormData(e, 'email')}
+            />
+            <Button buttonSize="sm" buttonStyle="square-grey">
+              인증
+            </Button>
+          </EmailContainer>
+        )}
       </Section>
 
       <Section>
@@ -77,11 +112,13 @@ const BasicRegistration: React.FC = () => {
         <Input
           placeholder="닉네임을 입력해주세요."
           placeholderColor="light-grey"
+          onChange={(e) => handleFormData(e, 'nickName')}
         />
         <P>핸드폰 번호*</P>
         <Input
           placeholder="핸드폰 번호(-제외)를 입력해주세요."
           placeholderColor="light-grey"
+          onChange={(e) => handleFormData(e, 'mobileNumber')}
         />
       </Section>
 
@@ -115,10 +152,7 @@ const BasicRegistration: React.FC = () => {
         <TermCheckContainer>
           {viewFullTerms && <LuChevronUp />}
           {!viewFullTerms && <LuChevronDown />}
-          <LinkButton
-            linkSize="sm"
-            onClick={handleViewFullTerms}
-          >
+          <LinkButton linkSize="sm" onClick={handleViewFullTerms}>
             전문 보기
           </LinkButton>
         </TermCheckContainer>

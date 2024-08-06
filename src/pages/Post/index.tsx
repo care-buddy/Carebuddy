@@ -183,11 +183,6 @@ const Post: React.FC<PostProps> = () => {
     setIsEditModalOpen(false);
   };
 
-  // 댓글 수정 버튼 클릭
-  // const handleCommentEdit = () => {};
-
-  // 댓글 삭제 버튼 클릭
-  // const handleCommentDelete = () => {};
 
   return (
     <>
@@ -251,6 +246,8 @@ const Post: React.FC<PostProps> = () => {
               nickname={comment.userId.nickName}
               date={formatDateIncludeTime(comment.createdAt)}
               profileImg={comment.userId.profileImage[0]}
+              // onEdit={handleCommentEdit}
+              // onDelete={handleCommentDelete}
             />
           ))}
         </CommentContainer>

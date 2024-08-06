@@ -206,7 +206,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  }, {
+  },
+  {
     _id: '6621f4ae5361c11c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -226,7 +227,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5316c1c127679a9f4',
     userId: {
       nickName: '김지연',
@@ -246,7 +248,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '66211f4ae536c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -266,7 +269,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c271679a9f4',
     userId: {
       nickName: '김지연',
@@ -286,7 +290,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c276.791a9f4',
     userId: {
       nickName: '김지연',
@@ -306,7 +311,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '66211f4ae536c1c127679a9f4',
     userId: {
       nickName: '김지연',
@@ -326,7 +332,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae53d6c1c27679a19f4',
     userId: {
       nickName: '김지연',
@@ -346,7 +353,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '1',
     userId: {
       nickName: '김지연',
@@ -366,7 +374,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c21ㄴ7679a9f4',
     userId: {
       nickName: '김지연',
@@ -386,7 +395,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '66221f4ae536c1c27179a9f4',
     userId: {
       nickName: '김지연',
@@ -406,7 +416,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621132132f4ae5136c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -414,7 +425,7 @@ const dummyPosts = [
       deletedAt: null,
     },
     communityId: {
-      _id: '66214eb084ee783e29e8ac6', 
+      _id: '66214eb084ee783e29e8ac6',
       category: 1,
       community: '뇌·신경',
       deletedAt: null,
@@ -426,7 +437,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5362c1c276793a9f4',
     userId: {
       nickName: '김지연',
@@ -446,7 +458,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5136c1c227679a9f4',
     userId: {
       nickName: '김지연',
@@ -466,7 +479,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5361c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -486,7 +500,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5361c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -506,7 +521,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5316c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -526,7 +542,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5361c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -546,7 +563,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c27179a9f4',
     userId: {
       nickName: '김지연',
@@ -566,7 +584,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c1327679a9f4',
     userId: {
       nickName: '김지연',
@@ -586,7 +605,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '66212f4ae5136c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -606,7 +626,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c271679a9f4',
     userId: {
       nickName: '김지연',
@@ -626,7 +647,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5361c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -646,7 +668,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c271679a9f4',
     userId: {
       nickName: '김지연',
@@ -666,7 +689,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5361c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -686,7 +710,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '122132132',
     userId: {
       nickName: '김지연',
@@ -706,7 +731,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c121c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -726,12 +752,13 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c127679a92f4',
     userId: {
       nickName: '김지연',
       profileImage: ['https://picsum.photos/200'],
-      deletedAt: null, 
+      deletedAt: null,
     },
     communityId: {
       _id: '66214eb084ee783e29e8ac6',
@@ -746,7 +773,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5361c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -766,7 +794,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: 'ㅁㅇ',
     userId: {
       nickName: '김지연',
@@ -786,7 +815,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5316c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -806,7 +836,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '62621f4ae536c1c127679a9f4',
     userId: {
       nickName: '김지연',
@@ -826,7 +857,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c271679a9f4',
     userId: {
       nickName: '김지연',
@@ -846,7 +878,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c276719a9f4',
     userId: {
       nickName: '김지연',
@@ -866,7 +899,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c2171679a9f4',
     userId: {
       nickName: '김지연',
@@ -886,7 +920,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c12c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -906,7 +941,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5362c1c27679a92f4',
     userId: {
       nickName: '김지연',
@@ -926,7 +962,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae536c1c271679a9f4',
     userId: {
       nickName: '김지연',
@@ -946,7 +983,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f41ae536c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -966,7 +1004,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f41ae536c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -986,7 +1025,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '2',
     userId: {
       nickName: '김지연',
@@ -1006,7 +1046,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '6621f4ae5361c1c27679a9f4',
     userId: {
       nickName: '김지연',
@@ -1026,7 +1067,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: 'ㅇ',
     userId: {
       nickName: '김지연',
@@ -1046,7 +1088,8 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  },  {
+  },
+  {
     _id: '1',
     userId: {
       nickName: '김지연',
@@ -1066,7 +1109,7 @@ const dummyPosts = [
     deletedAt: '2024-04-19T08:22:51.722Z',
     postImage: ['https://picsum.photos/200'],
     createdAt: '2024-04-19T04:35:58.458Z',
-  }
+  },
 ];
 
 const dummyGroups = [
@@ -1083,7 +1126,7 @@ const dummyGroups = [
       community: '뇌·신경',
       deletedAt: null,
     },
-    title: '콘텐츠제목2', 
+    title: '콘텐츠제목2',
     likedUsers: [],
     content:
       '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
@@ -1230,7 +1273,6 @@ export {
 
 // tempGroup(컴포넌트까지)
 
-
 const tempGroup = [
   <CommunityElement
     key={tempGroupArray1.groupId + 1}
@@ -1255,7 +1297,7 @@ const tempGroup = [
   />,
 ];
 
-export {tempGroup}
+export { tempGroup };
 
 // tempGroupMember(커뮤니티피드)
 // 작동 테스트용
@@ -1284,4 +1326,42 @@ const tempGroupMember = [
   />,
 ];
 
-export {tempGroupMember}
+export { tempGroupMember };
+
+// 알림
+// 임의의 알림 데이터 설정
+const notifications = [
+  {
+    id: 1,
+    user: 'nickname',
+    message: '님이 내 게시물을 마음에 들어합니다.',
+    date: '24/03/02',
+    details: '어떤 사료가 좋을까요?',
+  },
+  {
+    id: 2,
+    user: '닉네임',
+    message: '님이 내 게시물을 마음에 들어합니다.',
+    date: '어제',
+    details:
+      '알림이 없을때를 고려하지 않음 외부 클릭시 닫히지 않음을 고려하지 않음',
+  },
+  {
+    id: 3,
+    user: 'nickname',
+    message: '님이 내 게시물을 마음에 들어합니다.',
+    date: '1시간',
+    details:
+      '갯수가 많아졌을때를 고려하지 않음 길어집니다 두줄까지 허용할까요?',
+  },
+  {
+    id: 4,
+    user: '로직을 구현하지 않음',
+    message: '님이 댓글을 남겼습니다.',
+    date: '24/03/02',
+    details:
+      '임의의 댓글입니다 임의의 댓글입니다 임의의 댓글입니다 임의의 댓글입니...',
+  },
+];
+
+export { notifications };

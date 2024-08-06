@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
-import ActionButton from '../common/ActtionButton';
+import LinkButton from '@/components/common/LinkButton';
+import ActionButton from '@/components/common/ActtionButton';
+
+import useDebounce from '@hooks/useDebounce';
 
 type CommentProps = {
   // 닉네임, userId 둘 다 받아오는게 맞는지 모르겠음. recoil 적용 후 수정 - 임시
@@ -9,6 +12,8 @@ type CommentProps = {
   profileImg: string;
   nickname: string;
   date: string;
+  // onEdit: () => void;
+  // onDelete: () => void;
   // userId: string;
   // commentId: string | null | undefined;
 };
@@ -18,23 +23,65 @@ const Comment: React.FC<CommentProps> = ({
   profileImg,
   nickname,
   date,
+  // onEdit,
+  // onDelete,
   // userId,
   // commentId,
-}) => (
-  <StyledComment>
-    <ProfileImg src={profileImg} alt="댓글 프로필 사진" />
-    <Container>
-      <Div>
-      <Info>
-        <p>{nickname}</p>
-        <UploadedDate>{date}</UploadedDate>
-      </Info>
-      <ActionButton buttonBorder='border-none' buttonSize='sm' direction='horizonal'/>
-      </Div>
-      <Content>{text}</Content>
-    </Container>
-  </StyledComment>
-);
+}) => {
+  const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [editingComment, setEditingComment] = useState<string | null>(null);
+
+  // 디바운싱 사용하여 작성중인 코멘트 업데이트
+  const handleUpdateComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    // debouncedSetEditingComment(e.target.value);
+  };
+
+  const handleButtonClick = () => {
+    // onClick(comment);
+  };
+
+  // 댓글 수정 버튼 클릭
+  const handleCommentEdit = () => {
+    setIsEditing((prevState) => !prevState);
+  };
+
+  // 댓글 삭제 버튼 클릭
+  const handleCommentDelete = () => {
+    console.log('삭제 버튼 클릭');
+  };
+
+  return (
+    <StyledComment>
+      <ProfileImg src={profileImg} alt="댓글 프로필 사진" />
+      <Container>
+        <Div>
+          <Info>
+            <p>{nickname}</p>
+            <UploadedDate>{date}</UploadedDate>
+          </Info>
+          <ActionButton
+            buttonBorder="border-none"
+            buttonSize="sm"
+            direction="horizonal"
+            onEdit={handleCommentEdit}
+            onDelete={handleCommentDelete}
+          />
+        </Div>
+        {!isEditing && <Content>{text}</Content>}
+        {isEditing && (
+          <>
+            <EditContent onChange={handleUpdateComment}>{text}</EditContent>
+            <ButtonContainer>
+              <LinkButton linkSize="sm" onClick={handleCommentEdit}>
+                수정하기
+              </LinkButton>
+            </ButtonContainer>
+          </>
+        )}
+      </Container>
+    </StyledComment>
+  );
+};
 
 export default Comment;
 
@@ -69,20 +116,24 @@ const Content = styled.pre`
   white-space: pre-wrap;
 `;
 
+const EditContent = styled.textarea`
+  line-height: 1.3;
+  font-size: var(--font-size-ft-1);
+  margin: 10px 0 4px 0;
+  height: 70px;
+  resize: none;
+  outline: none;
+  padding: 2px;
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
 const ProfileImg = styled.img`
   margin-right: 10px;
 `;
-
-// const CommentOptionWrapper = styled.div`
-//   display: flex;
-//   justify-content: flex-end;
-//   flex-grow: 1;
-
-//   & > * {
-//     margin: 0 5px;
-//     font-size: var(--font-size-sm-1);
-//   }
-// `;
 
 const Info = styled.div`
   display: flex;
@@ -93,15 +144,7 @@ const Info = styled.div`
   }
 `;
 
-// const OnEditComment = styled.textarea`
-//   width: 650px;
-//   height: 60px;
-//   border-color: var(--color-grey-2);
-//   margin: 5px 10px 0 0;
-//   padding: 5px 5px;
-// `;
-
 const Div = styled.div`
-display: flex;
-justify-content: space-between;
+  display: flex;
+  justify-content: space-between;
 `;

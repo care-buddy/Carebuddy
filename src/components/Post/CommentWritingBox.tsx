@@ -66,6 +66,10 @@ const CommentBox = styled.textarea`
   border: none;
   resize: none;
   outline: none;
+
+  // line-height: 1.3;
+  // font-size: var(--font-size-ft-1);
+  // margin: 10px 0;
 `;
 
 const ButtonContainer = styled.div`
