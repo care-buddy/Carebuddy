@@ -199,7 +199,7 @@ const Mypage: React.FC = () => {
     setIsEditModalOpen(false);
   };
 
-  const handleFormDataChange = (data: { title?: string, content?: string, groupId?: string }) => {
+  const handleFormDataChange = (data: { title?: string, content?: string, groupId?: string, postImage?: string[] }) => {
     setFormData(prevData => ({
       ...prevData,
       ...data

@@ -64,7 +64,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) =
   };
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const files = event.target.files;
+    const { files } = event.target;
     if (files) {
       const fileArray = Array.from(files);
       setImageFiles(fileArray);
