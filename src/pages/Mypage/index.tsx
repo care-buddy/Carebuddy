@@ -42,9 +42,9 @@ mock.onPut('/api/user').reply((config) => {
 });
 
 mock.onPost('/api/posts').reply((config) => {
-  const { title, content, groupId } = JSON.parse(config.data);
-  console.log('게시물 생성:', { title, content, groupId });
-  return [200, { title, content, groupId }];
+  const { title, content, groupId, postImage } = JSON.parse(config.data);
+  // console.log('게시물 생성:', { title, content, groupId, postImage });
+  return [200, { title, content, groupId, postImage }];
 });
 
 const Container = styled.div`
@@ -95,6 +95,13 @@ interface PostId {
   title: string;
 }
 
+interface FormData {
+  title: string;
+  content: string;
+  groupId: string;
+  postImage: string[];
+}
+
 const Mypage: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
     email: '',
@@ -110,7 +117,7 @@ const Mypage: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
-  const [formData, setFormData] = useState({ title: '', content: '', groupId: '' });
+  const [formData, setFormData] = useState<FormData>({ title: '', content: '', groupId: '', postImage: [] });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -131,16 +138,14 @@ const Mypage: React.FC = () => {
 
   const handlePostSubmit = async () => {
     try {
-      console.log('게시물 생성 요청 데이터:', formData);
       const response = await axios.post('/api/posts', formData);
       console.log('게시물 생성됨:', response.data);
       alert('게시글 작성 완료');
-      // setIsWriteModalOpen(false);
+      setIsWriteModalOpen(false);
     } catch (error) {
       console.error('게시물 생성 오류:', error);
     }
   };
-
 
   const handleIntroductionChange = (newIntroduction: string) => {
     setUserData((prevData) => ({ ...prevData, introduction: newIntroduction }));
