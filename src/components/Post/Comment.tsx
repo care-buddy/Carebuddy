@@ -5,7 +5,6 @@ import LinkButton from '@/components/common/LinkButton';
 import ActionButton from '@/components/common/ActtionButton';
 
 import useDebounce from '@hooks/useDebounce';
-import { key } from 'localforage';
 
 type CommentProps = {
   // 닉네임, userId 둘 다 받아오는게 맞는지 모르겠음. recoil 적용 후 수정 - 임시
@@ -14,9 +13,9 @@ type CommentProps = {
   nickname: string;
   date: string;
   onEdit: (comment: string, commentId: string) => void;
-  onDelete: (comment: string,) => void;
-  // userId: string;
+  onDelete: (comment: string) => void;
   commentId: string;
+  // userId: string;
 };
 
 const Comment: React.FC<CommentProps> = ({
@@ -26,8 +25,8 @@ const Comment: React.FC<CommentProps> = ({
   date,
   onEdit,
   onDelete,
-  // userId,
   commentId,
+  // userId,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingComment, setEditingComment] = useState<string | null>(null);
@@ -49,7 +48,6 @@ const Comment: React.FC<CommentProps> = ({
   // 댓글 삭제 버튼 클릭
   const handleCommentDelete = () => {
     if (confirm('댓글을 삭제하시겠습니까?')) {
-      console.log('삭제 버튼 클릭');
       onDelete(commentId);
     }
   };

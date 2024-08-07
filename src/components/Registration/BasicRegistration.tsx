@@ -1,5 +1,8 @@
-import React, { useState, useEffect, InputHTMLAttributes } from 'react';
+// 이메일 인증 API, 회원가입 API, 유효성검사 추가 필요
+
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+// import axios from 'axios';
 
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
@@ -17,8 +20,8 @@ const BasicRegistration: React.FC = () => {
   const [viewFullTerms, setViewFullTerms] = useState(false); // 전문 보기
   const [emailVerification, setEmailVerification] = useState({
     status: 'idle',
-  }); // 이메일 인증
-  const [formData, setFormData] = useState({
+  }); // 이메일 인증 상태
+  const [formData, setFormData] = useState({ // formData
     email: '',
     nickName: '',
     mobileNumber: '',
@@ -27,10 +30,9 @@ const BasicRegistration: React.FC = () => {
   // 이메일 인증 핸들러(인증과정 이후 추가되어야 함)
   const submitEmailVerification = () => {
     if (emailVerification.status === 'idle' && formData.email !== '') {
-      setEmailVerification(
-        { status: 'inProgress' }
-        // 이메일 인증과정
-      );
+      setEmailVerification({ status: 'inProgress' });
+      // 이메일 인증
+
     }
   };
 
@@ -45,9 +47,9 @@ const BasicRegistration: React.FC = () => {
     });
   };
 
-  useEffect(() => {
-    console.log(formData);
-  }, [formData]);
+  // useEffect(() => { // 확인용 - 임시
+  //   console.log(formData);
+  // }, [formData]);
 
   // 체크박스 핸들러
   const handleCheckBoxChange = () => {
@@ -86,9 +88,13 @@ const BasicRegistration: React.FC = () => {
           <Input
             placeholder="이메일 형식으로 입력해주세요."
             placeholderColor="light-grey"
-            // onChange={handleEmailUpdate}
+            onChange={(e) => handleFormData(e, 'email')}
           />
-          <Button buttonSize="sm" buttonStyle="square-grey">
+          <Button
+            buttonSize="sm"
+            buttonStyle="square-grey"
+            onClick={submitEmailVerification}
+          >
             발송
           </Button>
         </EmailContainer>
@@ -97,7 +103,6 @@ const BasicRegistration: React.FC = () => {
             <Input
               placeholder="메일로 발송된 인증 번호를 입력해주세요."
               placeholderColor="light-grey"
-              onChange={(e) => handleFormData(e, 'email')}
             />
             <Button buttonSize="sm" buttonStyle="square-grey">
               인증

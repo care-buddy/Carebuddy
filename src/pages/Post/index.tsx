@@ -1,19 +1,18 @@
-// 댓글 등록이나 수정 같은 경우 각각의 컴포넌트가 API 요청까지 담당하도록 하는게 더 좋은 방법 같기도 함
-// 시간이 허락한다면 리팩토링 예정
+// 댓글 등록이나 수정 같은 경우 각각의 컴포넌트가 API 요청까지 담당하도록 하는게 더 좋은 방법 -> 시간이 허락한다면 리팩토링 예정. 임시
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
-// import { Link } from 'react-router-dom';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-import ActionButton from '@/components/common/ActtionButton';
-import LikeAndCommentCount from '@/components/Post/LikesAndCommentCount';
-import CommentWritingBox from '@/components/Post/CommentWritingBox';
-import Comment from '@/components/Post/Comment';
 import TopBar from '@/components/common/TopBar';
-import Modal from '@/components/common/Modal/index';
+import Comment from '@/components/Post/Comment';
+import Loading from '@/components/common/Loading';
 import PostCreate from '@/pages/PostCreate/index';
+import Modal from '@/components/common/Modal/index';
+import ActionButton from '@/components/common/ActtionButton';
+import CommentWritingBox from '@/components/Post/CommentWritingBox';
+import LikeAndCommentCount from '@/components/Post/LikesAndCommentCount';
 
 import { LuThumbsUp, LuChevronLeft } from 'react-icons/lu';
 
@@ -22,26 +21,21 @@ import formatDateIncludeTime from '@/utils/formatDateIncludeTime';
 import type { PostData, CommentData } from '@constants/tempInterface';
 
 // 임시 데이터
-import {
-  dummyPost,
-  dummyComments,
-  // dummyNewComment
-} from '@constants/tempData';
+import { dummyPost, dummyComments } from '@constants/tempData';
 
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
   timeout: 5000, // 타임아웃 설정 (ms)
 });
 
+// 모킹 API
 const mock = new MockAdapter(axiosInstance);
 
 mock.onGet('/posts/postId').reply(200, dummyPost); // 게시글 조회 목 API
 mock.onGet('/comments/postId').reply(200, dummyComments); // 댓글 조회 목 API
-mock.onPost(`/comments`).reply((config) => {
+mock.onPost(`/comments`).reply((config) => { // 댓글 등록
   // 댓글 등록 목 API
-
   const requestData = JSON.parse(config.data);
-  // console.log('콘솔', { config, requestData });
 
   const responseData = {
     userId: {
@@ -57,7 +51,7 @@ mock.onPost(`/comments`).reply((config) => {
 
   return [200, responseData];
 });
-mock.onPut(/\/posts\/\w+\/d/).reply((config) => {
+mock.onPut(/\/posts\/\w+\/d/).reply((config) => { // 게시글 삭제
   // 글 삭제 목 API -> 완전하게 붙일 수 없음.
 
   const requestData = JSON.parse(config.data);
@@ -77,14 +71,14 @@ mock.onPut(/\/posts\/\w+\/d/).reply((config) => {
 
   return [200, responseData];
 });
-mock.onPut(/\/comments\/\w+/).reply(() => [
+mock.onPut(/\/comments\/\w+/).reply(() => [ // 댓글 수정
   200,
   {
     success: true,
     message: '댓글 수정이 성공적으로 완료되었습니다',
   },
 ]);
-mock.onPut(/\/comments\/\w+\/d/).reply(() => [
+mock.onPut(/\/comments\/\w+\/d/).reply(() => [ // 댓글 삭제
   200,
   {
     success: true,
@@ -107,13 +101,52 @@ interface PostProps {
 }
 
 const Post: React.FC<PostProps> = () => {
-  const [post, setPost] = useState<PostData | null>(null);
-  const [comments, setComments] = useState<CommentData[] | null>(null);
+  const [post, setPost] = useState<PostData | null>(null); // 게시글
+  const [comments, setComments] = useState<CommentData[] | null>(null); // 댓글
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
+
+  const [isLoading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  // 게시글 & 댓글 조회 API
+  useEffect(() => {
+    const fetchData = async () => {
+      // 게시글
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(`/posts/postId`);
+        const post = response.data;
+
+        // 등록일 formatting
+        post.createdAt = formatDateIncludeTime(post.createdAt);
+
+        setPost(post);
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setLoading(false);
+      }
+
+      // 댓글
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get(`/comments/postId`);
+        const comments = response.data;
+
+        setComments(comments);
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // 댓글 등록 API
   const handleWrittenComment = async (comment: string) => {
     try {
+      setLoading(true);
       if (comment !== '' && comment !== null) {
         const response = await axiosInstance.post(`/comments`, {
           postId: '1',
@@ -132,53 +165,25 @@ const Post: React.FC<PostProps> = () => {
         alert('댓글 내용을 입력해주세요.');
       }
     } catch (error) {
-      // console.error(error, '댓글 등록에 실패했습니다');
+      setError(error as Error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 게시글 & 댓글 조회 API
-  useEffect(() => {
-    const fetchData = async () => {
-      // 게시글
-      try {
-        const response = await axiosInstance.get(`/posts/postId`);
-        const post = response.data;
-
-        // 등록일 formatting
-        post.createdAt = formatDateIncludeTime(post.createdAt);
-        // console.log('게시글 조회 성공');
-
-        setPost(post);
-      } catch (error) {
-        // console.error('게시글 조회 실패', error);
-      }
-
-      // 댓글
-      try {
-        const response = await axiosInstance.get(`/comments/postId`);
-        const comments = response.data;
-
-        // console.log('댓글 조회 성공');
-        setComments(comments);
-      } catch (error) {
-        // console.error('댓글 조회 실패', error);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // 댓글 수정
+  // 댓글 수정 API
   const handleCommentEdit = async (
     editingComment: string,
     commentId: string
   ) => {
     try {
-      // 댓글 수정하는 API 전송
+      setLoading(true);
+      // API 전송
       await axiosInstance.put(`/comments/${commentId}`, {
         text: editingComment,
       });
 
-      // 댓글 수정해서 setComments 배열에 넣기
+      // 수정된 댓글 내용 setComments 배열에 넣기
       setComments((prevComments) => {
         if (prevComments === null) {
           // prevComments가 null이면 바로 반환(오류 방지용)
@@ -193,13 +198,16 @@ const Post: React.FC<PostProps> = () => {
         );
       });
     } catch (error) {
-      console.error('댓글 수정 실패', error);
+      setError(error as Error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 댓글 삭제
+  // 댓글 삭제 API
   const handleCommentDelete = async (commentId: string) => {
     try {
+      setLoading(true);
       // 댓글 삭제 API 전송
       await axiosInstance.put(`/comments/${commentId}/d`, {
         deletedAt: 'O',
@@ -216,7 +224,9 @@ const Post: React.FC<PostProps> = () => {
         return prevComments.filter((comment) => comment._id !== commentId);
       });
     } catch (error) {
-      console.error('댓글 삭제 실패', error);
+      setError(error as Error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -230,6 +240,7 @@ const Post: React.FC<PostProps> = () => {
   const handlePostDelete = async () => {
     if (confirm('정말로 글을 삭제하시겠습니까?')) {
       try {
+        setLoading(true);
         await axiosInstance.put(`/posts/:_id/d`, {
           postId: '포스트아이디',
           userId: '유저아이디',
@@ -241,7 +252,9 @@ const Post: React.FC<PostProps> = () => {
 
         // console.log(response);
       } catch (error) {
-        // console.error(error, '글 삭제에 실패했습니다');
+        setError(error as Error);
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -254,6 +267,12 @@ const Post: React.FC<PostProps> = () => {
   const handleCloseEditModal = () => {
     setIsEditModalOpen(false);
   };
+
+  if (isLoading) return <Loading />;
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   return (
     <>
