@@ -1,6 +1,6 @@
+/* eslint-disable react/react-in-jsx-scope */
 import profile from '@assets/profile.png'; // 임시
 
-import React from 'react';
 import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 import MemberElement from '@/components/Home&CommunityFeed/MemberElement';
 
