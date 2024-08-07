@@ -3,15 +3,8 @@ import styled from 'styled-components';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import defaultImg from '@/assets/person.png';
-import Button from '@/components/common/Button';
-import TextArea from '@/components/common/TextArea';
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
-import Input from '@/components/common/Input';
-import SmallModal from '@/components/common/SmallModal';
-import UserAsk from '@/pages/Mypage/UserAsk';
-import Modal from '@/components/common/Modal/index';
-import PostCreate from '@/pages/PostCreate/index';
 import TopBar from '@/components/common/TopBar';
 
 // user api Mock 설정
