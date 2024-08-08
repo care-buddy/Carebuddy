@@ -16,6 +16,8 @@ import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 
+import usePostCreate from '@/hooks/usePostCreate';
+
 const axiosInstance = axios.create({
   baseURL: '/api',
   timeout: 5000,
@@ -49,6 +51,12 @@ const Home: React.FC = () => {
   const [page, setPage] = useState(1); // 현재 페이지 상태(무한스크롤)
   const [hasMore, setHasMore] = useState(true); // 남은 데이터 여부(무한스크롤)
   const [error, setError] = useState<Error | null>(null);
+
+  const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
+    () => {
+      console.log('이후 실행 로직 자리');
+    }
+  );
 
   // 글 작성 모달 닫기 핸들러
   const handleCloseWriteModal = () => {
@@ -221,8 +229,14 @@ const Home: React.FC = () => {
               <Modal
                 title="글 작성하기"
                 value="등록"
-                component={<PostCreate />}
+                component={
+                  <PostCreate
+                    formData={formData}
+                    onFormDataChange={handleFormDataChange}
+                  />
+                }
                 onClose={handleCloseWriteModal}
+                onHandleClick={handlePostSubmit}
               />
             )}
           </FeedOptionContainer>

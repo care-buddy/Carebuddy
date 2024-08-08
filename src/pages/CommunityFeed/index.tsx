@@ -15,6 +15,8 @@ import PostCreate from '@/pages/PostCreate/index';
 import LinkButton from '@/components/common/LinkButton';
 import NoPostsFound from '@/components/common/NoPostsFound';
 
+import usePostCreate from '@/hooks/usePostCreate';
+
 import formatDate from '@/utils/formatDate';
 
 import type { PostData } from '@constants/tempInterface';
@@ -49,6 +51,10 @@ const CommunityFeed: React.FC = () => {
   const [error, setError] = useState<Error | null>(null); // 에러
   const [loading, setLoading] = useState<boolean>(false); // 로딩중
 
+  const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(() => {
+    console.log('이후 실행 로직 자리');
+  });
+
   // 글 작성 모달 닫기
   const handleCloseWriteModal = () => {
     setIsWriteModalOpen(false);
@@ -59,12 +65,9 @@ const CommunityFeed: React.FC = () => {
     if (confirm('커뮤니티를 탈퇴하시겠습니까?')) {
       try {
         const userId = 'abc'; // 임시
-        await axiosInstance.put(
-          `/user/${userId}/withdrawGroup`,
-          {
-            communityId: '6617c6acb39abf604bbe8dc2',
-          }
-        );
+        await axiosInstance.put(`/user/${userId}/withdrawGroup`, {
+          communityId: '6617c6acb39abf604bbe8dc2',
+        });
         // const response = await axiosInstance.put(
         //   `/user/${userId}/withdrawGroup`,
         //   {
@@ -194,8 +197,14 @@ const CommunityFeed: React.FC = () => {
               <Modal
                 title="글 작성하기"
                 value="등록"
-                component={<PostCreate />}
+                component={
+                  <PostCreate
+                    formData={formData}
+                    onFormDataChange={handleFormDataChange}
+                  />
+                }
                 onClose={handleCloseWriteModal}
+                onHandleClick={handlePostSubmit}
               />
             )}
           </FeedOptionContainer>
