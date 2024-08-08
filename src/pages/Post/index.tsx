@@ -33,7 +33,7 @@ const mock = new MockAdapter(axiosInstance);
 
 mock.onGet('/posts/postId').reply(200, dummyPost); // 게시글 조회 목 API
 mock.onGet('/comments/postId').reply(200, dummyComments); // 댓글 조회 목 API
-mock.onPost(`/comments`).reply((config) => { // 댓글 등록
+mock.onPost(`/comments`).reply((config) => {
   // 댓글 등록 목 API
   const requestData = JSON.parse(config.data);
 
@@ -51,9 +51,8 @@ mock.onPost(`/comments`).reply((config) => { // 댓글 등록
 
   return [200, responseData];
 });
-mock.onPut(/\/posts\/\w+\/d/).reply((config) => { // 게시글 삭제
+mock.onPut(/\/posts\/\w+\/d/).reply((config) => {
   // 글 삭제 목 API -> 완전하게 붙일 수 없음.
-
   const requestData = JSON.parse(config.data);
   // console.log('콘솔', { config, requestData });
 
@@ -71,18 +70,30 @@ mock.onPut(/\/posts\/\w+\/d/).reply((config) => { // 게시글 삭제
 
   return [200, responseData];
 });
-mock.onPut(/\/comments\/\w+/).reply(() => [ // 댓글 수정
+mock.onPut(/\/comments\/\w+/).reply(() => [
+  // 댓글 수정
+
   200,
   {
     success: true,
     message: '댓글 수정이 성공적으로 완료되었습니다',
   },
 ]);
-mock.onPut(/\/comments\/\w+\/d/).reply(() => [ // 댓글 삭제
+mock.onPut(/\/comments\/\w+\/d/).reply(() => [
+  // 댓글 삭제
   200,
   {
     success: true,
     message: '댓글 삭제가 성공적으로 완료되었습니다',
+  },
+]);
+
+mock.onPut(/\/posts\/\w+/).reply(() => [
+  // 게시글 수정
+  200,
+  {
+    success: true,
+    message: '게시글 수정이 성공적으로 완료되었습니다',
   },
 ]);
 
@@ -100,6 +111,19 @@ interface PostProps {
   // };
 }
 
+// interface FormData {
+//   title: string | undefined;
+//   content: string | undefined;
+//   groupId: string | undefined; // 임시 - 나중에 categoryId로 수정
+//   postImage: string[] | undefined;
+// }
+interface FormData {
+  title: string;
+  content: string;
+  groupId: string; // 임시 - 나중에 categoryId로 수정
+  postImage: string[];
+}
+
 const Post: React.FC<PostProps> = () => {
   const [post, setPost] = useState<PostData | null>(null); // 게시글
   const [comments, setComments] = useState<CommentData[] | null>(null); // 댓글
@@ -107,6 +131,53 @@ const Post: React.FC<PostProps> = () => {
 
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
+
+  const [formData, setFormData] = useState<FormData>({
+    title: '',
+    content: '',
+    groupId: '', // 임시 - 나중에 categoryId로 수정
+    postImage: [],
+  });
+
+  // 글 수정 모달 내용 수정
+  const handleFormDataChange = (data: {
+    title?: string;
+    content?: string;
+    groupId?: string;
+    postImage?: string[];
+  }) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      ...data,
+    }));
+  };
+
+  // 글 수정 API
+  const handleEditPostSubmit = async () => {
+    try {
+      const id = '11';
+      const response = await axiosInstance.put(`/posts/${id}`, formData);
+      console.log('게시물 수정됨:', response.data);
+      alert('게시글 수정 완료');
+      setIsEditModalOpen((prevState) => !prevState);
+
+      if (post) {
+        setPost({
+          ...post,
+          title: formData.title,
+          content: formData.content,
+          communityId: {
+            ...post?.communityId,
+            _id: formData.groupId,
+          },
+          postImage: formData.postImage,
+        });
+      }
+      
+    } catch (error) {
+      console.error('게시물 수정 오류', error);
+    }
+  };
 
   // 게시글 & 댓글 조회 API
   useEffect(() => {
@@ -142,6 +213,16 @@ const Post: React.FC<PostProps> = () => {
     };
     fetchData();
   }, []);
+
+  // 게시글 조회 완료 시 글 수정 모달용 formData 채우기
+  useEffect(() => {
+    setFormData({
+      title: post?.title || '',
+      content: post?.content || '',
+      groupId: post?.communityId._id || '',
+      postImage: post?.postImage || [],
+    });
+  }, [post]);
 
   // 댓글 등록 API
   const handleWrittenComment = async (comment: string) => {
@@ -230,12 +311,6 @@ const Post: React.FC<PostProps> = () => {
     }
   };
 
-  // 글 수정 버튼 클릭
-  // const handlePostEdit = () => {
-  //   // // 글 수정 모달 열기 -> 글 수정 모달 만들어진지 확인 후 작업
-  //   // setIsPostModalOpen((prevState) => !prevState);
-  // };
-
   // 글 삭제 버튼 클릭
   const handlePostDelete = async () => {
     if (confirm('정말로 글을 삭제하시겠습니까?')) {
@@ -260,12 +335,8 @@ const Post: React.FC<PostProps> = () => {
   };
 
   // 글 수정 모달
-  const handleEditClick = () => {
-    setIsEditModalOpen(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
+  const handleEditClick = (value: boolean) => {
+    setIsEditModalOpen(value);
   };
 
   if (isLoading) return <Loading />;
@@ -297,15 +368,21 @@ const Post: React.FC<PostProps> = () => {
             <ActionButton
               buttonBorder="border-solid"
               direction="horizonal"
-              onEdit={handleEditClick}
+              onEdit={() => handleEditClick(true)}
               onDelete={handlePostDelete}
             />
             {isEditModalOpen && (
               <Modal
                 title="글 수정하기"
                 value="수정"
-                component={<PostCreate />}
-                onClose={handleCloseEditModal}
+                component={
+                  <PostCreate
+                    formData={formData}
+                    onFormDataChange={handleFormDataChange}
+                  />
+                }
+                onClose={() => handleEditClick(false)}
+                onHandleClick={handleEditPostSubmit}
               />
             )}
           </PostOption>
