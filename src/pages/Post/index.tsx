@@ -52,9 +52,8 @@ mock.onPost(`/comments`).reply((config) => {
   return [200, responseData];
 });
 mock.onPut(/\/posts\/\w+\/d/).reply((config) => {
-  // 글 삭제 목 API -> 완전하게 붙일 수 없음.
+  // 글 삭제 목 API -> 엔드포인트 관련으로 완전하게 붙일 수 없음.
   const requestData = JSON.parse(config.data);
-  // console.log('콘솔', { config, requestData });
 
   const responseData = {
     userId: {
