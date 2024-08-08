@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
@@ -6,9 +6,7 @@ import LikeAndCommentCount from '@components/Post/LikesAndCommentCount';
 import CommunityCategory from '@components/GlobalSearch/CommunityCategory';
 
 import formatDate from '@/utils/formatDate';
-
-// 임시 데이터
-import { tempLikeCount, tempCommentCount } from '@constants/tempData';
+import processedContentForFeedBox from '@/utils/processedContentForFeedBox';
 
 type FeedBoxProps = {
   postId: string;
@@ -19,74 +17,91 @@ type FeedBoxProps = {
   uploadedDate: string;
   communityName?: string;
   communityCategory?: string;
+  likeCount?: number;
+  commentCount?: number;
 };
 
-const FeedBox: React.FC<FeedBoxProps> = ({
-  title,
-  content,
-  profileSrc,
-  nickname,
-  uploadedDate,
-  postId,
-  communityName,
-  communityCategory,
-}) => {
-  // 커뮤니티일 때만 설정
-  const [isSearchResult, setIsSearchResult] = useState(false);
+// React.FC대신 React.forwardRef 사용(ref 사용을 위해 두 개의 인자를 넘기기 위함)
+const FeedBox = React.forwardRef<HTMLDivElement, FeedBoxProps>(
+  (
+    {
+      title,
+      content,
+      profileSrc,
+      nickname,
+      uploadedDate,
+      postId,
+      communityName,
+      communityCategory,
+      likeCount,
+      commentCount,
+    },
+    ref
+  ) => {
+    const [isSearchResult, setIsSearchResult] = useState(false); // global-search 결과
+    const boxRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (communityName) {
-      setIsSearchResult(true);
-    } else {
-      setIsSearchResult(false);
-    }
-  }, [communityName]);
+    useImperativeHandle(ref, () => boxRef.current!); // !을 통해 명시적으로 null이 아닐 것이라고 알림
 
-  // 유틸함수화 할듯 아마
-  const processedContent = content.split('. ').slice(0, 2).join('. '); // 두 문장만 보여주기
-  const formattedDate = formatDate({ rowDate: uploadedDate }); // 시간 제외하고 날짜만 보여주기
+    useEffect(() => {
+      if (communityName) {
+        setIsSearchResult(true);
+      } else {
+        setIsSearchResult(false);
+      }
+    }, [communityName]);
 
-  return (
-    <StyledFeedBox to={`/post/${postId}`}>
-      <TitleContainer>
-        <LeftContainer>
-          <Title>{title}</Title>
-          {isSearchResult && (
-            <>
-              <CommunityCategory>{communityName}</CommunityCategory>
-              <CommunityCategory>{communityCategory}</CommunityCategory>
-            </>
-          )}
-        </LeftContainer>
-        <LikeAndCommentCount
-          likeCount={tempLikeCount}
-          commentCount={tempCommentCount}
-        />
-      </TitleContainer>
-      <Content>
-        {processedContent}
-        <MoreSpan>... 더보기</MoreSpan>
-      </Content>
-      <ProfileContainer>
-        <ProfileImg src={profileSrc} alt="프로필 이미지" />
-        <p>{nickname}</p>
-        <p>|</p>
-        <p>{formattedDate}</p>
-      </ProfileContainer>
-    </StyledFeedBox>
-  );
-};
+    const processedContent = processedContentForFeedBox(content);
+    const formattedDate = formatDate(uploadedDate);
+
+    return (
+      <StyledFeedBox ref={boxRef}>
+        <Container to={`/post/${postId}`}>
+          <TitleContainer>
+            <LeftContainer>
+              <Title>{title}</Title>
+              {isSearchResult && (
+                <>
+                  <CommunityCategory>{communityName}</CommunityCategory>
+                  <CommunityCategory>{communityCategory}</CommunityCategory>
+                </>
+              )}
+            </LeftContainer>
+            <LikeAndCommentCount
+              likeCount={likeCount}
+              commentCount={commentCount}
+            />
+          </TitleContainer>
+          <Content>
+            {processedContent}
+            <MoreSpan>... 더보기</MoreSpan>
+          </Content>
+          <ProfileContainer>
+            <ProfileImg src={profileSrc} alt="프로필 이미지" />
+            <p>{nickname}</p>
+            <p>|</p>
+            <p>{formattedDate}</p>
+          </ProfileContainer>
+        </Container>
+      </StyledFeedBox>
+    );
+  }
+);
 
 export default FeedBox;
 
-const StyledFeedBox = styled(Link)`
+const StyledFeedBox = styled.div`
   display: flex;
-  flex-direction: column;
   border-radius: 12px;
   border: solid 1px var(--color-grey-2);
   height: auto;
   padding: 20px;
   margin: 10px 0 20px 0;
+`;
+
+const Container = styled(Link)`
+  display: flex;
+  flex-direction: column;
   text-decoration: none;
   cursor: pointer;
 `;

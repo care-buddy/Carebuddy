@@ -15,6 +15,8 @@
     "prettier"
   ],
   "rules": {
+    // 자동으로 만들어지는 _id를 key로 사용할 수 있도록 설정하기 위해
+    "no-underscore-dangle": "off",
     // 다른 스코프의 변수도명 사용 가능하도록
     "no-shadow": 0,
     // 커스텀 라디오 버튼 사용을 위해 접근성 규칙 설정
@@ -53,7 +55,15 @@
       { "namedComponents": ["arrow-function", "function-declaration"] }
     ],
     // 변수나 함수 정의 이전에 사용 불가능하도록 제한
-    "no-use-before-define": "off"
+    "no-use-before-define": "off",
+    // alert,  confirm, prompt를 사용 불가능하도록 제한
+    "no-alert": "off",
+    // 전역 변수, 함수 등을 사용 불가능하도록 제한(alert, confirm, prompt, event 등 포함)
+    "no-restricted-globals": "off",
+    // react hooks의 의존성배열이 충분하지 않을 때 에러 발생 - 배포용 
+    "react-hooks/exhaustive-deps": "off"
+    // react hooks의 의존성배열이 충분하지 않을 때 경고 표시 - 개발용
+    // "react-hooks/exhaustive-deps": ["warn"]
   },
   "settings": {
     "import/parsers": {

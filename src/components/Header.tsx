@@ -1,8 +1,194 @@
-import { Link, NavLink } from 'react-router-dom';
-import React, { useState } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+
 import logo from '@assets/carebuddyLogo.png';
-import Dropdown from './Dropdown';
+import { LuBell, LuUser2, LuSearch, LuX } from 'react-icons/lu';
+
+import Login from '@/components/Login/Login';
+import BasicRegistration from '@/components/Registration/BasicRegistration';
+import Dropdown from '@/components/Dropdown';
+import Button from '@/components/common/Button';
+import Notification from '@/components/Notification';
+import SmallModal from '@/components/common/SmallModal';
+
+import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
+
+const Header: React.FC = () => {
+  const [dropdownVisible, setDropdownVisible] = useState(false);
+  const [showNotification, setShowNotification] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
+  const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
+
+  const navigate = useNavigate();
+
+  // 로그인 모달 조작 함수
+  const handleLoginModal = (isOpen: boolean) => {
+    setLoginModalOpen(isOpen);
+  };
+
+  // 회원가입 모달 조작 함수
+  const handleRegistrationModal = (isOpen: boolean) => {
+    setRegistrationModalOpen(isOpen);
+    setLoginModalOpen(false);
+  };
+
+  // 알림 관련 함수 (임시)
+  const toggleNotification = () => {
+    setShowNotification(!showNotification);
+  };
+
+  const closeNotification = () => {
+    setShowNotification(false);
+  };
+
+  // 드롭다운 메뉴 클릭 시, 드롭다운 메뉴가 사라지도록 하는 함수
+  const handleLinkClick = () => {
+    setDropdownVisible(false);
+  };
+
+  // 검색 로직
+  // 검색 상태 설정
+  const handleSearchState = () => {
+    setSearchTerm('');
+    if (!isSearching) {
+      setIsSearching(true);
+    } else {
+      setIsSearching(false);
+    }
+  };
+
+  // 검색 창에서 엔터 입력 시 검색어로 설정
+  const handleSearchResult = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      setSearchTerm(e.currentTarget.value);
+    }
+  };
+
+  useEffect(() => {
+    if (searchTerm !== '') {
+      navigate(`global-search?searchTerm=${encodeURIComponent(searchTerm)}`);
+      setIsSearching(false);
+      setSearchTerm('');
+    }
+  }, [searchTerm]);
+
+  // 임시
+  const InfoMenuItems = [
+    { to: '/hosInfo', label: '병원 검색' },
+    { to: '/pharInfo', label: '약국 검색' },
+  ];
+
+  const CommunityMenuItems = [
+    { to: '/community', label: '커뮤니티' },
+    { to: '/post', label: '포스트' },
+  ];
+
+  return (
+    <Wrapper>
+      <Content>
+        <Logo to="/">
+          <img src={logo} alt="Logo" />
+        </Logo>
+        <Menu>
+          {!isSearching && (
+            <>
+              {' '}
+              <MenuItem
+                onClick={handleLinkClick}
+                onMouseEnter={() => setDropdownVisible(true)}
+                to="/community-feed"
+              >
+                커뮤니티
+                {dropdownVisible && (
+                  <DropdownContainer>
+                    <Dropdown
+                      subMenuItems={CommunityMenuItems}
+                      onLinkClick={handleLinkClick}
+                    />
+                  </DropdownContainer>
+                )}
+              </MenuItem>
+              <MenuItem to="/diary">건강관리</MenuItem>
+              <MenuItem
+                onClick={handleLinkClick}
+                onMouseEnter={() => setDropdownVisible(true)}
+                to="/hosInfo"
+              >
+                정보
+                {dropdownVisible && (
+                  <DropdownContainer>
+                    <Dropdown
+                      subMenuItems={InfoMenuItems}
+                      onLinkClick={handleLinkClick}
+                    />
+                  </DropdownContainer>
+                )}
+              </MenuItem>
+            </>
+          )}
+
+          <SearchWrapper isSearching={isSearching}>
+            <LuSearch onClick={() => handleSearchState()} />
+            {isSearching && (
+              <>
+                <SearchBar
+                  placeholder="검색어를 입력하세요"
+                  onKeyDown={handleSearchResult}
+                />
+                <LuX onClick={() => handleSearchState()} />
+              </>
+            )}
+          </SearchWrapper>
+        </Menu>
+        <NotificationWrapper>
+          <NotificationIcon>
+            <LuBell onClick={toggleNotification} />
+            {showNotification && (
+              <Notification
+                show={showNotification}
+                notifications={notifications}
+                onClose={closeNotification}
+              />
+            )}
+
+            <Link to="/mypage">
+              <LuUser2 />
+            </Link>
+            <Button
+              buttonStyle="grey"
+              buttonSize="sm"
+              onClick={() => handleLoginModal(true)}
+            >
+              로그인
+            </Button>
+            {loginModalOpen && (
+              <SmallModal
+                onClose={() => handleLoginModal(false)}
+                component={
+                  <Login
+                    onOpenRegistrationModal={() =>
+                      handleRegistrationModal(true)
+                    }
+                  />
+                }
+              />
+            )}
+            {registrationModalOpen && (
+              <SmallModal
+                onClose={() => handleRegistrationModal(false)}
+                component={<BasicRegistration />}
+              />
+            )}
+          </NotificationIcon>
+        </NotificationWrapper>
+      </Content>
+    </Wrapper>
+  );
+};
+export default Header;
 
 const Wrapper = styled.header`
   position: fixed;
@@ -38,7 +224,7 @@ const Menu = styled.nav`
   display: flex;
   /* align-items: center; */
   justify-content: center;
-  gap: 6rem;
+  gap: 5rem;
 `;
 
 const MenuItem = styled(NavLink)`
@@ -66,10 +252,9 @@ const MenuItem = styled(NavLink)`
   }
 `;
 
-const Notification = styled.div`
+const NotificationWrapper = styled.div`
   display: flex;
-  align-items: center;
-  justify-content: flex-start;
+  /* position: relative; */
 `;
 
 const fadeIn = keyframes`
@@ -99,75 +284,68 @@ const DropdownContainer = styled.div`
   animation: ${fadeIn} 0.3s ease-in-out;
 `;
 
-const Header: React.FC = () => {
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+/* 임시 알림 구역: 수정필요! */
+const NotificationIcon = styled.div`
+  position: relative;
+  cursor: default;
+  padding: 44px 16px 10px 16px;
+  > svg,
+  a > svg {
+    width: 22px;
+    height: 22px;
+    color: var(--color-black-main);
+    cursor: pointer;
+  }
+  > button {
+    position: absolute;
+    padding-right: 16px;
 
-  // 드롭다운 메뉴 클릭 시, 드롭다운 메뉴가 사라지도록 하는 함수
-  const handleLinkClick = () => {
-    setDropdownVisible(false);
-  };
+    right: 0;
+    top: 10px;
+  }
+  > svg + a,
+  > div + a {
+    margin-left: 1rem;
+  }
+`;
 
-  // 임시
-  const InfoMenuItems = [
-    { to: '/hosInfo', label: '병원 검색' },
-    { to: '/pharInfo', label: '약국 검색' },
-  ];
+const SearchWrapper = styled.div<{ isSearching: boolean }>`
+  width: ${(props) => (props.isSearching ? `380px` : `auto`)};
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 36px 0 10px 0;
+  cursor: pointer;
 
-  const CommunityMenuItems = [
-    { to: '/community', label: '커뮤니티' },
-    { to: '/post', label: '포스트' },
-  ];
+  svg {
+    width: 22px;
+    height: 22px;
+  }
 
-  return (
-    <Wrapper>
-      <Content>
-        <Logo to="/">
-          <img src={logo} alt="Logo" />
-        </Logo>
-        <Menu>
-          <MenuItem
-            onClick={handleLinkClick}
-            onMouseEnter={() => setDropdownVisible(true)}
-            to="/community-feed"
-          >
-            커뮤니티
-            {dropdownVisible && (
-              <DropdownContainer>
-                <Dropdown
-                  subMenuItems={CommunityMenuItems}
-                  onLinkClick={handleLinkClick}
-                />
-              </DropdownContainer>
-            )}
-          </MenuItem>
-          <MenuItem to="/diary">건강관리</MenuItem>
-          <MenuItem
-            onClick={handleLinkClick}
-            onMouseEnter={() => setDropdownVisible(true)}
-            to="/hosInfo"
-          >
-            정보
-            {dropdownVisible && (
-              <DropdownContainer>
-                <Dropdown
-                  subMenuItems={InfoMenuItems}
-                  onLinkClick={handleLinkClick}
-                />
-              </DropdownContainer>
-            )}
-          </MenuItem>
-        </Menu>
-        <Notification>
-          라우팅용 임시버튼들
-          <MenuItem to="/login-router">로그인</MenuItem>
-          <MenuItem to="/mypage">마이페이지</MenuItem>
-          <MenuItem to="/pharInfo">약국정보</MenuItem>
-          <MenuItem to="/globalSearch">전체 검색</MenuItem>
-          <MenuItem to="/post">글(post)</MenuItem>
-          <MenuItem to="/community">전체 커뮤니티</MenuItem>
-        </Notification>
-      </Content>
-    </Wrapper>
-  );
-};
-export default Header;
+  > * {
+    margin: 0 4px;
+  }
+`;
+
+const stretching = keyframes`
+from {
+width: 0
+}
+to {
+width: 400px
+}
+`;
+
+const SearchBar = styled.input`
+  border: none;
+  border-bottom: 2px solid var(--color-grey-2);
+
+  font-size: var(--font-size-sm);
+  padding: 4px 8px;
+  outline: none;
+
+  animation-duration: 0.5s;
+  animation-timing-function: ease-out;
+  animation-name: ${stretching};
+  animation-fill-mode: forwards;
+`;

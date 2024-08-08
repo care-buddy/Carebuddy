@@ -10,99 +10,19 @@ import {
 
 interface StyledActionButtonProps {
   buttonBorder: 'border-solid' | 'border-none';
+  buttonSize?: 'sm' | 'md';
 }
 
-const buttonBorders = {
-  'border-solid': css`
-    border: var(--color-grey-2) solid 1px;
-  `,
-  'border-none': css`
-    border: none;
-  `,
-};
-
-const StyledActionButton = styled.button<StyledActionButtonProps>`
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-  background-color: transparent;
-  color: var(--color-grey-2);
-  height: 35px;
-  width: 35px;
-  margin-left: 10px;
-  position: relative;
-  ${(props) => props.buttonBorder && buttonBorders[props.buttonBorder]};
-`;
-
-const StyledIconHorizontal = styled(LuMoreHorizontal)`
-  font-size: 24px;
-`;
-
-const StyledIconVertical = styled(LuMoreVertical)`
-  font-size: 24px;
-`;
-
-const OptionButtons = styled.div`
-  z-index: 999;
-  position: absolute;
-  top: 0;
-  left: 100%;
-  border: var(--color-grey-2) 1px solid;
-  background-color: var(--color-white);
-
-  p {
-    color: var(--color-grey-1);
-    display: inline-block;
-    width: 50px;
-  }
-`;
-
-const OptionItemEdit = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
-  color: var(--color-grey-1);
-  /* 임시 색상 */
-  &:hover {
-    background-color: var(--color-grey-2);
-  }
-`;
-
-const OptionItemDelete = styled.div`
-  display: flex;
-  flex-direction: row;
-  padding: 10px;
-  color: var(--color-red);
-
-  &:hover {
-    background-color: var(--color-grey-2);
-  }
-`;
-
-const Hr = styled.hr`
-  border: 0;
-  border-top: 0.5px solid var(--color-grey-2);
-  width: 100%;
-  margin: 0 0;
-`;
-
-const Icon = styled.div`
-  > svg {
-    height: 100%;
-  }
-`;
-
 interface ActionButtonProps extends StyledActionButtonProps {
-  direction: string;
+  direction?: string;
   onEdit?: () => void; // 수정 버튼 클릭 이벤트 핸들러
   onDelete?: () => void; // 삭제 버튼 클릭 이벤트 핸들러
 }
 
 const ActionButton: React.FC<ActionButtonProps> = ({
   buttonBorder,
-  direction,
+  buttonSize = 'md',
+  direction='vertical',
   onEdit,
   onDelete,
 }) => {
@@ -146,6 +66,7 @@ const ActionButton: React.FC<ActionButtonProps> = ({
   return (
     <StyledActionButton
       buttonBorder={buttonBorder}
+      buttonSize={buttonSize}
       onClick={handleClick}
       ref={buttonRef}
     >
@@ -176,3 +97,96 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 };
 
 export default ActionButton;
+
+
+const buttonBorders = {
+  'border-solid': css`
+    border: var(--color-grey-2) solid 1px;
+  `,
+  'border-none': css`
+    border: none;
+  `,
+};
+
+const buttonSizes = {
+  sm: css`
+    height: 20px;
+    width: 20px;
+  `,
+  md: css`
+    height: 35px;
+    width: 35px;
+  `,
+};
+
+const StyledActionButton = styled.button<StyledActionButtonProps>`
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  background-color: transparent;
+  color: var(--color-grey-2);
+  margin-left: 10px;
+  position: relative;
+  ${(props) => props.buttonBorder && buttonBorders[props.buttonBorder]};
+  ${(props) => props.buttonSize && buttonSizes[props.buttonSize]};
+`;
+
+const StyledIconHorizontal = styled(LuMoreHorizontal)`
+  font-size: 24px;
+`;
+
+const StyledIconVertical = styled(LuMoreVertical)`
+  font-size: 24px;
+`;
+
+const OptionButtons = styled.div`
+  position: absolute;
+  top: 0;
+  left: 100%;
+  border: var(--color-grey-2) 1px solid;
+  background-color: var(--color-white);
+  z-index: 3000;
+
+  p {
+    color: var(--color-grey-1);
+    display: inline-block;
+    width: 50px;
+  }
+`;
+
+const OptionItemEdit = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  color: var(--color-grey-1);
+  /* 임시 색상 */
+  &:hover {
+    background-color: var(--color-grey-2);
+  }
+`;
+
+const OptionItemDelete = styled.div`
+  display: flex;
+  flex-direction: row;
+  padding: 10px;
+  color: var(--color-red);
+
+  &:hover {
+    background-color: var(--color-grey-2);
+  }
+`;
+
+const Hr = styled.hr`
+  border: 0;
+  border-top: 0.5px solid var(--color-grey-2);
+  width: 100%;
+  margin: 0 0;
+`;
+
+const Icon = styled.div`
+  > svg {
+    height: 100%;
+  }
+`;

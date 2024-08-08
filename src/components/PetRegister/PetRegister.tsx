@@ -1,212 +1,255 @@
-// 추후 이미지 업로드 + 로직 공통컴포넌트화
 // 디바운싱 적용 필요
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-import Button from '@components/common/Button';
 import Input from '@components/common/Input';
+import Button from '@components/common/Button';
+import ImageUploader from '@components/common/ImageUploader';
 
-import { LuCamera } from 'react-icons/lu';
+import { Buddy } from '@/interfaces';
 
-// 임시 데이터
-import { tempProfileSrc } from '@constants/tempData';
+import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 
-// 인터페이스
-// import { FormData } from '@/pages/Temp-PetRegister';
+interface PetRegisterProps {
+  petData: Buddy | null;
+  onFormDataChange: (FormData: FormData) => void; // 폼데이터를 수집해 부모 컴포넌트로 전달하기 위한 콜백 함수
+}
 
-// interface PetRegisterProps {
-// formData: FormData;
-// setFormData: React.Dispatch<React.SetStateAction<FormData>>;
-// }
-
-const PetRegister = () => {
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null); // 프리뷰 이미지
-  const [, setSelectedFile] = useState<File | null>(null); // 전송할 이미지
-  // const [selectedFile, setSelectedFile] = useState<File | null>(null); // 전송할 이미지
-
-  // const [setFormData, setFormData] = useState<FormData>({
-  // const [, setFormData] = useState<FormData>({
-    // name: '',
-    // age: 0,
-    // weight: 0,
-    // gender: '',
-    // species: '',
-    // neutered: '',
-  // });
+const PetRegister: React.FC<PetRegisterProps> = ({
+  petData,
+  onFormDataChange,
+}) => {
+  const [buddyImage, setBuddyImage] = useState<string>(DefaultPetProfileImg);
+  // 전송할 이미지
+  // 변경할 이미지를 고르고, 바로 변경되는 것이 아니기 때문에 저장할 상태가 필요
+  const [selectedFile, setSelectedFile] = useState<string | undefined>(
+    undefined
+  );
 
   // petInfo 객체 초기화
   const [petInfo, setPetInfo] = useState({
-    gender: null as 'male' | 'female' | null,
-    species: null as 'dog' | 'cat' | null,
-    neutered: null as 'before' | 'completed' | null,
+    sex: petData?.sex ?? (null as 1 | 2 | null), // 남: 1, 여: 2
+    species: petData?.species ?? (null as 0 | 1 | null), // 강아지 0, 고양이 1
+    isNeutered: petData?.isNeutered ?? (null as 'before' | 1 | null),
+    // 없을 때 값은 임시
+    name: petData?.name ?? '',
+    kind: petData?.kind ?? '',
+    age: petData?.age ?? '',
+    weight: petData?.weight ?? '',
+    buddyImage: petData?.buddyImage ?? '',
   });
 
-  // 이미지 핸들러(화면상에서 보여줌 + 전송할 파일 설정)
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e?.target.files?.[0];
-
-    if (file) {
-      setSelectedFile(file);
-      const imageUrl = URL.createObjectURL(file); // 프리뷰 url
-      setPreviewUrl(imageUrl);
-    }
+  // formData - input 핸들러
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'name' | 'age' | 'weight' | 'kind'
+  ) => {
+    setPetInfo({
+      ...petInfo,
+      [type]: e.target.value,
+    });
   };
 
-  // formData - button 핸들러
+  // formData - button 핸들러: 성별, 종, 중성화 여부가 버튼으로 관리
   const handleClick = (
-    type: 'gender' | 'species' | 'neutered',
-    value: 'male' | 'female' | 'dog' | 'cat' | 'before' | 'completed'
+    type: 'sex' | 'species' | 'isNeutered',
+    value: 0 | 1 | 2 | null
   ) => {
     setPetInfo({
       ...petInfo,
       [type]: value,
     });
-    // setFormData((prevData) => ({
-    //   ...prevData,
-    //   [type]: value,
-    // }));
   };
 
-  // formData - input 핸들러
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    // 임시
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    type: 'name' | 'age' | 'weight'
+  useEffect(() => {
+    // 수정 모달의 경우, 펫데이터가 있으므로 초기값 세팅
+    if (petData) {
+      setPetInfo({
+        sex: petData.sex,
+        species: petData.species,
+        isNeutered: petData.isNeutered,
+        name: petData?.name,
+        kind: petData?.kind,
+        age: petData?.age,
+        weight: petData?.weight,
+        buddyImage: petData?.buddyImage,
+      });
 
-  ) => {
-    // 임시
-    // eslint-disable-next-line no-console
-    console.log(e, type);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    // const { value } = e.target;
+      setBuddyImage(petData.buddyImage);
+    }
+  }, []);
 
-    // setFormData((prevData) => ({
-    //   ...prevData,
-    //   [type]: type === 'age' || type === 'weight' ? parseInt(value, 10) : value,
-    // }));
+  // 폼데이터 생성 함수
+  const createFormData = () => {
+    const formData = new FormData();
+    // string으로 append 해줘야한다?
+    formData.append('sex', String(petInfo.sex));
+    formData.append('species', String(petInfo.species));
+    formData.append('isNeutered', String(petInfo.isNeutered));
+    formData.append('name', petInfo.name);
+    formData.append('age', String(petInfo.age));
+    formData.append('weight', String(petInfo.weight));
+    formData.append('kind', petInfo.kind);
+    // 선택 파일이 있을 때에는 그 파일을 append 해준다
+    if (selectedFile) {
+      formData.append('buddyImage', selectedFile);
+    } else formData.append('buddyImage', buddyImage);
+
+    return formData;
   };
 
-  // 이미지 전송 핸들러
-  // const handleProfileImageSubmit = () => {};
+  // 모달 내용이 변경될 때마다 폼데이터를 객체를 만들어 업데이트해준다
+  useEffect(() => {
+    onFormDataChange(createFormData());
+  }, [petInfo, selectedFile]);
 
   return (
-    <>
-      <Section>
-        <Heading>프로필 등록</Heading>
-        <ImageContainer>
-          <Img src={previewUrl || tempProfileSrc} alt="프로필 이미지" />
-          <LabelForFileInput>
-            <LuCamera />
-            <input
-              type="file"
-              id="profile"
-              name="profile"
-              accept="image/png, image/jpeg"
-              onChange={handleFileChange}
-              style={{ display: 'none' }}
+    <Wrapper>
+      <LeftSection>
+        <Section>
+          <Heading>프로필 등록</Heading>
+          <ImageContainer>
+            <ImageUploader
+              transferFile={buddyImage}
+              selectFile={selectedFile}
+              onSelectFile={setSelectedFile}
             />
-          </LabelForFileInput>
-        </ImageContainer>
-      </Section>
-      <Section>
-        <Heading>반려동물 이름</Heading>
-        <Input onChange={(e) => handleInputChange(e, 'name')} placeholder="이름을 입력해주세요" />
-      </Section>
-      <Section>
-        <Heading>반려동물 성별</Heading>
-        <Button
-          buttonStyle={
-            petInfo.gender === 'male' ? 'square-green' : 'square-white'
-          }
-          buttonSize="sm"
-          onClick={() => handleClick('gender', 'male')}
-        >
-          남자 아이
-        </Button>
-        <Button
-          buttonStyle={
-            petInfo.gender === 'female' ? 'square-green' : 'square-white'
-          }
-          buttonSize="sm"
-          onClick={() => handleClick('gender', 'female')}
-        >
-          여자 아이
-        </Button>
-      </Section>
-      <Section>
-        <Heading>반려동물 종</Heading>
-        <Button
-          buttonStyle={
-            petInfo.species === 'dog' ? 'square-green' : 'square-white'
-          }
-          buttonSize="sm"
-          onClick={() => handleClick('species', 'dog')}
-        >
-          강아지
-        </Button>
-        <Button
-          buttonStyle={
-            petInfo.species === 'cat' ? 'square-green' : 'square-white'
-          }
-          buttonSize="sm"
-          onClick={() => handleClick('species', 'cat')}
-        >
-          고양이
-        </Button>
-      </Section>
-      <Section>
-        <Heading>반려동물 나이</Heading>
-        <Input type="number" onChange={(e) => handleInputChange(e, 'age')} placeholder="나이를 입력해주세요" />
-      </Section>
-      <Section>
-        <Heading>중성화 여부</Heading>
-        <Button
-          buttonStyle={
-            petInfo.neutered === 'before' ? 'square-green' : 'square-white'
-          }
-          buttonSize="sm"
-          onClick={() => handleClick('neutered', 'before')}
-        >
-          중성화 전
-        </Button>
-        <Button
-          buttonStyle={
-            petInfo.neutered === 'completed' ? 'square-green' : 'square-white'
-          }
-          buttonSize="sm"
-          onClick={() => handleClick('neutered', 'completed')}
-        >
-          중성화 완료
-        </Button>
-      </Section>
+          </ImageContainer>
+        </Section>
+      </LeftSection>
 
-      <Section>
-        <Heading>반려동물 체중</Heading>
-        <Input type="number" onChange={(e) => handleInputChange(e, 'weight')} placeholder="체중을 입력해주세요"/>
-      </Section>
-    </>
+      <RightSection>
+        <Section>
+          <Heading>이름</Heading>
+          <Input
+            onChange={(e) => handleInputChange(e, 'name')}
+            placeholder="이름을 입력해주세요"
+            defaultValue={petData?.name || ''}
+            inputPadding="sm"
+            focusColor="green"
+          />
+        </Section>
+        <Section>
+          <Heading>성별</Heading>
+          <Button
+            buttonStyle={petInfo?.sex === 1 ? 'square-green' : 'square-white'}
+            buttonSize="sm"
+            onClick={() => handleClick('sex', 1)}
+          >
+            남자 아이
+          </Button>
+          <Button
+            buttonStyle={petInfo?.sex === 2 ? 'square-green' : 'square-white'}
+            buttonSize="sm"
+            onClick={() => handleClick('sex', 2)}
+          >
+            여자 아이
+          </Button>
+        </Section>
+        <Section>
+          <Heading>반려동물 종</Heading>
+          <Button
+            buttonStyle={
+              petInfo.species === 0 ? 'square-green' : 'square-white'
+            }
+            buttonSize="sm"
+            onClick={() => handleClick('species', 0)}
+          >
+            강아지
+          </Button>
+          <Button
+            buttonStyle={
+              petInfo.species === 1 ? 'square-green' : 'square-white'
+            }
+            buttonSize="sm"
+            onClick={() => handleClick('species', 1)}
+          >
+            고양이
+          </Button>
+        </Section>
+        <Section>
+          <Heading>품종</Heading>
+          <Input
+            onChange={(e) => handleInputChange(e, 'kind')}
+            placeholder="품종을 입력해주세요"
+            inputPadding="sm"
+            defaultValue={petData?.kind || ''}
+            focusColor="green"
+          />
+        </Section>
+        <Section>
+          <Heading>나이</Heading>
+          <Input
+            type="number"
+            onChange={(e) => handleInputChange(e, 'age')}
+            placeholder="나이를 입력해주세요"
+            inputPadding="sm"
+            defaultValue={petData?.age || ''}
+            focusColor="green"
+          />
+        </Section>
+        <Section>
+          <Heading>중성화</Heading>
+          <Button
+            buttonStyle={
+              petInfo.isNeutered === 0 ? 'square-green' : 'square-white'
+            }
+            buttonSize="sm"
+            onClick={() => handleClick('isNeutered', 0)}
+          >
+            중성화 전
+          </Button>
+          <Button
+            buttonStyle={
+              petInfo.isNeutered === 1 ? 'square-green' : 'square-white'
+            }
+            buttonSize="sm"
+            onClick={() => handleClick('isNeutered', 1)}
+          >
+            중성화 완료
+          </Button>
+        </Section>
+
+        <Section>
+          <Heading>반려동물 체중</Heading>
+          <Input
+            type="number"
+            onChange={(e) => handleInputChange(e, 'weight')}
+            placeholder="체중을 입력해주세요"
+            inputPadding="sm"
+            defaultValue={petData?.weight || ''}
+            focusColor="green"
+          />
+        </Section>
+      </RightSection>
+    </Wrapper>
   );
 };
 
 export default PetRegister;
 
+const Wrapper = styled.div`
+  display: flex;
+`;
+
+const LeftSection = styled.div``;
+const RightSection = styled.div`
+  margin-left: 5.5rem;
+`;
+
 const Section = styled.div`
-  padding-bottom: 20px;
+  padding-bottom: 1rem;
 
   & > * {
     margin-right: 10px;
-  }
-
-  input {
-    padding: 8px 6px;
   }
 `;
 
 const Heading = styled.p`
   padding: 12px 0;
   font-size: var(--font-size-md-2);
+  font-weight: var(--font-weight-bold);
 `;
 
 const ImageContainer = styled.div`
@@ -214,25 +257,4 @@ const ImageContainer = styled.div`
   display: flex;
   width: 170px;
   height: 160px;
-`;
-
-const Img = styled.img<{ src?: string }>`
-  border-radius: 50%;
-  width: 150px;
-  height: 150px;
-`;
-
-const LabelForFileInput = styled.label`
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  cursor: pointer;
-  color: var(--color-green-main);
-  padding: 8px 12px;
-  border-radius: 5px;
-
-  svg {
-    width: 40px;
-    height: 40px;
-  }
 `;

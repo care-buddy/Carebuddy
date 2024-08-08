@@ -1,23 +1,21 @@
-import React, { useState } from 'react';
-import styled from 'styled-components';
-import { Swiper, SwiperSlide } from 'swiper/react';
+import React, { useState, useEffect } from 'react';
+import styled, { keyframes } from 'styled-components';
 import 'swiper/css';
 import 'swiper/css/pagination';
 import 'swiper/css/navigation';
-import { Pagination, Virtual } from 'swiper/modules';
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
-import { TbReportMedical, TbBuildingHospital } from 'react-icons/tb';
-import {
-  LuPill,
-  LuActivitySquare,
-  LuStethoscope,
-  LuMessageSquarePlus,
-} from 'react-icons/lu';
-import ActionButton from '@/components/common/ActtionButton';
 import TopBar from '@/components/common/TopBar';
-import PetRegister from '@/components/PetRegister/PetRegister';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import { Record, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
+import Loading from '@/components/common/Loading';
+import ValidationAlert from '@/components/common/ValidationAlert';
+import { LuPencilLine } from 'react-icons/lu';
 import HosRecords from './HosRecords';
+import PetProfiles from './PetProfiles';
+import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
+import RecordWrapper from './Record';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -27,112 +25,41 @@ const Wrapper = styled.div`
   margin: 0 auto;
   height: auto;
 `;
-
-/* 카드프로필 */
-
-const ProfilesWrapper = styled.div`
-  height: 400px;
-  display: block;
-`;
-
-const ProfilesTitle = styled.div`
-  font-size: var(--font-size-hd-2);
-  font-weight: var(--font-weight-bold);
-  margin: 20px 0 30px 0;
-`;
-
-/* 카드프로필 끝 */
-
-/* 카드 */
-
-const CardsWrapper = styled.div`
-  position: relative;
-  height: 300px;
-  display: flex;
-  width: 100%;
-  position: relative;
-`;
-
-const Cards = styled.div`
-  width: 244px;
-  height: 90%;
-  /* background: #ffffff; */
-  box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.1);
-  border-radius: 15px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-
-  > button {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    > div {
-      position: absolute;
-    }
+// 임시 애니메이션 수정해야함!
+const fadeIn = keyframes`
+  from {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
   }
-  :hover {
-    cursor: pointer;
+  to {
+    opacity: 1;
   }
 `;
-
-const Photo = styled.img`
-  width: 130px;
-  height: 130px;
-  background: rgba(152, 185, 156, 0.3);
-  border-radius: 50%;
-  border: 0;
-  overflow: hidden;
-  text-align: center;
-`;
-
-const Name = styled.p`
-  margin-top: 22px;
-  height: 26px;
-  font-size: var(--font-size-hd-1);
-  font-weight: bold;
-  line-height: 26px;
-  text-align: center;
-  margin-bottom: 6px;
-  transition: color 0.3s ease;
-  &.selectedPet {
-    color: var(--color-green-main);
-  }
-`;
-
-const Details = styled.p`
-  width: 100%;
-  height: 19px;
-  font-size: 16px;
-  line-height: 19px;
-  text-align: center;
-  color: #7d7d7d;
-  margin: 0;
-`;
-
-/* 카드 끝 */
-
 /* 다이어리 */
 
 const DiaryWrapper = styled.div`
+  /* animation: ${fadeIn} 0.3s ease-in-out; */
+  /* transition: all 0.5s ease; */
   box-sizing: border-box;
   width: 100%;
   height: auto;
+  min-height: 600px;
   padding: 50px 80px 40px 60px;
-  border: 1px solid #cecece;
+  border: 2px solid var(--color-grey-2);
   border-radius: 6px 80px 6px 6px;
   margin-top: 100px;
   position: relative;
   margin-bottom: 10%;
-`;
 
-const DeseaseTitle = styled.h2`
-  font-size: var(--font-size-hd-1);
-  font-weight: var(--font-weight-medium);
-  height: auto;
-  margin-left: 10px;
+  box-shadow:
+    10px 5px 10px -5px rgba(0, 0, 0, 0.2),
+    0px 0 15px -5px rgba(0, 0, 0, 0.1);
+
+  > button {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
 `;
 
 const NameInTitle = styled.h2`
@@ -148,302 +75,320 @@ const NameInTitle = styled.h2`
 const DiaryTitle = styled.span``;
 
 const HorizontalLine = styled.div`
-  border-top: 3px solid var(--color-green-sub-2);
+  border-top: 2px solid var(--color-green-sub-2);
+  border-bottom: 2px solid var(--color-green-sub-2);
   top: 115px;
   left: 0;
   width: 100%;
   position: absolute;
+  /* 반응형 적용해보고 수정 */
+  height: 0.3rem;
 `;
 
 // 타이틀을 포함한 다이어리 컨테이너
 const ReportWrapper = styled.div`
-  height: 280px;
+  animation: ${fadeIn} 0.3s ease-in-out;
+  /* height: 100% */
   width: 100%;
-  margin-top: 50px;
-  margin-bottom: 150px;
+  margin-top: 40px;
+  margin-bottom: 50px;
   &.noReport {
+    animation: none;
     > p {
       padding-bottom: 8px;
     }
   }
-`;
-
-const Paragraph = styled.p``;
-
-// 다이어리 본문 컨테이너
-const Report = styled.div`
-  padding: 20px 3%;
-  margin-top: 24px;
-  height: 100%;
-  border: 1px solid #7d7d7d;
-  border-radius: 6px;
-  /* display: flex;
-  position: relative; */
-  display: grid;
-  /* grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
-  grid-template-columns: 1fr 2fr 2fr;
-  gap: 20px;
-  /* > div:first-child {
-    position: absolute;
-    top: 20px;
-    right: 30px;
-  } */
-  position: relative;
-`;
-
-const DeseaseName = styled.div`
-  display: flex;
-  height: 26px;
-  width: 100%;
-  padding-top: 26px;
-  /* padding-right: 20px; */
-`;
-
-const Icon = styled.div`
-  > svg {
-    width: 20px;
-    height: 20px;
-    color: var(--color-green-main);
-
-    &.big {
-      width: 24px;
-      height: 24px;
-    }
+  + div {
+    margin-top: 80px;
   }
 `;
 
 /* 다이어리 끝 */
 
-/* 다이어리 상세 : 그리드로 변경 */
-const DiaryDetailsLeft = styled.div`
-  display: flex;
-  border-left: solid 2px #cecece;
-  padding: 26px 4%;
-  padding-left: 30px;
-  flex-direction: column;
-  /* width: 35%; */
-`;
-
-const DiaryDetailsRight = styled.div`
-  display: flex;
-  padding: 26px 30px;
-  flex-direction: column;
-  /* width: 35%; */
-  > button {
-    position: absolute;
-
-    top: 15px;
-    right: 15px;
-  }
-`;
-
-// 질병에 대한 상세 정보 컨테이너
-const DiaryDetailContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-`;
-
-const DiaryDetail = styled.div`
-  margin-left: 15px;
-  margin-bottom: 30px;
-  /* margin-right: 250px; */
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-`;
-
-const DetailTitle = styled.p`
-  /* width: 300px; */
-  font-weight: var(--font-weight-bold);
-
-  + p {
-    font-size: var(--font-size-md-1);
-    margin-top: 4px;
-    line-height: var(--font-size-hd-2);
-    white-space: pre-wrap;
-
-    /* > span {
-      color: #7d7d7d;
-    } */
-  }
-`;
-
-const Doctor = styled.span`
-  color: var(--color-grey-1);
-`;
-
-/* 다이어리 상세 끝  */
-
-const StyledSwiper = styled(Swiper)`
-  width: 100%;
-  > div {
-    padding-top: 8px;
-  }
-  > div:last-child {
-    position: absolute;
-    bottom: 0;
-    display: flex;
-    justify-content: center;
-  }
-`;
-
-// 프로필이 없을 때
-const AddProfile = styled.div`
-  width: 100px;
-  height: 100px;
-  background: var(--color-grey-2);
-  border-radius: 50%;
-  border: 0;
-  overflow: hidden;
-`;
-
-const AddProfileMsg = styled.p`
-  margin-top: 26px;
-  font-size: 18px;
-  text-align: center;
-  color: #7d7d7d;
-`;
-
-// 임시, 나중에 폼데이터 인터페이스 통합
-interface FormData {
-  doctorName?: string;
-  consultationDate?: string;
-  address?: string;
-  disease?: string;
-  symptom?: string;
-  treatment?: string;
-  memo?: string;
-  hospitalizationStatus?: Date | null;
-}
+const axiosInstance = axios.create({
+  baseURL: '/api', // 기본 URL 설정
+  timeout: 5000, // 타임아웃 설정 (ms)
+});
 
 const Diary: React.FC = () => {
+  const mock = new MockAdapter(axiosInstance);
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
-  const [editModalOpen, setEditModalOpen] = useState(false);
-  const [petModalOpen, setPetModalOpen] = useState(false);
-  const [petEditModalOpen, setPetEditModalOpen] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    doctorName: '',
-    consultationDate: '',
-    address: '',
+
+  const nullData: Record = {
+    _id: '',
+    doctorName: null,
+    address: null,
+    isConsultation: true,
+    consultationDate: null,
+    hospitalizationStatus: false,
     disease: '',
-    symptom: '',
-    treatment: '',
-    memo: '',
-    hospitalizationStatus: null,
-  });
+    symptom: [],
+    treatment: [],
+    memo: null,
+    deletedAt: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  // 기록 등록을 위한 Record 상태
+  const [formData, setFormData] = useState<Record>(nullData);
+
+  const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
+    null
+  );
+
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [isLoading, setLoading] = useState(false);
+  // 화면 렌더링 시 버디와 로딩 상태를 공유할 경우, 버디만 렌더링 완료된 경우에 로딩 상태가 false가 되므로 분리한다.
+  const [isRecordLoading, setRecordLoading] = useState(false);
+  const [, setError] = useState<Error | null>(null);
+
+  // 반려동물 1마리의 병원 기록들을 저장할 상태
+  const [recordsData, setRecords] = useState<Record[] | null>([]);
+
+  // 유효성 검사 알림 상태
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState('');
+
+  //
+  const [hasRecords, setHasRecords] = useState(false);
+
+  const [isCheckSymptom, setCheckSymptom] = useState(false);
+  const [isCheckTreat, setCheckTreat] = useState(false);
+
+  const fetchBuddiesData = async () => {
+    // /api/buddies로 GET 요청 모킹
+    try {
+      setLoading(true);
+      mock.onGet('/buddies').reply(200, dummyBuddies);
+      const response = await axiosInstance.get('/buddies');
+      setBuddiesData(response.data);
+      setLoading(false);
+    } catch (error) {
+      setError(error as Error);
+      setLoading(false);
+    }
+  };
+
+  mock.onGet('/hospitals/1a').reply(200, dummyRecord);
+  mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
+  const fetchRecordsData = async (buddyId: string) => {
+    // /api/hospitals로 GET 요청 모킹
+    setRecordLoading(true);
+    try {
+      const response = await axiosInstance.get(`/hospitals/${buddyId}`);
+
+      setRecords(response.data);
+    } catch (error) {
+      setError(error as Error);
+    } finally {
+      // 로딩 상태 확인 완료
+      setRecordLoading(false);
+    }
+  };
+  useEffect(() => {
+    fetchBuddiesData();
+    // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
+    if (selectedId) fetchRecordsData(selectedId);
+  }, [selectedId]);
+
+  useEffect(() => {
+    if (recordsData) {
+      // 모든 기록이 삭제된 경우에만(null이 아닌 경우) false를 반환
+      // 즉 false인 경우에는 기록이 없다는 안내 문구를 보여주면 된다.
+      const hasNonDeletedRecords = recordsData.some(
+        (record) => record.deletedAt === null
+      );
+      setHasRecords(hasNonDeletedRecords);
+    } else {
+      setHasRecords(false);
+    }
+    console.log(recordsData);
+  }, [recordsData]);
+
+  // if (error) {
+  //   return <div>Error: {error.message}</div>;
+  // }
+
+  const handleSubmitBuddy = (newBuddy: BuddyProfile) => {
+    if (buddiesData?.buddies) {
+      setBuddiesData({
+        ...buddiesData,
+        buddies: [...buddiesData.buddies, newBuddy],
+      });
+    }
+  };
 
   // 모달 관련 함수
   const handleOpenModal = () => {
     setModalOpen(true);
   };
 
-  const handleOpenPetModal = () => {
-    setPetModalOpen(true);
-  };
-
-  const handleOpenEditModal = () => {
-    // 수정 모달 표시 여부를 관리하는 함수
-    setEditModalOpen(!editModalOpen);
-  };
-
-  const handleOpenPetEditModal = () => {
-    setPetEditModalOpen(!petEditModalOpen);
-  };
-
   const handleCloseModal = () => {
     setModalOpen(false);
-  };
-
-  const handleCloseEditModal = () => {
-    setEditModalOpen(false);
-  };
-  const handleClosePetModal = () => {
-    setPetModalOpen(false);
-  };
-
-  const handleClosePetEditModal = () => {
-    setPetEditModalOpen(false);
+    // 모달이 닫혔을 때, 기존 상태로 돌려줘야함
+    setFormData(nullData);
   };
 
   const handleFormSubmit = () => {
-    console.log('Form data:', formData);
+    // POST 요청 모킹
+    mock.onPost(`/hospitals`).reply((config) => {
+      console.log('요청 정보:', config);
+      const formData = JSON.parse(config.data);
 
-    // 모달 닫기
-    handleCloseModal();
+      const newRecord: Record = {
+        ...formData,
+        _id: String(Date.now()),
+      };
+
+      if (recordsData) {
+        setRecords([...recordsData, newRecord]);
+      } else setRecords([newRecord]);
+      return [200, { success: true, message: '병원 기록 등록 성공' }];
+    });
+
+    if (validateForm() && formData) {
+      axiosInstance
+        .post(`/hospitals`, formData)
+        .then(() => {
+          handleCloseModal();
+        })
+        .catch((error) => {
+          console.log(error);
+        });
+    } else setShowAlert(true);
   };
+
+  // PetProfiles가 마운트될 때, 버디프로필이 있다면 실행된다.
+  // 따라서 프로필이 있다면 selectedId 상태가 초기값이 null에서 id로 업데이트된다
+  const handleSelectedId = (buddyId: string) => {
+    setSelectedId(buddyId);
+  };
+
+  const handleUpdateRecord = (updatedRecord: Record) => {
+    if (recordsData) {
+      const updatedRecords = recordsData.map((record) =>
+        record._id === updatedRecord._id ? updatedRecord : record
+      );
+      setRecords(updatedRecords);
+    }
+  };
+
+  mock.onPut(`/hospitals/1r/d`).reply((config) => {
+    const deletedRecord = JSON.parse(config.data);
+    return [200, deletedRecord];
+  });
+  mock.onPut(`/hospitals/2r/d`).reply((config) => {
+    const deletedRecord = JSON.parse(config.data);
+
+    return [200, deletedRecord];
+  });
+  const handleDeleteRecord = async (recordId: string) => {
+    // 삭제 PUT 요청 설정
+    mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
+      const deletedRecord = JSON.parse(config.data);
+
+      return [200, deletedRecord];
+    });
+    if (window.confirm('삭제하시겠습니까?')) {
+      try {
+        // id로 삭제 요청한 record를 찾음
+        if (recordsData) {
+          const updatedRecord = recordsData.find(
+            (record) => record._id === recordId
+          );
+
+          if (!updatedRecord) {
+            console.error('일치하는 레코드가 없습니다.');
+            return;
+          }
+
+          // deletedAt을 업데이트한 레코드
+          const deletedRecord: Record = {
+            ...updatedRecord,
+            deletedAt: new Date(),
+          };
+
+          setLoading(true);
+          // 서버에 삭제 요청
+          await axiosInstance.put(`/hospitals/${recordId}/d`, deletedRecord);
+
+          // 상태 업데이트: 삭제 요청한 id만 deletedRecord로 업데이트 해줌
+          setRecords((prevRecords) =>
+            prevRecords
+              ? prevRecords.map((record) =>
+                  record._id === recordId ? deletedRecord : record
+                )
+              : null
+          );
+        }
+      } catch (e) {
+        console.error(e);
+        setError(e as Error);
+      } finally {
+        // 로딩 상태 확인 완료
+        setLoading(false);
+      }
+    }
+  };
+
+  const validateForm = () => {
+    if (formData.isConsultation && formData.address === null) {
+      setAlertMessage('병원 정보를 입력해주세요.');
+      return false;
+    }
+
+    if (formData.disease === '') {
+      setAlertMessage('질병 정보를 입력해주세요.');
+      return false;
+    }
+
+    if (isCheckSymptom) {
+      setAlertMessage('증상 내용을 추가하셨는지 확인해주세요.');
+      return false;
+    }
+
+    if (isCheckTreat) {
+      setAlertMessage('처방 내용을 추가하셨는지 확인해주세요.');
+      return false;
+    }
+
+    return true;
+  };
+
+  if (isLoading) return <Loading />;
+  if (isRecordLoading) return <Loading />;
 
   return (
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
       <Wrapper>
-        <ProfilesWrapper>
-          <ProfilesTitle>user 님의 반려동물</ProfilesTitle>
-          <StyledSwiper
-            virtual
-            slidesPerView={4}
-            spaceBetween={0}
-            // slidesOffsetBefore={20}
-            // /* 전체적인 슬라이드의 오른쪽에 20px 공백을 준다. */
-            // slidesOffsetAfter={30}
-            pagination={{
-              clickable: true,
-            }}
-            modules={[Pagination, Virtual]}
-            className="mySwiper"
-          >
-            <SwiperSlide key={0} virtualIndex={0}>
-              <CardsWrapper>
-                <Cards>
-                  <ActionButton
-                    buttonBorder="border-none"
-                    direction="vertical"
-                    onDelete={() => {}}
-                    onEdit={handleOpenPetEditModal}
-                  />
-                  <Photo />
-                  <Name>이름</Name>
-                  <Details>종 / 나이</Details>
-                </Cards>
-              </CardsWrapper>
-            </SwiperSlide>
-            <SwiperSlide key={1} virtualIndex={1}>
-              <CardsWrapper>
-                <Cards>
-                  <AddProfile onClick={handleOpenPetModal} />
+        <PetProfiles
+          name={buddiesData?.name}
+          buddies={buddiesData?.buddies}
+          onSubmitBuddy={handleSubmitBuddy}
+          onBuddySelect={handleSelectedId}
+        />
 
-                  <AddProfileMsg>프로필 추가</AddProfileMsg>
-                </Cards>
-              </CardsWrapper>
-            </SwiperSlide>
-          </StyledSwiper>
-          {petModalOpen && (
-            <Modal
-              onClose={handleClosePetModal}
-              title="동물 정보 등록"
-              value="등록"
-              component={<PetRegister />}
-              onHandleClick={handleFormSubmit}
-            />
-          )}
-          {petEditModalOpen && (
-            <Modal
-              onClose={handleClosePetEditModal}
-              title="동물 정보 수정"
-              value="수정"
-              component={<PetRegister />}
-              onHandleClick={handleFormSubmit}
-            />
-          )}
-        </ProfilesWrapper>
         <DiaryWrapper>
-          <NameInTitle className="diaryTitle">
-            (반려동물 이름)<DiaryTitle>의 건강 다이어리</DiaryTitle>
+          <NameInTitle>
+            {buddiesData?.buddies && buddiesData.buddies.length > 0 ? (
+              <>
+                {
+                  buddiesData.buddies.find((buddy) => buddy._id === selectedId)
+                    ?.name
+                }
+                <DiaryTitle> 의 건강 다이어리</DiaryTitle>
+              </>
+            ) : (
+              <DiaryTitle>반려동물 프로필을 등록해주세요.</DiaryTitle>
+            )}
           </NameInTitle>
           <HorizontalLine />
           <Button buttonStyle="square-green" onClick={handleOpenModal}>
-            기록하기
+            <LuPencilLine />
+            <span> 다이어리 작성하기</span>
           </Button>
           {modalOpen && (
             <Modal
@@ -451,101 +396,43 @@ const Diary: React.FC = () => {
               title="병원 기록"
               value="등록"
               component={
-                <HosRecords formData={formData} setFormData={setFormData} />
+                <HosRecords
+                  formData={formData}
+                  setFormData={setFormData}
+                  setCheckTreat={setCheckTreat}
+                  setCheckSymptom={setCheckSymptom}
+                />
               }
               onHandleClick={handleFormSubmit}
             />
           )}
-          <ReportWrapper>
-            <Paragraph>날짜(컴포넌트화 필요합니다)</Paragraph>
-
-            <Report>
-              <DeseaseName>
-                <Icon>
-                  <TbReportMedical className="big" />
-                </Icon>
-                <DeseaseTitle>질병 타이틀</DeseaseTitle>
-              </DeseaseName>
-              <DiaryDetailsLeft>
-                <DiaryDetailContainer>
-                  <Icon>
-                    <LuActivitySquare />
-                  </Icon>
-                  <DiaryDetail>
-                    <DetailTitle>증상</DetailTitle>
-                    <Paragraph>
-                      {'data.symptom' || '증상 기록이 없어요'}
-                    </Paragraph>
-                  </DiaryDetail>
-                </DiaryDetailContainer>
-                <DiaryDetailContainer>
-                  <Icon>
-                    <TbBuildingHospital />
-                  </Icon>
-                  <DiaryDetail>
-                    <DetailTitle>입원 여부</DetailTitle>
-                    <Paragraph>입원중 or 입원하지 않았어요</Paragraph>
-                  </DiaryDetail>
-                </DiaryDetailContainer>
-                <DiaryDetailContainer>
-                  <Icon>
-                    <LuMessageSquarePlus />
-                  </Icon>
-                  <DiaryDetail>
-                    <DetailTitle>보호자 메모</DetailTitle>
-                    <Paragraph>{'data.memo' || '메모 없음'}</Paragraph>
-                  </DiaryDetail>
-                </DiaryDetailContainer>
-              </DiaryDetailsLeft>
-              <DiaryDetailsRight>
-                <ActionButton
-                  buttonBorder="border-none"
-                  direction="vertical"
-                  onDelete={() => {}}
-                  onEdit={handleOpenEditModal}
-                />
-                {editModalOpen && (
-                  <Modal
-                    onClose={handleCloseEditModal}
-                    title="병원 기록 수정"
-                    value="수정"
-                    component={
-                      <HosRecords
-                        formData={formData}
-                        setFormData={setFormData}
-                      />
-                    }
-                    onHandleClick={() => {}}
+          {recordsData && hasRecords ? (
+            recordsData
+              // 삭제된 record는 렌더링하지 않음
+              .filter((record) => record.deletedAt === null)
+              .map((record) => (
+                <ReportWrapper key={record._id}>
+                  <RecordWrapper
+                    // 병원 기록 전달 전달
+                    record={record}
+                    onUpdate={handleUpdateRecord}
+                    onDelete={() => handleDeleteRecord(record._id)}
                   />
-                )}
-                <DiaryDetailContainer>
-                  <Icon>
-                    <LuPill />
-                  </Icon>
-                  <DiaryDetail>
-                    <DetailTitle>처방</DetailTitle>
-                    <Paragraph>
-                      {'data.treatment' || '처방 기록이 없어요'}
-                    </Paragraph>
-                  </DiaryDetail>
-                </DiaryDetailContainer>
-                <DiaryDetailContainer>
-                  <Icon>
-                    <LuStethoscope />
-                  </Icon>
-                  <DiaryDetail>
-                    <DetailTitle>동물병원</DetailTitle>
-                    <Paragraph>
-                      방문 기록 여부
-                      <Doctor> 수의사 선생님 성함</Doctor>
-                    </Paragraph>
-                  </DiaryDetail>
-                </DiaryDetailContainer>
-              </DiaryDetailsRight>
-            </Report>
-          </ReportWrapper>
+                </ReportWrapper>
+              ))
+          ) : (
+            <ReportWrapper className="noReport">
+              <div>기록이 없습니다 안내문구</div>
+            </ReportWrapper>
+          )}
         </DiaryWrapper>
       </Wrapper>
+      {showAlert && (
+        <ValidationAlert
+          message={alertMessage}
+          onClose={() => setShowAlert(false)}
+        />
+      )}
     </>
   );
 };

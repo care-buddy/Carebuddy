@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from 'styled-components';
 import Typewriter from 'typewriter-effect';
-// 배너 이미지
-import BannerImg from '@assets/bannerImg.png';
+
+// 배너 요소 이미지
+import BannerElementImage from '@assets/bannerElementImage.png';
 
 type TextProps = {
   fontSize?: string;
@@ -10,40 +11,9 @@ type TextProps = {
   fontWeight?: string;
 };
 
-const StyledBanner = styled.div`
-  position: relative;
-
-  img {
-    width: 1024px;
-    height: auto;
-  }
-`;
-
-const Row = styled.div`
-  display: flex;
-`;
-
-const TypeWriterWrapper = styled.div`
-  padding-left: 10px;
-`;
-
-const TextContainer = styled.div`
-  position: absolute;
-  top: 36%;
-  left: 4%;
-`;
-
-const StyledText = styled.div<TextProps>`
-  display: flex;
-  font-size: ${(props) => props.fontSize || 'var(--font-size-lg-3)'};
-  font-weight: ${(props) => props.fontWeight || 'var(--font-weight-extrabold)'};
-  padding: 8px 0;
-  color: ${(props) => props && props.color};
-`;
-
 const Banner: React.FC = () => (
   <StyledBanner>
-    <img src={BannerImg} alt="배너 이미지" />
+    <Image src={BannerElementImage} alt="배너 이미지" />
     <TextContainer>
       <Row>
         <StyledText color="var(--color-green-main)">케어버디</StyledText>
@@ -79,3 +49,45 @@ const Banner: React.FC = () => (
 );
 
 export default Banner;
+
+const StyledBanner = styled.div`
+  position: relative;
+  background-color: var(--color-green-sub-2); 
+  width: 100%;
+  height: 100%;
+`;
+
+const Image = styled.img`
+  position: absolute;
+  left: 70%; // 부모 요소의 가로 중앙에 정렬
+  bottom: 0; // 부모 요소의 하단에 정렬
+  transform: translateX(-50%); // 중앙 정렬 보정
+  width: 30vw;
+  pointer-events: none;
+`;
+
+const TextContainer = styled.div`
+  position: absolute;
+  top: 36%;
+  left: 32%; // 부모 요소의 가로 중앙에 정렬
+  transform: translateX(-50%); // 중앙 정렬 보정
+  width: 30vw;
+  pointer-events: none;
+  // 임시 - 반응형으로 글자 크기 추가해야함
+`;
+
+const Row = styled.div`
+  display: flex;
+`;
+
+const TypeWriterWrapper = styled.div`
+  padding-left: 10px;
+`;
+
+const StyledText = styled.div<TextProps>`
+  display: flex;
+  font-size: ${(props) => props.fontSize || 'var(--font-size-lg-2)'};
+  font-weight: ${(props) => props.fontWeight || 'var(--font-weight-bold)'};
+  padding: 8px 0;
+  color: ${(props) => props && props.color};
+`;

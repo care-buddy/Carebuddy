@@ -1,20 +1,55 @@
+// 이메일 인증 API, 회원가입 API, 유효성검사 추가 필요
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+// import axios from 'axios';
 
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
 import CheckBox from '@components/common/CheckBox';
+import LinkButton from '@components/common/LinkButton';
 
 import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 
-// 임시 데이터
 import { tempTerms } from '@constants/tempData';
 
 const BasicRegistration: React.FC = () => {
-  const [agreeChecked, setAgreeChecked] = useState(false);
-  const [agreeChecked2, setAgreeChecked2] = useState(false);
-  const [agreeChecked3, setAgreeChecked3] = useState(false);
+  const [agreeChecked, setAgreeChecked] = useState(false); // 모두 동의
+  const [agreeChecked2, setAgreeChecked2] = useState(false); // 동의1(만 14세 이상)
+  const [agreeChecked3, setAgreeChecked3] = useState(false); // 동의2(이용 약관)
   const [viewFullTerms, setViewFullTerms] = useState(false); // 전문 보기
+  const [emailVerification, setEmailVerification] = useState({
+    status: 'idle',
+  }); // 이메일 인증 상태
+  const [formData, setFormData] = useState({ // formData
+    email: '',
+    nickName: '',
+    mobileNumber: '',
+  });
+
+  // 이메일 인증 핸들러(인증과정 이후 추가되어야 함)
+  const submitEmailVerification = () => {
+    if (emailVerification.status === 'idle' && formData.email !== '') {
+      setEmailVerification({ status: 'inProgress' });
+      // 이메일 인증
+
+    }
+  };
+
+  // formData 핸들러 - 임시: 디바운싱 적용 or 가입하기 누를 때 할 때 다 가져오기
+  const handleFormData = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    name: string
+  ) => {
+    setFormData({
+      ...formData,
+      [name]: e.target.value,
+    });
+  };
+
+  // useEffect(() => { // 확인용 - 임시
+  //   console.log(formData);
+  // }, [formData]);
 
   // 체크박스 핸들러
   const handleCheckBoxChange = () => {
@@ -50,26 +85,46 @@ const BasicRegistration: React.FC = () => {
       <Section>
         <Heading>아이디</Heading>
         <EmailContainer>
-          <Input placeholder="이메일 형식으로 입력해주세요." />
-          <Button buttonSize="sm" buttonStyle="square-grey">
+          <Input
+            placeholder="이메일 형식으로 입력해주세요."
+            placeholderColor="light-grey"
+            onChange={(e) => handleFormData(e, 'email')}
+          />
+          <Button
+            buttonSize="sm"
+            buttonStyle="square-grey"
+            onClick={submitEmailVerification}
+          >
             발송
           </Button>
         </EmailContainer>
-        <p>메일 발송하면 보이는 영역</p>
-        <EmailContainer>
-          <Input placeholder="메일로 발송된 인증 번호를 입력해주세요." />
-          <Button buttonSize="sm" buttonStyle="square-grey">
-            인증
-          </Button>
-        </EmailContainer>
+        {emailVerification.status === 'inProgress' && (
+          <EmailContainer>
+            <Input
+              placeholder="메일로 발송된 인증 번호를 입력해주세요."
+              placeholderColor="light-grey"
+            />
+            <Button buttonSize="sm" buttonStyle="square-grey">
+              인증
+            </Button>
+          </EmailContainer>
+        )}
       </Section>
 
       <Section>
         <Heading>회원정보 입력</Heading>
         <P>닉네임*</P>
-        <Input placeholder="닉네임을 입력해주세요." />
+        <Input
+          placeholder="닉네임을 입력해주세요."
+          placeholderColor="light-grey"
+          onChange={(e) => handleFormData(e, 'nickName')}
+        />
         <P>핸드폰 번호*</P>
-        <Input placeholder="핸드폰 번호(-제외)를 입력해주세요." />
+        <Input
+          placeholder="핸드폰 번호(-제외)를 입력해주세요."
+          placeholderColor="light-grey"
+          onChange={(e) => handleFormData(e, 'mobileNumber')}
+        />
       </Section>
 
       <Section>
@@ -102,13 +157,9 @@ const BasicRegistration: React.FC = () => {
         <TermCheckContainer>
           {viewFullTerms && <LuChevronUp />}
           {!viewFullTerms && <LuChevronDown />}
-          <Button
-            buttonStyle="link"
-            buttonSize="sm"
-            onClick={handleViewFullTerms}
-          >
+          <LinkButton linkSize="sm" onClick={handleViewFullTerms}>
             전문 보기
-          </Button>
+          </LinkButton>
         </TermCheckContainer>
         {viewFullTerms && (
           <TermContainer>
@@ -205,10 +256,11 @@ const EmailContainer = styled.div`
   display: flex;
   justify-content: space-between;
 
-  button{
-  // width: 18%
+  button {
+    // width: 18%
   }
 
   input {
-  width: 80%;}
+    width: 80%;
+  }
 `;

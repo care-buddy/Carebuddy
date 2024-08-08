@@ -1,26 +1,21 @@
 import styled from "styled-components";
+import React from 'react';
 
 const Container = styled.div`
-  margin: 30px 0 30px 0;
+  margin: 30px 0;
 `;
 
 const ContentList = styled.span`
-  padding: 10px 0 10px 0;
+  padding: 10px 0;
   text-align: center;
 `;
 
 const Title = styled.div`
   font-weight: bold;
-  font-size: var(--font-size-md-1); //16
+  font-size: 16px;
   text-align: center;
-  padding: 10px 0 10px 0;
+  padding: 10px 0;
 `;
-
-// const ListContainer = styled.div`
-//   display: flex;
-//   flex-direction: column;
-//   margin: auto 0;
-// `;
 
 const DataContainer = styled.div`
   display: grid;
@@ -34,31 +29,44 @@ const GroupContent = styled(ContentList)`
   color: #6d987a;
 `;
 
-const ListContainer = () => {
-  const posts = [
-    { id: '1', group: '그룹1', title: '안녕하세요', date: '2024-01-01' },
-    { id: '2', group: '그룹2', title: '글입니다히히히', date: '2024-01-02' },
-    { id: '3', group: '그룹3', title: '가운데정렬왜안돼', date: '2024-01-03' },
-  ];
+interface CommunityPost {
+  id: string;
+  category: number;
+  community: string;
+  createdAt: string;
+}
 
-  return (
-    <Container>
-      {/* <ListContainer> */}
-      <DataContainer>
-        <Title>그룹</Title>
-        <Title>글제목</Title>
-        <Title>작성일</Title>
-      </DataContainer>
-      {posts.map((post) => (
-        <DataContainer key={post.id}>
-          <GroupContent>[{post.group}]</GroupContent>
-          <ContentList>{post.title}</ContentList>
-          <ContentList>{post.date}</ContentList>
-        </DataContainer>
-      ))}
-      {/* </ListContainer> */}
-    </Container>
-  );
-};
+interface PostId {
+  title: string;
+}
+
+interface ListContainerProps {
+  communityPosts: CommunityPost[];
+  postIds: PostId[];
+  isLoading: boolean;
+}
+
+const ListContainer: React.FC<ListContainerProps> = ({ communityPosts, postIds, isLoading }) => (
+  <Container>
+    <DataContainer>
+      <Title>그룹</Title>
+      <Title>글제목</Title>
+      <Title>작성일</Title>
+    </DataContainer>
+    {isLoading ? (
+      <div>Loading...</div>
+    ) : (
+      <>
+        {communityPosts.map((post, index) => (
+          <DataContainer key={post.id}>
+            <GroupContent>[{post.category === 0 ? '강아지' : '고양이'}] {post.community}</GroupContent>
+            <ContentList>{postIds[index].title}</ContentList>
+            <ContentList>{post.createdAt}</ContentList>
+          </DataContainer>
+        ))}
+      </>
+    )}
+  </Container>
+);
 
 export default ListContainer;
