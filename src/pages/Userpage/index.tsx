@@ -11,6 +11,7 @@ import TopBar from '@/components/common/TopBar';
 const mock = new MockAdapter(axios, { delayResponse: 500 });
 
 mock.onGet('/api/user').reply(200, {
+  email: 'carebuddy@naver.com',
   nickname: '케어버디',
   introduction: '소개글입니다^^',
   communityId: [
@@ -85,6 +86,7 @@ const ImageBox = styled.div`
 `;
 
 interface UserData {
+  email: string;
   nickname: string;
   introduction: string;
   communityId: CommunityPost[];
@@ -126,6 +128,7 @@ const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
 
 const Userpage: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
+    email: '',
     nickname: '',
     introduction: '',
     communityId: [],

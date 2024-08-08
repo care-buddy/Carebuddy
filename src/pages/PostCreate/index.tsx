@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Input from '@/components/common/Input';
+import TextArea from '@/components/common/TextArea';
 
 const Container = styled.div`
   display: flex;
@@ -21,14 +22,29 @@ const TextAreaWrapper = styled.div`
 `;
 
 const ImageUploadWrapper = styled.div`
-  margin-bottom: 15px;
 `;
 
-const ImageUploadButton = styled.button`
-  padding: 10px;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
+const ImageUploadLabel = styled.label`
   cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+`;
+
+const ImagePreview = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+const PreviewImage = styled.img`
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  margin-right: 10px;
+`;
+
+const FileName = styled.span`
+  font-size: 14px;
 `;
 
 interface PostCreateProps {
@@ -40,6 +56,12 @@ interface PostCreateProps {
   };
   onFormDataChange: (data: { title?: string; content?: string; groupId?: string; postImage?: string[] }) => void;
 }
+
+const SpeciesOptions = [
+  { value: '', label: '종을 선택해주세요' },
+  { value: '0', label: '강아지' },
+  { value: '1', label: '고양이' },
+];
 
 const SelectOptions = [
   { value: '', label: '그룹을 선택해주세요' },
@@ -89,6 +111,11 @@ const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) =
       <SelectWrapper>
         <Select
           selectStyle="square"
+          selectSize="sm"
+          options={SpeciesOptions}
+        />
+        <Select
+          selectStyle="square"
           selectSize="bg"
           options={SelectOptions}
           value={formData.groupId}
@@ -105,26 +132,29 @@ const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) =
         />
       </InputWrapper>
       <TextAreaWrapper>
-        <textarea
+        <TextArea
           placeholder="내용을 입력해주세요."
           value={formData.content}
           onChange={handleContentChange}
-          rows={10}
-          style={{ width: '100%', padding: '10px' }}
+          style={{ width: '100%', padding: '8px', height: '200px' }}
         />
       </TextAreaWrapper>
       <ImageUploadWrapper>
-        <label>
-          <ImageUploadButton onClick={() => document.getElementById('postImage')?.click()}>사진을 첨부하세요</ImageUploadButton>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            id='postImage'
-            style={{ display: 'none' }}
-            onChange={handleImageUpload}
-          />
-        </label>
+        <ImageUploadLabel htmlFor="postImage">사진 첨부</ImageUploadLabel>
+        <input
+          type="file"
+          multiple
+          accept="image/*"
+          id='postImage'
+          style={{ display: 'none' }}
+          onChange={handleImageUpload}
+        />
+        {imageFiles.map((file) => (
+          <ImagePreview key={file.name}>
+            <PreviewImage src={URL.createObjectURL(file)} alt="미리보기" />
+            <FileName>{file.name}</FileName>
+          </ImagePreview>
+        ))}
       </ImageUploadWrapper>
     </Container>
   );
