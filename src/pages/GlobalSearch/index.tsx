@@ -14,6 +14,8 @@ import PostCreate from '@/pages/PostCreate/index';
 
 import formatDate from '@/utils/formatDate';
 
+import usePostCreate from '@/hooks/usePostCreate';
+
 import type { PostData } from '@constants/tempInterface';
 
 // 임시 데이터
@@ -37,6 +39,12 @@ const GlobalSearch: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
   const [searchParams, setSearchParams] = useSearchParams(''); // 쿼리스트링 값(검색 값)
   const params = new URLSearchParams(searchParams); // 현재 쿼리 파라미터
+
+  const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
+    () => {
+      console.log('이후 실행 로직 자리');
+    }
+  );
 
   // 글 작성 모달 닫기
   const handleCloseWriteModal = () => {
@@ -156,8 +164,14 @@ const GlobalSearch: React.FC = () => {
               <Modal
                 title="글 작성하기"
                 value="등록"
-                component={<PostCreate />}
+                component={
+                  <PostCreate
+                    formData={formData}
+                    onFormDataChange={handleFormDataChange}
+                  />
+                }
                 onClose={handleCloseWriteModal}
+                onHandleClick={handlePostSubmit}
               />
             )}
           </FeedOptionContainer>

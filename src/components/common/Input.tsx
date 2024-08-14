@@ -99,9 +99,12 @@ const StyledInput = styled.input.withConfig({
 // 스타일을 확장한 최종 input 컴포넌트의 props
 interface InputProps
   extends StyledInputProps,
-    React.InputHTMLAttributes<HTMLInputElement> {}
+    React.InputHTMLAttributes<HTMLInputElement> {
+  name?: string;
+}
 
 const Input: React.FC<InputProps> = ({
+  name,
   inputSize = 'md',
   activeOption = 'active',
   borderStyle = 'round',
@@ -112,6 +115,7 @@ const Input: React.FC<InputProps> = ({
   ...props
 }) => (
   <StyledInput
+    name={name}
     inputSize={inputSize}
     activeOption={activeOption}
     borderStyle={borderStyle}

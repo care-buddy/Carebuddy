@@ -3,15 +3,8 @@ import styled from 'styled-components';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import defaultImg from '@/assets/person.png';
-import Button from '@/components/common/Button';
-import TextArea from '@/components/common/TextArea';
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
-import Input from '@/components/common/Input';
-import SmallModal from '@/components/common/SmallModal';
-import UserAsk from '@/pages/Mypage/UserAsk';
-import Modal from '@/components/common/Modal/index';
-import PostCreate from '@/pages/PostCreate/index';
 import TopBar from '@/components/common/TopBar';
 
 // user api Mock 설정
@@ -135,6 +128,7 @@ const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
 
 const Userpage: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
+    email: '',
     nickname: '',
     introduction: '',
     communityId: [],
@@ -161,7 +155,7 @@ const Userpage: React.FC = () => {
 
   const contentItems = [
     { id: '1', content: '프로필', component: <ProfileContainer userData={userData} /> },
-    { id: '2', content: 'User의 반려동물', component: <PetCardContainer userData={userData} /> },
+    { id: '2', content: 'User의 반려동물', component: <PetCardContainer /> },
     { id: '3', content: '작성 글 목록', component: <ListContainer communityPosts={userData.communityId} postIds={userData.postId} isLoading={isLoading} /> },
   ];
 

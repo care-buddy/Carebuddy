@@ -1,30 +1,37 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+
 import logo from '@assets/carebuddyLogo.png';
 import { LuBell, LuUser2, LuSearch, LuX } from 'react-icons/lu';
 
 import Login from '@/components/Login/Login';
+import BasicRegistration from '@/components/Registration/BasicRegistration';
 import Dropdown from '@/components/Dropdown';
 import Button from '@/components/common/Button';
 import Notification from '@/components/Notification';
 import SmallModal from '@/components/common/SmallModal';
 
+import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
+
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
 
   const navigate = useNavigate();
 
-  // 로그인 관련 함수
-  const handleOpenLoginModal = () => {
-    setLoginModalOpen(true);
+  // 로그인 모달 조작 함수
+  const handleLoginModal = (isOpen: boolean) => {
+    setLoginModalOpen(isOpen);
   };
 
-  const handleCloseLoginModal = () => {
+  // 회원가입 모달 조작 함수
+  const handleRegistrationModal = (isOpen: boolean) => {
+    setRegistrationModalOpen(isOpen);
     setLoginModalOpen(false);
   };
 
@@ -36,41 +43,6 @@ const Header: React.FC = () => {
   const closeNotification = () => {
     setShowNotification(false);
   };
-
-  // 임의의 알림 데이터 설정
-  const notifications = [
-    {
-      id: 1,
-      user: 'nickname',
-      message: '님이 내 게시물을 마음에 들어합니다.',
-      date: '24/03/02',
-      details: '어떤 사료가 좋을까요?',
-    },
-    {
-      id: 2,
-      user: '닉네임',
-      message: '님이 내 게시물을 마음에 들어합니다.',
-      date: '어제',
-      details:
-        '알림이 없을때를 고려하지 않음 외부 클릭시 닫히지 않음을 고려하지 않음',
-    },
-    {
-      id: 3,
-      user: 'nickname',
-      message: '님이 내 게시물을 마음에 들어합니다.',
-      date: '1시간',
-      details:
-        '갯수가 많아졌을때를 고려하지 않음 길어집니다 두줄까지 허용할까요?',
-    },
-    {
-      id: 4,
-      user: '로직을 구현하지 않음',
-      message: '님이 댓글을 남겼습니다.',
-      date: '24/03/02',
-      details:
-        '임의의 댓글입니다 임의의 댓글입니다 임의의 댓글입니다 임의의 댓글입니...',
-    },
-  ];
 
   // 드롭다운 메뉴 클릭 시, 드롭다운 메뉴가 사라지도록 하는 함수
   const handleLinkClick = () => {
@@ -88,7 +60,7 @@ const Header: React.FC = () => {
     }
   };
 
-  // 검색 창에서 엔터 입력 시 검색어
+  // 검색 창에서 엔터 입력 시 검색어로 설정
   const handleSearchResult = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
       setSearchTerm(e.currentTarget.value);
@@ -96,7 +68,7 @@ const Header: React.FC = () => {
   };
 
   useEffect(() => {
-    if (searchTerm !== ''){
+    if (searchTerm !== '') {
       navigate(`global-search?searchTerm=${encodeURIComponent(searchTerm)}`);
       setIsSearching(false);
       setSearchTerm('');
@@ -188,14 +160,26 @@ const Header: React.FC = () => {
             <Button
               buttonStyle="grey"
               buttonSize="sm"
-              onClick={handleOpenLoginModal}
+              onClick={() => handleLoginModal(true)}
             >
               로그인
             </Button>
             {loginModalOpen && (
               <SmallModal
-                onClose={handleCloseLoginModal}
-                component={<Login />}
+                onClose={() => handleLoginModal(false)}
+                component={
+                  <Login
+                    onOpenRegistrationModal={() =>
+                      handleRegistrationModal(true)
+                    }
+                  />
+                }
+              />
+            )}
+            {registrationModalOpen && (
+              <SmallModal
+                onClose={() => handleRegistrationModal(false)}
+                component={<BasicRegistration />}
               />
             )}
           </NotificationIcon>
