@@ -2,6 +2,7 @@ import React from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import reset from 'styled-reset';
+import { RecoilRoot } from 'recoil';
 import ProtectedRoute from '@/routes/protectedRoute';
 import Layout from '@/components/Layout';
 import {
@@ -129,17 +130,11 @@ const GlobalStyles = createGlobalStyle`
   }
 `;
 
-const Wrapper = styled.div`
-  /* height: 100vh;
-  display: flex;
-  justify-content: center; */
-`;
-
 const App: React.FC = () => (
-  <Wrapper>
+  <RecoilRoot>
     <GlobalStyles />
     <RouterProvider router={router} />
-  </Wrapper>
+  </RecoilRoot>
 );
 
 export default App;
