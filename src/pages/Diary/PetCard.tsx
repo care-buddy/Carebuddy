@@ -55,6 +55,7 @@ interface ProfileCardProps {
   onDelete: () => void;
   onClick: () => void;
   className: string;
+  isMe: boolean;
 }
 
 const PetCard: React.FC<ProfileCardProps> = ({
@@ -63,14 +64,17 @@ const PetCard: React.FC<ProfileCardProps> = ({
   onDelete,
   onClick,
   className,
+  isMe,
 }) => (
   <CardsWrapper className={className} onClick={onClick}>
-    <ActionButton
-      buttonBorder="border-none"
-      direction="vertical"
-      onDelete={onDelete}
-      onEdit={onEdit}
-    />
+    {isMe && (
+      <ActionButton
+        buttonBorder="border-none"
+        direction="vertical"
+        onDelete={onDelete}
+        onEdit={onEdit}
+      />
+    )}
     <Cards>
       {/* 버디 이미지를 추가하지 않았다면, 기본 이미지가 렌더링 */}
       <Photo src={buddy.buddyImage || DefaultPetProfileImg} />

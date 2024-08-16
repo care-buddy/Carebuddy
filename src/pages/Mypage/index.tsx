@@ -13,6 +13,8 @@ import TopBar from '@/components/common/TopBar';
 import Loading from '@/components/common/Loading';
 import UserInfoContainer from '@components/Mypage&Userpage/UserInfoContainer';
 import ProfileContainer from '@components/Mypage&Userpage/ProfileContainer';
+import { useRecoilState } from 'recoil';
+import buddyState from '@/recoil/atoms/buddyState';
 
 // Mock API 설정
 const mock = new MockAdapter(axios, { delayResponse: 500 });
@@ -32,7 +34,7 @@ mock.onGet('/api/user').reply(200, {
     { title: '안녕하세요' },
     { title: '글제목입니다 ㅎㅎ' },
     { title: '동물이 최고야!!' },
-  ]
+  ],
 });
 
 mock.onPut('/api/user').reply((config) => {
@@ -117,7 +119,14 @@ const Mypage: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
-  const [formData, setFormData] = useState<FormData>({ title: '', content: '', groupId: '', postImage: [] });
+  const [formData, setFormData] = useState<FormData>({
+    title: '',
+    content: '',
+    groupId: '',
+    postImage: [],
+  });
+
+  const [buddiesData] = useRecoilState(buddyState);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -125,7 +134,6 @@ const Mypage: React.FC = () => {
       try {
         const response = await axios.get('/api/user');
         setUserData(response.data);
-        console.log(response.data);
       } catch (error) {
         console.error('사용자 데이터 가져오기 오류:', error);
       } finally {
@@ -199,18 +207,52 @@ const Mypage: React.FC = () => {
     setIsEditModalOpen(false);
   };
 
-  const handleFormDataChange = (data: { title?: string, content?: string, groupId?: string, postImage?: string[] }) => {
-    setFormData(prevData => ({
+  const handleFormDataChange = (data: {
+    title?: string;
+    content?: string;
+    groupId?: string;
+    postImage?: string[];
+  }) => {
+    setFormData((prevData) => ({
       ...prevData,
-      ...data
+      ...data,
     }));
   };
 
   const contentItems = [
-    { id: '1', content: '회원정보', component: <UserInfoContainer userData={userData} /> },
-    { id: '2', content: '프로필', component: <ProfileContainer userData={userData} onIntroductionChange={handleIntroductionChange} onNicknameChange={handleNicknameChange} onProfileImageChange={handleProfileImageChange} /> },
-    { id: '3', content: '반려동물 관리', component: <PetCardContainer /> },
-    { id: '4', content: '작성 글 목록', component: <ListContainer communityPosts={userData.communityId} postIds={userData.postId} isLoading={isLoading} /> },
+    {
+      id: '1',
+      content: '회원정보',
+      component: <UserInfoContainer userData={userData} />,
+    },
+    {
+      id: '2',
+      content: '프로필',
+      component: (
+        <ProfileContainer
+          userData={userData}
+          onIntroductionChange={handleIntroductionChange}
+          onNicknameChange={handleNicknameChange}
+          onProfileImageChange={handleProfileImageChange}
+        />
+      ),
+    },
+    {
+      id: '3',
+      content: '반려동물 관리',
+      component: <PetCardContainer buddyData={buddiesData.buddies} isMe />,
+    },
+    {
+      id: '4',
+      content: '작성 글 목록',
+      component: (
+        <ListContainer
+          communityPosts={userData.communityId}
+          postIds={userData.postId}
+          isLoading={isLoading}
+        />
+      ),
+    },
   ];
 
   return (
@@ -221,7 +263,12 @@ const Mypage: React.FC = () => {
         <Modal
           title="글 작성하기"
           value="등록"
-          component={<PostCreate formData={formData} onFormDataChange={handleFormDataChange} />}
+          component={
+            <PostCreate
+              formData={formData}
+              onFormDataChange={handleFormDataChange}
+            />
+          }
           onClose={handleCloseWriteModal}
           onHandleClick={handlePostSubmit}
         />
@@ -231,7 +278,12 @@ const Mypage: React.FC = () => {
         <Modal
           title="글 수정하기"
           value="수정"
-          component={<PostCreate formData={formData} onFormDataChange={handleFormDataChange} />}
+          component={
+            <PostCreate
+              formData={formData}
+              onFormDataChange={handleFormDataChange}
+            />
+          }
           onClose={handleCloseEditModal}
         />
       )}
@@ -251,7 +303,15 @@ const Mypage: React.FC = () => {
         <Withdraw onClick={handleWithdrawClick}>회원탈퇴</Withdraw>
       </WithdrawContainer>
       {isModalOpen && (
-        <SmallModal component={<UserAsk onConfirm={handleConfirmWithdraw} onCancel={handleCloseModal} />} onClose={handleCloseModal} />
+        <SmallModal
+          component={
+            <UserAsk
+              onConfirm={handleConfirmWithdraw}
+              onCancel={handleCloseModal}
+            />
+          }
+          onClose={handleCloseModal}
+        />
       )}
     </Container>
   );

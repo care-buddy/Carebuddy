@@ -6,6 +6,9 @@ import defaultImg from '@/assets/person.png';
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
 import TopBar from '@/components/common/TopBar';
+// 사진 데이터
+import { tempProfileSrc } from '@constants/tempData';
+import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 
 // user api Mock 설정
 const mock = new MockAdapter(axios, { delayResponse: 500 });
@@ -24,11 +27,31 @@ mock.onGet('/api/user').reply(200, {
     { title: '안녕하세요' },
     { title: '글제목입니다 ㅎㅎ' },
     { title: '동물이 최고야!!' },
-  ]
+  ],
+  // buddy profile 용 임시로 추가했습니다: 지영
+  buddyId: [
+    {
+      buddyImage: DefaultPetProfileImg,
+      name: '후이',
+      species: 0,
+      kind: '샴',
+      age: 1,
+      weight: 2,
+      deletedAt: null,
+    },
+    {
+      buddyImage: tempProfileSrc,
+      name: '쿠키',
+      species: 0,
+      kind: '말티즈',
+      age: 3,
+      weight: 13,
+      deletedAt: null,
+    },
+  ],
 });
 
-const Container = styled.div`
-`;
+const Container = styled.div``;
 
 const Menu = styled.div`
   padding: 10px 10px 10px 0;
@@ -91,6 +114,7 @@ interface UserData {
   introduction: string;
   communityId: CommunityPost[];
   postId: PostId[];
+  buddyId: [];
 }
 
 interface CommunityPost {
@@ -108,7 +132,9 @@ const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
   <Container>
     <UserContainer>
       <ImgContainer>
-        <ImageBox><img src={defaultImg} alt="프로필 사진" /></ImageBox>
+        <ImageBox>
+          <img src={defaultImg} alt="프로필 사진" />
+        </ImageBox>
       </ImgContainer>
       <Info>
         <InputList>
@@ -133,6 +159,7 @@ const Userpage: React.FC = () => {
     introduction: '',
     communityId: [],
     postId: [],
+    buddyId: [],
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -154,9 +181,27 @@ const Userpage: React.FC = () => {
   }, []);
 
   const contentItems = [
-    { id: '1', content: '프로필', component: <ProfileContainer userData={userData} /> },
-    { id: '2', content: 'User의 반려동물', component: <PetCardContainer /> },
-    { id: '3', content: '작성 글 목록', component: <ListContainer communityPosts={userData.communityId} postIds={userData.postId} isLoading={isLoading} /> },
+    {
+      id: '1',
+      content: '프로필',
+      component: <ProfileContainer userData={userData} />,
+    },
+    {
+      id: '2',
+      content: 'User의 반려동물',
+      component: <PetCardContainer buddyData={userData.buddyId} isMe={false} />,
+    },
+    {
+      id: '3',
+      content: '작성 글 목록',
+      component: (
+        <ListContainer
+          communityPosts={userData.communityId}
+          postIds={userData.postId}
+          isLoading={isLoading}
+        />
+      ),
+    },
   ];
 
   return (
@@ -165,7 +210,7 @@ const Userpage: React.FC = () => {
       {isLoading ? (
         <div>Loading...</div>
       ) : (
-        contentItems.map(item => (
+        contentItems.map((item) => (
           <React.Fragment key={item.id}>
             <Menu>
               <Item>{item.content}</Item>

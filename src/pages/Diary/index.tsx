@@ -8,10 +8,12 @@ import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Record, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
+import { Record } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';
+import { useRecoilState } from 'recoil';
+import buddyState from '@/recoil/atoms/buddyState';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
 import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
@@ -105,6 +107,12 @@ const ReportWrapper = styled.div`
 
 /* 다이어리 끝 */
 
+const ProfilesTitle = styled.div`
+  font-size: var(--font-size-hd-2);
+  font-weight: var(--font-weight-bold);
+  margin: 20px 0 30px 0;
+`;
+
 const axiosInstance = axios.create({
   baseURL: '/api', // 기본 URL 설정
   timeout: 5000, // 타임아웃 설정 (ms)
@@ -134,9 +142,10 @@ const Diary: React.FC = () => {
   // 기록 등록을 위한 Record 상태
   const [formData, setFormData] = useState<Record>(nullData);
 
-  const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
-    null
-  );
+  // const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
+  //   null
+  // );
+  const [buddiesData, setBuddiesData] = useRecoilState(buddyState);
 
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [isLoading, setLoading] = useState(false);
@@ -204,21 +213,21 @@ const Diary: React.FC = () => {
     } else {
       setHasRecords(false);
     }
-    console.log(recordsData);
   }, [recordsData]);
 
   // if (error) {
   //   return <div>Error: {error.message}</div>;
   // }
 
-  const handleSubmitBuddy = (newBuddy: BuddyProfile) => {
-    if (buddiesData?.buddies) {
-      setBuddiesData({
-        ...buddiesData,
-        buddies: [...buddiesData.buddies, newBuddy],
-      });
-    }
-  };
+  // 필요 없는 로직인가?
+  // const handleSubmitBuddy = (newBuddy: BuddyProfile) => {
+  //   if (buddiesData?.buddies) {
+  //     setBuddiesData((prevData) => ({
+  //       ...prevData,
+  //       buddies: [...prevData.buddies, newBuddy],
+  //     }));
+  //   }
+  // };
 
   // 모달 관련 함수
   const handleOpenModal = () => {
@@ -364,11 +373,14 @@ const Diary: React.FC = () => {
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
       <Wrapper>
+        <ProfilesTitle>{buddiesData?.name} 님의 반려동물</ProfilesTitle>
+        {/* props drilling 유지하는 이유: userPage에서는 유저마다 다른 buddieData를 전달해줘야하기 때문에 */}
         <PetProfiles
-          name={buddiesData?.name}
+          // name={buddiesData?.name}
           buddies={buddiesData?.buddies}
-          onSubmitBuddy={handleSubmitBuddy}
+          // onSubmitBuddy={handleSubmitBuddy}
           onBuddySelect={handleSelectedId}
+          isMe
         />
 
         <DiaryWrapper>
@@ -413,7 +425,7 @@ const Diary: React.FC = () => {
               .map((record) => (
                 <ReportWrapper key={record._id}>
                   <RecordWrapper
-                    // 병원 기록 전달 전달
+                    // 병원 기록 전달
                     record={record}
                     onUpdate={handleUpdateRecord}
                     onDelete={() => handleDeleteRecord(record._id)}

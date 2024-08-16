@@ -18,12 +18,6 @@ import ValidationAlert from '@/components/common/ValidationAlert';
 import { CardsWrapper, Cards } from './card-components';
 import PetCard from './PetCard';
 
-const ProfilesTitle = styled.div`
-  font-size: var(--font-size-hd-2);
-  font-weight: var(--font-weight-bold);
-  margin: 20px 0 30px 0;
-`;
-
 const StyledSwiper = styled(Swiper)`
   width: 100%;
   padding: 4px 10px;
@@ -100,10 +94,9 @@ const axiosInstance = axios.create({
 
 // 회원 이름과 버디 정보들을 받아와서 카드에 렌더링해준다.
 const PetProfiles: React.FC<ProfilesWrapperProps> = ({
-  name,
   buddies,
-  onSubmitBuddy,
   onBuddySelect,
+  isMe = true,
 }) => {
   const mock = new MockAdapter(axiosInstance);
 
@@ -249,7 +242,8 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       };
 
       setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
-      onSubmitBuddy(newBuddy);
+      // 필요 없는 로직인가?
+      // onSubmitBuddy(newBuddy);
       return [200, { success: true, message: '반려동물 등록 성공' }];
     });
 
@@ -335,7 +329,8 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     // className 변경을 위해 상태를 업데이트 해준다. 업데이트한 id와 같은 id의 카드가 활성화된다
     setSelectedId(buddyId);
     // 병원 기록을 불러올 id를 전달하기 위해 상위 컴포넌트(index)에 선택된 버디의 id를 전달해준다
-    onBuddySelect(buddyId);
+    // ?? optional chaining 사용해도 문제 없는지 확인 필요
+    onBuddySelect?.(buddyId);
   };
 
   // buddies 값이 변경될 때마다 변경된 buddies를 profiles로 업데이트
@@ -347,7 +342,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       }
     }
     // 반려동물 프로필이 있거나 변경된 경우 상위 컴포넌트에 전달
-    if (selectedId) onBuddySelect(selectedId);
+    if (selectedId) onBuddySelect?.(selectedId);
   }, [buddies, selectedId]);
 
   const validateForm = () => {
@@ -387,7 +382,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
   return (
     <div>
-      <ProfilesTitle>{name} 님의 반려동물</ProfilesTitle>
+      {/* <ProfilesTitle>{name} 님의 반려동물</ProfilesTitle> */}
       <StyledSwiper
         virtual
         slidesPerView={4}
@@ -414,24 +409,27 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
                     handleSelectedId(buddy._id);
                   }}
                   className={
-                    buddy._id === selectedId
+                    isMe && buddy._id === selectedId
                       ? 'selected-card'
                       : 'not-selected-card'
                   }
+                  isMe={isMe}
                 />
               </SwiperSlide>
             ))}
 
-        <SwiperSlide key={999} virtualIndex={999}>
-          <CardsWrapper>
-            <Cards className="add-card" onClick={handleOpenPetModal}>
-              <AddProfile>
-                <LuPlus />
-              </AddProfile>
-              <AddProfileMsg>프로필 추가</AddProfileMsg>
-            </Cards>
-          </CardsWrapper>
-        </SwiperSlide>
+        {isMe && (
+          <SwiperSlide key={999} virtualIndex={999}>
+            <CardsWrapper>
+              <Cards className="add-card" onClick={handleOpenPetModal}>
+                <AddProfile>
+                  <LuPlus />
+                </AddProfile>
+                <AddProfileMsg>프로필 추가</AddProfileMsg>
+              </Cards>
+            </CardsWrapper>
+          </SwiperSlide>
+        )}
       </StyledSwiper>
       {petModalOpen && (
         <Modal
