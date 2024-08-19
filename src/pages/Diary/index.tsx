@@ -12,12 +12,22 @@ import { Record } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';
-import { useRecoilState } from 'recoil';
+import {
+  useRecoilState,
+  // eslint-disable-next-line camelcase
+  useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
+} from 'recoil';
 import buddyState from '@/recoil/atoms/buddyState';
+import selectedIdState from '@/recoil/atoms/selectedIdState';
+import loadingState from '@/recoil/atoms/loadingState';
+import errorState from '@/recoil/atoms/errorState';
+import ErrorAlert from '@/components/common/ErrorAlert';
+import validationAlertState from '@/recoil/atoms/validationAlertState';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
 import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
 import RecordWrapper from './Record';
+import validateRecordForm from './validateRecordForm';
 
 const Wrapper = styled.div`
   width: 100%;
@@ -147,20 +157,25 @@ const Diary: React.FC = () => {
   // );
   const [buddiesData, setBuddiesData] = useRecoilState(buddyState);
 
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [isLoading, setLoading] = useState(false);
+  // const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedId] = useRecoilState(selectedIdState);
+  // const [isLoading, setLoading] = useState(false);
+  // state에 transition을 적용하기 위해 사용
+  const [isLoading, setLoading] =
+    useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
   // 화면 렌더링 시 버디와 로딩 상태를 공유할 경우, 버디만 렌더링 완료된 경우에 로딩 상태가 false가 되므로 분리한다.
   const [isRecordLoading, setRecordLoading] = useState(false);
-  const [, setError] = useState<Error | null>(null);
+  // const [error, setError] = useState<Error | null>(null);
+  const [error, setError] = useRecoilState(errorState);
 
   // 반려동물 1마리의 병원 기록들을 저장할 상태
   const [recordsData, setRecords] = useState<Record[] | null>([]);
 
   // 유효성 검사 알림 상태
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState('');
+  // const [showAlert, setShowAlert] = useState(false);
+  // const [alertMessage, setAlertMessage] = useState('');
+  const [alertState, setAlertState] = useRecoilState(validationAlertState);
 
-  //
   const [hasRecords, setHasRecords] = useState(false);
 
   const [isCheckSymptom, setCheckSymptom] = useState(false);
@@ -215,9 +230,9 @@ const Diary: React.FC = () => {
     }
   }, [recordsData]);
 
-  // if (error) {
-  //   return <div>Error: {error.message}</div>;
-  // }
+  if (error) {
+    return <ErrorAlert />;
+  }
 
   // 필요 없는 로직인가?
   // const handleSubmitBuddy = (newBuddy: BuddyProfile) => {
@@ -257,7 +272,15 @@ const Diary: React.FC = () => {
       return [200, { success: true, message: '병원 기록 등록 성공' }];
     });
 
-    if (validateForm() && formData) {
+    if (
+      validateRecordForm(
+        formData,
+        setAlertState,
+        isCheckSymptom,
+        isCheckTreat
+      ) &&
+      formData
+    ) {
       axiosInstance
         .post(`/hospitals`, formData)
         .then(() => {
@@ -266,14 +289,18 @@ const Diary: React.FC = () => {
         .catch((error) => {
           console.log(error);
         });
-    } else setShowAlert(true);
+      // } else setShowAlert(true);
+      // } else
+      //   setAlertState({ showAlert: true, alertMessage: alertState.alertMessage });
+    }
   };
 
   // PetProfiles가 마운트될 때, 버디프로필이 있다면 실행된다.
   // 따라서 프로필이 있다면 selectedId 상태가 초기값이 null에서 id로 업데이트된다
-  const handleSelectedId = (buddyId: string) => {
-    setSelectedId(buddyId);
-  };
+
+  // const handleSelectedId = (buddyId: string) => {
+  //   setSelectedId(buddyId);
+  // };
 
   const handleUpdateRecord = (updatedRecord: Record) => {
     if (recordsData) {
@@ -342,29 +369,45 @@ const Diary: React.FC = () => {
     }
   };
 
-  const validateForm = () => {
-    if (formData.isConsultation && formData.address === null) {
-      setAlertMessage('병원 정보를 입력해주세요.');
-      return false;
-    }
+  // const validateForm = () => {
+  //   if (formData.isConsultation && formData.address === null) {
+  //     // setAlertMessage('병원 정보를 입력해주세요.');
+  //     setAlertState({
+  //       showAlert: true,
+  //       alertMessage: '병원 정보를 입력해주세요.',
+  //     });
+  //     return false;
+  //   }
 
-    if (formData.disease === '') {
-      setAlertMessage('질병 정보를 입력해주세요.');
-      return false;
-    }
+  //   if (formData.disease === '') {
+  //     // setAlertMessage('질병 정보를 입력해주세요.');
+  //     setAlertState({
+  //       showAlert: true,
+  //       alertMessage: '질병 정보를 입력해주세요.',
+  //     });
+  //     return false;
+  //   }
 
-    if (isCheckSymptom) {
-      setAlertMessage('증상 내용을 추가하셨는지 확인해주세요.');
-      return false;
-    }
+  //   if (isCheckSymptom) {
+  //     // setAlertMessage('증상 내용을 추가하셨는지 확인해주세요.');
+  //     setAlertState({
+  //       showAlert: true,
+  //       alertMessage: '증상 내용을 추가하셨는지 확인해주세요.',
+  //     });
+  //     return false;
+  //   }
 
-    if (isCheckTreat) {
-      setAlertMessage('처방 내용을 추가하셨는지 확인해주세요.');
-      return false;
-    }
+  //   if (isCheckTreat) {
+  //     // setAlertMessage('처방 내용을 추가하셨는지 확인해주세요.');
+  //     setAlertState({
+  //       showAlert: true,
+  //       alertMessage: '처방 내용을 추가하셨는지 확인해주세요.',
+  //     });
+  //     return false;
+  //   }
 
-    return true;
-  };
+  //   return true;
+  // };
 
   if (isLoading) return <Loading />;
   if (isRecordLoading) return <Loading />;
@@ -379,7 +422,7 @@ const Diary: React.FC = () => {
           // name={buddiesData?.name}
           buddies={buddiesData?.buddies}
           // onSubmitBuddy={handleSubmitBuddy}
-          onBuddySelect={handleSelectedId}
+          // onBuddySelect={handleSelectedId}
           isMe
         />
 
@@ -439,10 +482,10 @@ const Diary: React.FC = () => {
           )}
         </DiaryWrapper>
       </Wrapper>
-      {showAlert && (
+      {alertState.showAlert && (
         <ValidationAlert
-          message={alertMessage}
-          onClose={() => setShowAlert(false)}
+          message={alertState.alertMessage}
+          onClose={() => setAlertState({ showAlert: false, alertMessage: '' })}
         />
       )}
     </>

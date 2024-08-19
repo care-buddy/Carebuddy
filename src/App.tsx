@@ -1,5 +1,5 @@
 import React from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import reset from 'styled-reset';
 import { RecoilRoot } from 'recoil';

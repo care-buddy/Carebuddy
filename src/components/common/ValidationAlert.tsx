@@ -19,7 +19,7 @@ const Overlay = styled.div`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5); // 흰색 배경에 투명도 추가
+  background-color: rgba(0, 0, 0, 0.1); // 흰색 배경에 투명도 추가
   display: flex;
   align-items: center;
   justify-content: center;
