@@ -157,7 +157,7 @@ const dummyPosts = [
       community: '뇌·신경',
       deletedAt: null,
     },
-    title: '제목2',
+    title: '제목2 - 검색',
     likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
     content:
       '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
@@ -168,7 +168,7 @@ const dummyPosts = [
   {
     _id: '6621f4ae536c1c762432479a9df4',
     userId: {
-      nickName: '김지연',
+      nickName: '김지연 - localhost3001;',
       profileImage: ['https://picsum.photos/200'],
       deletedAt: null,
     },
@@ -189,7 +189,7 @@ const dummyPosts = [
   {
     _id: '662f4ae536c1c2767923434a9df4',
     userId: {
-      nickName: '박유신',
+      nickName: '테스트용 !!!!!!',
       profileImage: ['https://picsum.photos/200'],
       deletedAt: null,
     },

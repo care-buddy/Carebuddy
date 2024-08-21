@@ -12,8 +12,7 @@ const Wrapper = styled.div`
 
 const OutletWrapper = styled.div`
   flex: 1;
-  padding-top: 180px; // 임시로 뺌 
-  // padding-top: 100px; // 임시 - 헤더 높이 80 뺌
+  padding-top: 180px; 
   width: 1024px;
   margin: 0 auto;
   /* display: flex;

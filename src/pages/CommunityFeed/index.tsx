@@ -51,9 +51,11 @@ const CommunityFeed: React.FC = () => {
   const [error, setError] = useState<Error | null>(null); // 에러
   const [loading, setLoading] = useState<boolean>(false); // 로딩중
 
-  const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(() => {
-    console.log('이후 실행 로직 자리');
-  });
+  const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
+    () => {
+      // console.log('이후 실행 로직 자리');
+    }
+  );
 
   // 글 작성 모달 닫기
   const handleCloseWriteModal = () => {
@@ -263,3 +265,4 @@ const LinkButtonContainer = styled.div`
   justify-content: space-between;
   padding: 10px;
 `;
+
