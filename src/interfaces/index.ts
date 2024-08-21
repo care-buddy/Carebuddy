@@ -41,6 +41,7 @@ export interface BuddyProfile {
 export interface ProfilesWrapperProps {
   name?: string;
   buddies?: BuddyProfile[];
-  onSubmitBuddy: (newBuddy: BuddyProfile) => void;
-  onBuddySelect: (buddyId: string) => void;
+  onSubmitBuddy?: (newBuddy: BuddyProfile) => void;
+  onBuddySelect?: (buddyId: string) => void;
+  isMe: boolean;
 }
