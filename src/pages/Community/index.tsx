@@ -8,7 +8,7 @@ import TopBar from '@/components/common/TopBar';
 
 import axiosInstance from '@/utils/asioxInstance';
 
-import { CATEGORY } from '@/constants/communityConstants';
+import CATEGORY from '@/constants/communityConstants';
 import type { CommunityData } from '@/constants/tempInterface';
 
 const Community: React.FC = () => {
