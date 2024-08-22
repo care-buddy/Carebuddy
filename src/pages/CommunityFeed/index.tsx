@@ -1,8 +1,9 @@
+// 남은 작업: 커뮤니티별 게시글 불러오기 API, 그룹 멤버 조회 API(백엔드 완료 이후 작업)
+// 리팩토링할 수도 있는 부분: filteredPosts를 제거하고 필터링된 데이터를 바로 렌더링하는 방식 고려 가능. useMemo 사용해서 메모이제이션, posts 부분과 filterefPosts 함수로 만들어서 동적렌더링
+
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 
 import TopBar from '@/components/common/TopBar';
 import Loading from '@/components/common/Loading';
@@ -18,20 +19,15 @@ import NoPostsFound from '@/components/common/NoPostsFound';
 import usePostCreate from '@/hooks/usePostCreate';
 
 import formatDate from '@/utils/formatDate';
+import axiosInstance from '@/utils/asioxInstance';
 
 import type { PostData } from '@constants/tempInterface';
 
 // 임시 데이터
 import {
   tempGroupArray1,
-  dummyPosts,
   tempGroupMember,
 } from '@constants/tempData';
-
-const axiosInstance = axios.create({
-  baseURL: '/api', // 기본 URL 설정
-  timeout: 5000, // 타임아웃 설정 (ms)
-});
 
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
@@ -43,6 +39,15 @@ const CommunityFeed: React.FC = () => {
   const params = new URLSearchParams(searchParams); // 현재 쿼리 파라미터
   const [error, setError] = useState<Error | null>(null); // 에러
   const [loading, setLoading] = useState<boolean>(false); // 로딩중
+
+  const { communityId } = useParams();
+  const navigate = useNavigate();
+
+  const user = {
+    // 임시 유저. 나중에 전역 상태 관리로 바꾸어야함.
+    _id: '66a6f8e1640d6ec46070509d',
+    communityId: ['66b5ba8c19ffced581357307', '66c687429ac226b8a246a791'],
+  };
 
   const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
     () => {
@@ -59,24 +64,11 @@ const CommunityFeed: React.FC = () => {
   const handleWithdrawalCommunity = async () => {
     if (confirm('커뮤니티를 탈퇴하시겠습니까?')) {
       try {
-        const mock = new MockAdapter(axiosInstance);
-
-        mock
-          .onPut(/\/api\/user\/\w+\/withdrawGroup/)
-          .reply(200, '커뮤니티 탈퇴가 완료되었습니다.'); // 커뮤니티 탈퇴하기, put 메서드
-          
-        const userId = 'abc'; // 임시
-        await axiosInstance.put(`/user/${userId}/withdrawGroup`, {
-          communityId: '6617c6acb39abf604bbe8dc2',
+        await axiosInstance.put(`/user/${user._id}/withdrawalCommunity`, {
+          communityId,
         });
-        // const response = await axiosInstance.put(
-        //   `/user/${userId}/withdrawGroup`,
-        //   {
-        //     communityId: '6617c6acb39abf604bbe8dc2',
-        //   }
-        // );
 
-        // 임시 - response 받아서 홈으로 리다이렉트 ? 어떻게 할지 안 정함
+        navigate('/');
       } catch (error) {
         setError(error as Error);
       } finally {
@@ -85,22 +77,18 @@ const CommunityFeed: React.FC = () => {
     }
   };
 
-  // 데이터 받기
+  // 커뮤니티별 게시글 불러오기(백엔드 완료 이후 작업)
   useEffect(() => {
     const fetchData = async () => {
       // 게시글 목록
-      try {
-        const mock = new MockAdapter(axiosInstance);
-
-        mock.onGet('/api/posts').reply(200, dummyPosts); // 글 목록 받아오기, get 메서드
-
-        const response = await axiosInstance.get(`/posts`);
-        setPosts(response.data);
-      } catch (error) {
-        setError(error as Error);
-      } finally {
-        setLoading(false);
-      }
+      // try {
+      //   const response = await axiosInstance.get(`/posts`);
+      //   setPosts(response.data);
+      // } catch (error) {
+      //   setError(error as Error);
+      // } finally {
+      //   setLoading(false);
+      // }
     };
     fetchData();
   }, []);
@@ -145,6 +133,28 @@ const CommunityFeed: React.FC = () => {
   if (loading) {
     return <Loading />;
   }
+
+  // 리팩토링하고싶은 부분
+  // const renderPosts = (postArray: PostData[] | null) => {
+  //   if (!postArray || postArray.length === 0) {
+  //     return <NoPostsFound>검색어에 해당하는 게시글이 없습니다.</NoPostsFound>;
+  //   }
+  //   return postArray.map((post) => (
+  //     <FeedBox
+  //       key={post._id}
+  //       postId={post._id}
+  //       title={post.title}
+  //       content={post.content}
+  //       uploadedDate={formatDate(post.createdAt)}
+  //       nickname={post.userId.nickName}
+  //       profileSrc={post.userId.profileImage[0]}
+  //       likeCount={post.likedUsers.length}
+  //     />
+  //   ));
+  // };
+
+  // {isSearching ? renderPosts(filteredPosts) : renderPosts(posts)}
+
 
   // 복잡한 JSX코드 변수에 넣어 정리
   const renderAllPosts = () =>

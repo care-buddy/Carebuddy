@@ -19,7 +19,7 @@ const Community: React.FC = () => {
   const [error, setError] = useState<Error | null>(null);
 
   const user = {
-    // 임시. 나중에 전역 상태 관리로 바꾸어야함.
+    // 임시 유저. 나중에 전역 상태 관리로 바꾸어야함.
     _id: '66a6f8e1640d6ec46070509d',
     communityId: ['66b5ba8c19ffced581357307', '66c687429ac226b8a246a791'],
   };

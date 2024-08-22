@@ -1,7 +1,7 @@
+// 무한스크롤 때문에 API 구현되기까지 실제 API 붙이기 미루기 !.. 
+
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 
 import { dummyPosts, dummyGroups, tempGroup } from '@constants/tempData';
 import type { PostData } from '@constants/tempInterface';
@@ -18,13 +18,7 @@ import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 
 import usePostCreate from '@/hooks/usePostCreate';
 
-import { API_URL } from '@/constants/constants';
-
-const axiosInstance = axios.create({
-  baseURL: API_URL,
-  // baseURL: '/api',
-  timeout: 5000,
-});
+import axiosInstance from '@/utils/asioxInstance';
 
 // const mock = new MockAdapter(axiosInstance);
 

@@ -82,7 +82,7 @@ const Header: React.FC = () => {
   ];
 
   const CommunityMenuItems = [
-    { to: '/community', label: '커뮤니티' },
+    { to: '/community', label: '커뮤니티' }, 
     { to: '/post/66b9a2f06928b8fede303284', label: '포스트' }, // 임시
   ];
 
@@ -99,7 +99,7 @@ const Header: React.FC = () => {
               <MenuItem
                 onClick={handleLinkClick}
                 onMouseEnter={() => setDropdownVisible(true)}
-                to="/community-feed"
+                to="/community-feed/66b5ba8c19ffced581357307" // 임시
               >
                 커뮤니티
                 {dropdownVisible && (
