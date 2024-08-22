@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+// import MockAdapter from 'axios-mock-adapter';
 
 import TopBar from '@/components/common/TopBar';
 import Comment from '@/components/Post/Comment';
@@ -18,83 +18,85 @@ import { LuThumbsUp, LuChevronLeft } from 'react-icons/lu';
 
 import formatDateIncludeTime from '@/utils/formatDateIncludeTime';
 
+import { API_URL } from '@/constants/constants';
 import type { PostData, CommentData } from '@constants/tempInterface';
 
 // 임시 데이터
 import { dummyPost, dummyComments } from '@constants/tempData';
 
 const axiosInstance = axios.create({
-  baseURL: '/api', // 기본 URL 설정
-  timeout: 5000, // 타임아웃 설정 (ms)
+  baseURL: 'http://localhost:3003/api/',
+  // baseURL: API_URL,
+  timeout: 5000,
 });
 
 // 모킹 API
-const mock = new MockAdapter(axiosInstance);
+// const mock = new MockAdapter(axiosInstance);
 
-mock.onGet('/posts/postId').reply(200, dummyPost); // 게시글 조회 목 API
-mock.onGet('/comments/postId').reply(200, dummyComments); // 댓글 조회 목 API
-mock.onPost(`/comments`).reply((config) => {
-  // 댓글 등록 목 API
-  const requestData = JSON.parse(config.data);
+// mock.onGet('/posts/postId').reply(200, dummyPost); // 게시글 조회 목 API
+// mock.onGet('/comments/postId').reply(200, dummyComments); // 댓글 조회 목 API
+// mock.onPost(`/comments`).reply((config) => {
+//   // 댓글 등록 목 API
+//   const requestData = JSON.parse(config.data);
 
-  const responseData = {
-    userId: {
-      _id: '661a0e5febec873b54de2ad1',
-      nickName: '새코멘트!',
-      profileImage: ['https://picsum.photos/200'],
-    },
-    text: requestData.text,
-    deletedAt: null,
-    _id: '6622362d30d4656920c08dd',
-    createdAt: '2024-04-19T09:15:25.992Z',
-  };
+//   const responseData = {
+//     userId: {
+//       _id: '661a0e5febec873b54de2ad1',
+//       nickName: '새코멘트!',
+//       profileImage: ['https://picsum.photos/200'],
+//     },
+//     text: requestData.text,
+//     deletedAt: null,
+//     _id: '6622362d30d4656920c08dd',
+//     createdAt: '2024-04-19T09:15:25.992Z',
+//   };
 
-  return [200, responseData];
-});
-mock.onPut(/\/posts\/\w+\/d/).reply((config) => {
-  // 글 삭제 목 API -> 엔드포인트 관련으로 완전하게 붙일 수 없음.
-  const requestData = JSON.parse(config.data);
+//   return [200, responseData];
+// });
+// mock.onPut(/\/posts\/\w+\/d/).reply((config) => {
+//   // 글 삭제 목 API -> 엔드포인트 관련으로 완전하게 붙일 수 없음.
+//   const requestData = JSON.parse(config.data);
 
-  const responseData = {
-    userId: {
-      _id: '661a0e5febec873b54de2ad1',
-      nickName: '새코멘트!',
-      profileImage: ['https://picsum.photos/200'],
-    },
-    text: requestData.text,
-    deletedAt: '2024-04-19T09:15:25.992Z',
-    _id: '6622362d30d4656920c08dd',
-    createdAt: '2024-04-19T09:15:25.992Z',
-  };
+//   const responseData = {
+//     userId: {
+//       _id: '661a0e5febec873b54de2ad1',
+//       nickName: '새코멘트!',
+//       profileImage: ['https://picsum.photos/200'],
+//     },
+//     text: requestData.text,
+//     deletedAt: '2024-04-19T09:15:25.992Z',
+//     _id: '6622362d30d4656920c08dd',
+//     createdAt: '2024-04-19T09:15:25.992Z',
+//   };
 
-  return [200, responseData];
-});
-mock.onPut(/\/comments\/\w+/).reply(() => [
-  // 댓글 수정
+//   return [200, responseData];
+// });
+// mock.onPut(/\/comments\/\w+/).reply(() => [
+//   // 댓글 수정
 
-  200,
-  {
-    success: true,
-    message: '댓글 수정이 성공적으로 완료되었습니다',
-  },
-]);
-mock.onPut(/\/comments\/\w+\/d/).reply(() => [
-  // 댓글 삭제
-  200,
-  {
-    success: true,
-    message: '댓글 삭제가 성공적으로 완료되었습니다',
-  },
-]);
+//   200,
+//   {
+//     success: true,
+//     message: '댓글 수정이 성공적으로 완료되었습니다',
+//   },
+// ]);
+// mock.onPut(/\/comments\/\w+\/d/).reply(() => [
+//   // 댓글 삭제
+//   200,
+//   {
+//     success: true,
+//     message: '댓글 삭제가 성공적으로 완료되었습니다',
+//   },
+// ]);
 
-mock.onPut(/\/posts\/\w+/).reply(() => [
-  // 게시글 수정
-  200,
-  {
-    success: true,
-    message: '게시글 수정이 성공적으로 완료되었습니다',
-  },
-]);
+// mock.onPut(/\/posts\/\w+/).reply(() => [
+//   // 게시글 수정
+//   200,
+//   {
+//     success: true,
+//     message: '게시글 수정이 성공적으로 완료되었습니다',
+//   },
+// ]);
 
 interface PostProps {
   // title?: string;
@@ -106,20 +108,20 @@ interface PostProps {
   //   updatedAt: string;
   //   likeCount: number;
   //   postImage?: string;
-  //   categoryId?: string;
+  //   communityId?: string;
   // };
 }
 
 // interface FormData {
 //   title: string | undefined;
 //   content: string | undefined;
-//   groupId: string | undefined; // 임시 - 나중에 categoryId로 수정
+//   communityId: string | undefined; 
 //   postImage: string[] | undefined;
 // }
 interface FormData {
   title: string;
   content: string;
-  groupId: string; // 임시 - 나중에 categoryId로 수정
+  communityId: string; 
   postImage: string[];
 }
 
@@ -134,7 +136,7 @@ const Post: React.FC<PostProps> = () => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',
-    groupId: '', // 임시 - 나중에 categoryId로 수정
+    communityId: '', 
     postImage: [],
   });
 
@@ -142,7 +144,7 @@ const Post: React.FC<PostProps> = () => {
   const handleFormDataChange = (data: {
     title?: string;
     content?: string;
-    groupId?: string;
+    communityId?: string;
     postImage?: string[];
   }) => {
     setFormData((prevData) => ({
@@ -153,29 +155,27 @@ const Post: React.FC<PostProps> = () => {
 
   // 글 수정 API
   const handleEditPostSubmit = async () => {
-    try {
-      const id = '11';
-      const response = await axiosInstance.put(`/posts/${id}`, formData);
-      console.log('게시물 수정됨:', response.data);
-      alert('게시글 수정 완료');
-      setIsEditModalOpen((prevState) => !prevState);
-
-      if (post) {
-        setPost({
-          ...post,
-          title: formData.title,
-          content: formData.content,
-          communityId: {
-            ...post?.communityId,
-            _id: formData.groupId,
-          },
-          postImage: formData.postImage,
-        });
-      }
-      
-    } catch (error) {
-      console.error('게시물 수정 오류', error);
-    }
+    // try {
+    //   const id = '11';
+    //   const response = await axiosInstance.put(`post/${id}`, formData); // 임시 - 엔드포인트 수정 필요
+    //   console.log('게시물 수정됨:', response.data);
+    //   alert('게시글 수정 완료');
+    //   setIsEditModalOpen((prevState) => !prevState);
+    //   if (post) {
+    //     setPost({
+    //       ...post,
+    //       title: formData.title,
+    //       content: formData.content,
+    //       communityId: {
+    //         ...post?.communityId,
+    //         _id: formData.groupId,
+    //       },
+    //       postImage: formData.postImage,
+    //     });
+    //   }
+    // } catch (error) {
+    //   console.error('게시물 수정 오류', error);
+    // }
   };
 
   // 게시글 & 댓글 조회 API
@@ -184,31 +184,37 @@ const Post: React.FC<PostProps> = () => {
       // 게시글
       try {
         setLoading(true);
-        const response = await axiosInstance.get(`/posts/postId`);
+        const response = await axiosInstance.get(
+          `/post/66c685f59ac226b8a246a780`
+        ); // 임시 - 엔드포인트 수정
         const post = response.data;
+        console.log('포스트', post)
 
         // 등록일 formatting
         post.createdAt = formatDateIncludeTime(post.createdAt);
 
         setPost(post);
       } catch (error) {
-        setError(error as Error);
+        console.log('포스트조회 에러')
+        console.error(error);
+        // setError(error as Error);
       } finally {
         setLoading(false);
       }
 
-      // 댓글
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get(`/comments/postId`);
-        const comments = response.data;
+      // 댓글 -> 불러오기 없어짐
+      // try {
+      //   setLoading(true);
+      //   const response = await axiosInstance.get(`/comments/postId`);
+      //   const comments = response.data;
 
-        setComments(comments);
-      } catch (error) {
-        setError(error as Error);
-      } finally {
-        setLoading(false);
-      }
+      //   setComments(comments);
+      // } catch (error) {
+      //   console.log
+      //   // setError(error as Error);
+      // } finally {
+      //   setLoading(false);
+      // }
     };
     fetchData();
   }, []);
@@ -218,7 +224,7 @@ const Post: React.FC<PostProps> = () => {
     setFormData({
       title: post?.title || '',
       content: post?.content || '',
-      groupId: post?.communityId._id || '',
+      communityId: post?.communityId._id || '',
       postImage: post?.postImage || [],
     });
   }, [post]);
@@ -245,7 +251,8 @@ const Post: React.FC<PostProps> = () => {
         alert('댓글 내용을 입력해주세요.');
       }
     } catch (error) {
-      setError(error as Error);
+      // setError(error as Error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -278,7 +285,8 @@ const Post: React.FC<PostProps> = () => {
         );
       });
     } catch (error) {
-      setError(error as Error);
+      // setError(error as Error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -304,7 +312,8 @@ const Post: React.FC<PostProps> = () => {
         return prevComments.filter((comment) => comment._id !== commentId);
       });
     } catch (error) {
-      setError(error as Error);
+      // setError(error as Error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -326,7 +335,8 @@ const Post: React.FC<PostProps> = () => {
 
         // console.log(response);
       } catch (error) {
-        setError(error as Error);
+        // setError(error as Error);
+        console.error(error);
       } finally {
         setLoading(false);
       }

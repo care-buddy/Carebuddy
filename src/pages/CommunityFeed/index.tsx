@@ -33,13 +33,6 @@ const axiosInstance = axios.create({
   timeout: 5000, // 타임아웃 설정 (ms)
 });
 
-const mock = new MockAdapter(axiosInstance);
-
-mock.onGet('/api/posts').reply(200, dummyPosts); // 글 목록 받아오기, get 메서드
-mock
-  .onPut(/\/api\/user\/\w+\/withdrawGroup/)
-  .reply(200, '커뮤니티 탈퇴가 완료되었습니다.'); // 커뮤니티 탈퇴하기, put 메서드
-
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
   const [posts, setPosts] = useState<PostData[] | null>(null); // 게시글 목록
@@ -66,6 +59,12 @@ const CommunityFeed: React.FC = () => {
   const handleWithdrawalCommunity = async () => {
     if (confirm('커뮤니티를 탈퇴하시겠습니까?')) {
       try {
+        const mock = new MockAdapter(axiosInstance);
+
+        mock
+          .onPut(/\/api\/user\/\w+\/withdrawGroup/)
+          .reply(200, '커뮤니티 탈퇴가 완료되었습니다.'); // 커뮤니티 탈퇴하기, put 메서드
+          
         const userId = 'abc'; // 임시
         await axiosInstance.put(`/user/${userId}/withdrawGroup`, {
           communityId: '6617c6acb39abf604bbe8dc2',
@@ -91,6 +90,10 @@ const CommunityFeed: React.FC = () => {
     const fetchData = async () => {
       // 게시글 목록
       try {
+        const mock = new MockAdapter(axiosInstance);
+
+        mock.onGet('/api/posts').reply(200, dummyPosts); // 글 목록 받아오기, get 메서드
+
         const response = await axiosInstance.get(`/posts`);
         setPosts(response.data);
       } catch (error) {
@@ -265,4 +268,3 @@ const LinkButtonContainer = styled.div`
   justify-content: space-between;
   padding: 10px;
 `;
-

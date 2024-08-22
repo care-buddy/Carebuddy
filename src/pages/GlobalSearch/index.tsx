@@ -26,10 +26,10 @@ const axiosInstance = axios.create({
   timeout: 5000, // 타임아웃 설정 (ms)
 });
 
-const mock = new MockAdapter(axiosInstance);
+// const mock = new MockAdapter(axiosInstance);
 
 // 전체 게시글, 전체 그룹 목 API,
-mock.onGet('/api/posts').reply(200, dummyPosts);
+// mock.onGet('/api/posts').reply(200, dummyPosts);
 
 const GlobalSearch: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달

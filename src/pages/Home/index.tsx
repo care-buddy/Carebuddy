@@ -18,27 +18,30 @@ import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 
 import usePostCreate from '@/hooks/usePostCreate';
 
+import { API_URL } from '@/constants/constants';
+
 const axiosInstance = axios.create({
-  baseURL: '/api',
+  baseURL: API_URL,
+  // baseURL: '/api',
   timeout: 5000,
 });
 
-const mock = new MockAdapter(axiosInstance);
+// const mock = new MockAdapter(axiosInstance);
 
 // 무한스크롤로 보내줄 콘텐츠 개수
 const PAGE_SIZE = 5;
 
-mock.onGet('/posts').reply((config) => {
-  const { page = 1, pageSize = PAGE_SIZE } = config.params;
-  const startIndex = (page - 1) * pageSize;
-  const endIndex = page * pageSize;
-  const paginatedPosts = dummyPosts.slice(startIndex, endIndex);
-  const hasMore = endIndex < dummyPosts.length;
+// mock.onGet('/posts').reply((config) => {
+//   const { page = 1, pageSize = PAGE_SIZE } = config.params;
+//   const startIndex = (page - 1) * pageSize;
+//   const endIndex = page * pageSize;
+//   const paginatedPosts = dummyPosts.slice(startIndex, endIndex);
+//   const hasMore = endIndex < dummyPosts.length;
 
-  return [200, { data: paginatedPosts, hasMore }];
-});
+//   return [200, { data: paginatedPosts, hasMore }];
+// });
 
-mock.onGet('/api/groups').reply(200, dummyGroups);
+// mock.onGet('/api/groups').reply(200, dummyGroups);
 
 const Home: React.FC = () => {
   // 상태 정의

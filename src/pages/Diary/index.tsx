@@ -129,7 +129,7 @@ const axiosInstance = axios.create({
 });
 
 const Diary: React.FC = () => {
-  const mock = new MockAdapter(axiosInstance);
+  // const mock = new MockAdapter(axiosInstance);
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -185,7 +185,7 @@ const Diary: React.FC = () => {
     // /api/buddies로 GET 요청 모킹
     try {
       setLoading(true);
-      mock.onGet('/buddies').reply(200, dummyBuddies);
+      // mock.onGet('/buddies').reply(200, dummyBuddies);
       const response = await axiosInstance.get('/buddies');
       setBuddiesData(response.data);
       setLoading(false);
@@ -195,8 +195,8 @@ const Diary: React.FC = () => {
     }
   };
 
-  mock.onGet('/hospitals/1a').reply(200, dummyRecord);
-  mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
+  // mock.onGet('/hospitals/1a').reply(200, dummyRecord);
+  // mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
   const fetchRecordsData = async (buddyId: string) => {
     // /api/hospitals로 GET 요청 모킹
     setRecordLoading(true);
@@ -257,20 +257,20 @@ const Diary: React.FC = () => {
 
   const handleFormSubmit = () => {
     // POST 요청 모킹
-    mock.onPost(`/hospitals`).reply((config) => {
-      console.log('요청 정보:', config);
-      const formData = JSON.parse(config.data);
+    // mock.onPost(`/hospitals`).reply((config) => {
+    //   console.log('요청 정보:', config);
+    //   const formData = JSON.parse(config.data);
 
-      const newRecord: Record = {
-        ...formData,
-        _id: String(Date.now()),
-      };
+    //   const newRecord: Record = {
+    //     ...formData,
+    //     _id: String(Date.now()),
+    //   };
 
-      if (recordsData) {
-        setRecords([...recordsData, newRecord]);
-      } else setRecords([newRecord]);
-      return [200, { success: true, message: '병원 기록 등록 성공' }];
-    });
+    //   if (recordsData) {
+    //     setRecords([...recordsData, newRecord]);
+    //   } else setRecords([newRecord]);
+    //   return [200, { success: true, message: '병원 기록 등록 성공' }];
+    // });
 
     if (
       validateRecordForm(
@@ -311,22 +311,22 @@ const Diary: React.FC = () => {
     }
   };
 
-  mock.onPut(`/hospitals/1r/d`).reply((config) => {
-    const deletedRecord = JSON.parse(config.data);
-    return [200, deletedRecord];
-  });
-  mock.onPut(`/hospitals/2r/d`).reply((config) => {
-    const deletedRecord = JSON.parse(config.data);
+  // mock.onPut(`/hospitals/1r/d`).reply((config) => {
+  //   const deletedRecord = JSON.parse(config.data);
+  //   return [200, deletedRecord];
+  // });
+  // mock.onPut(`/hospitals/2r/d`).reply((config) => {
+  //   const deletedRecord = JSON.parse(config.data);
 
-    return [200, deletedRecord];
-  });
+  //   return [200, deletedRecord];
+  // });
   const handleDeleteRecord = async (recordId: string) => {
     // 삭제 PUT 요청 설정
-    mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
-      const deletedRecord = JSON.parse(config.data);
+    // mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
+    //   const deletedRecord = JSON.parse(config.data);
 
-      return [200, deletedRecord];
-    });
+    //   return [200, deletedRecord];
+    // });
     if (window.confirm('삭제하시겠습니까?')) {
       try {
         // id로 삭제 요청한 record를 찾음

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+// import MockAdapter from 'axios-mock-adapter';
 import Button from '@/components/common/Button';
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
@@ -17,37 +17,37 @@ import { useRecoilState } from 'recoil';
 import buddyState from '@/recoil/atoms/buddyState';
 
 // Mock API 설정
-const mock = new MockAdapter(axios, { delayResponse: 500 });
+// const mock = new MockAdapter(axios, { delayResponse: 500 });
 
 // 초기 API 응답 설정
-mock.onGet('/api/user').reply(200, {
-  email: 'carebuddy@naver.com',
-  nickname: '케어버디',
-  introduction: '소개글입니다^^',
-  profileImage: [],
-  communityId: [
-    { id: '1', category: 0, community: '눈', createdAt: '2024-01-01' },
-    { id: '2', category: 0, community: '위식도', createdAt: '2024-01-02' },
-    { id: '3', category: 1, community: '중성화', createdAt: '2024-01-03' },
-  ],
-  postId: [
-    { title: '안녕하세요' },
-    { title: '글제목입니다 ㅎㅎ' },
-    { title: '동물이 최고야!!' },
-  ],
-});
+// mock.onGet('/api/user').reply(200, {
+//   email: 'carebuddy@naver.com',
+//   nickname: '케어버디',
+//   introduction: '소개글입니다^^',
+//   profileImage: [],
+//   communityId: [
+//     { id: '1', category: 0, community: '눈', createdAt: '2024-01-01' },
+//     { id: '2', category: 0, community: '위식도', createdAt: '2024-01-02' },
+//     { id: '3', category: 1, community: '중성화', createdAt: '2024-01-03' },
+//   ],
+//   postId: [
+//     { title: '안녕하세요' },
+//     { title: '글제목입니다 ㅎㅎ' },
+//     { title: '동물이 최고야!!' },
+//   ],
+// });
 
-mock.onPut('/api/user').reply((config) => {
-  const { nickname, introduction, profileImage } = JSON.parse(config.data);
-  // console.log('받은 데이터:', { nickname, introduction, profileImage });
-  return [200, { nickname, introduction, profileImage }];
-});
+// mock.onPut('/api/user').reply((config) => {
+//   const { nickname, introduction, profileImage } = JSON.parse(config.data);
+//   // console.log('받은 데이터:', { nickname, introduction, profileImage });
+//   return [200, { nickname, introduction, profileImage }];
+// });
 
-mock.onPost('/api/posts').reply((config) => {
-  const { title, content, groupId, postImage } = JSON.parse(config.data);
-  // console.log('게시물 생성:', { title, content, groupId, postImage });
-  return [200, { title, content, groupId, postImage }];
-});
+// mock.onPost('/api/posts').reply((config) => {
+//   const { title, content, groupId, postImage } = JSON.parse(config.data);
+//   // console.log('게시물 생성:', { title, content, groupId, postImage });
+//   return [200, { title, content, groupId, postImage }];
+// });
 
 const Container = styled.div`
   margin: 30px 0;
