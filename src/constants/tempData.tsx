@@ -1,7 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import profile from '@assets/profile.png'; // 임시
 
-import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 import MemberElement from '@/components/Home&CommunityFeed/MemberElement';
 
 // FeedBox
@@ -1271,33 +1270,6 @@ export {
   dummyNewComment,
 };
 
-// tempGroup(컴포넌트까지)
-
-const tempGroup = [
-  <CommunityElement
-    key={tempGroupArray1.groupId + 1}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-  <CommunityElement
-    key={tempGroupArray1.groupId + 2}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-  <CommunityElement
-    key={tempGroupArray1.groupId + 3}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-];
-
-export { tempGroup };
 
 // tempGroupMember(커뮤니티피드)
 // 작동 테스트용

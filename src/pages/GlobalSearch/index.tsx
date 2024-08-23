@@ -1,35 +1,24 @@
+// 임시 - 남은 작업: 게시글 전체 조회 API(백엔드 완료 이후 작업)
+// 리팩토링할 부분: 검색로직 커스텀 훅으로 분리, JSX코드 동적렌더링하도록 변경
+
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
 
+import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
 import Search from '@/components/common/Search';
-import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
-import NoPostsFound from '@/components/common/NoPostsFound';
-import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
-import Modal from '@/components/common/Modal';
 import PostCreate from '@/pages/PostCreate/index';
+import NoPostsFound from '@/components/common/NoPostsFound';
+import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
+import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 
 import formatDate from '@/utils/formatDate';
+import axiosInstance from '@/utils/asioxInstance';
 
 import usePostCreate from '@/hooks/usePostCreate';
 
 import type { PostData } from '@constants/tempInterface';
-
-// 임시 데이터
-import { dummyPosts } from '@constants/tempData';
-
-const axiosInstance = axios.create({
-  baseURL: '/api', // 기본 URL 설정
-  timeout: 5000, // 타임아웃 설정 (ms)
-});
-
-// const mock = new MockAdapter(axiosInstance);
-
-// 전체 게시글, 전체 그룹 목 API,
-// mock.onGet('/api/posts').reply(200, dummyPosts);
 
 const GlobalSearch: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
@@ -51,12 +40,12 @@ const GlobalSearch: React.FC = () => {
     setIsWriteModalOpen(false);
   };
 
-  // 게시글 조회 API
+  // 전체 게시글 조회 API(백엔드 코드 완성 이후 로 변경)
   useEffect(() => {
     const fetchData = async () => {
       // 게시글 목록
       try {
-        const response = await axiosInstance.get(`/posts`);
+        const response = await axiosInstance.get(`post`); 
 
         // 등록일 formatting
         const formattedPosts = response.data.map((post: PostData) => ({

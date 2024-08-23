@@ -5,20 +5,20 @@ import { Link } from 'react-router-dom';
 type CommunityElementProps = {
   name: string;
   introduction: string;
-  groupId: string;
-  memberCount: number;
+  communityId: string;
+  memberCount?: number;
 };
 
 const CommunityElement: React.FC<CommunityElementProps> = ({
   name,
   introduction,
-  groupId,
-  memberCount,
+  communityId,
+  // memberCount,
 }) => (
-  <StyledCommunityListSidebar to={`group/${groupId}`}>
+  <StyledCommunityListSidebar to={`community-feed/${communityId}`}>
     <Name>{name}</Name>
     <Introduction>{introduction}</Introduction>
-    <MemberCount>{memberCount}명의 멤버</MemberCount>
+    {/* <MemberCount>{memberCount}명의 멤버</MemberCount> */}
   </StyledCommunityListSidebar>
 );
 
@@ -46,9 +46,10 @@ const Name = styled.p`
 
 const Introduction = styled.p`
   color: var(--color-grey-1);
-  font-size: var(--font-size-ft-1);
+  font-size: var(--font-size-sm-1);
   font-weight: var(--font-weight-regular);
   line-height: 1.2rem;
+  white-space: pre-wrap;
 `;
 
 const MemberCount = styled.p`

@@ -46,3 +46,9 @@ export interface CommunityData {
   introduction: string;
   deletedAt: null | string;
 }
+
+export interface Community {
+  _id: string;
+  community: string;
+  introduction: string;
+}

@@ -1,9 +1,8 @@
-// 무한스크롤 때문에 API 구현되기까지 실제 API 붙이기 미루기 !.. 
+// 임시 - 남은 작업: 게시글 전체 조회 API(백엔드 완료 이후 작업), 게시글 작성, 유저가 가입된 그룹으로 select 옵션(recoil 적용 이후 작업),
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 
-import { dummyPosts, dummyGroups, tempGroup } from '@constants/tempData';
 import type { PostData } from '@constants/tempInterface';
 import formatDate from '@/utils/formatDate';
 
@@ -15,12 +14,15 @@ import NoPostsFound from '@/components/common/NoPostsFound';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
+import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 
 import usePostCreate from '@/hooks/usePostCreate';
 
 import axiosInstance from '@/utils/asioxInstance';
+import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
-// const mock = new MockAdapter(axiosInstance);
+import { Community } from '@/constants/tempInterface';
+import CATEGORY from '@/constants/communityConstants';
 
 // 무한스크롤로 보내줄 콘텐츠 개수
 const PAGE_SIZE = 5;
@@ -48,6 +50,28 @@ const Home: React.FC = () => {
   const [page, setPage] = useState(1); // 현재 페이지 상태(무한스크롤)
   const [hasMore, setHasMore] = useState(true); // 남은 데이터 여부(무한스크롤)
   const [error, setError] = useState<Error | null>(null);
+  const [recommendedCommunities, setRecommendedCommunities] = useState<
+    Community[] | null
+  >(null);
+
+  // 추천 그룹 사이드바용 API(전체 그룹 조회)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get<{ data: Community[] }>(
+          'communities'
+        );
+        const communityArray = pickRandomItemFromArray(response.data.data, 3);
+        setRecommendedCommunities(communityArray);
+      } catch (error) {
+        // 에러 처리 로직
+      } finally {
+        // 마지막에 실행할 로직
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
     () => {
@@ -62,78 +86,74 @@ const Home: React.FC = () => {
 
   // 초기 게시글 데이터 가져오기 함수
   const fetchData = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get(`/posts`, {
-        params: { page: 1, pageSize: PAGE_SIZE },
-      });
-
-      setPosts(response.data.data);
-      setHasMore(response.data.hasMore);
-      setPage(2);
-    } catch (error) {
-      setError(error as Error);
-    }
+    // try {
+    //   const response = await axiosInstance.get(`/post`, { // 임시. 추후 백엔드 코드 변경시 엔드포인트 변경
+    //     params: { page: 1, pageSize: PAGE_SIZE },
+    //   });
+    //   setPosts(response.data.data);
+    //   setHasMore(response.data.hasMore);
+    //   setPage(2);
+    // } catch (error) {
+    //   setError(error as Error);
+    // }
   }, []);
 
   // 컴포넌트가 마운트 된 후 초기 데이터 가져오기
   useEffect(() => {
-    fetchData();
+    // fetchData();
   }, [fetchData]);
 
   // 초기 렌더링 이후 게시글 로드 함수
   const loadMorePosts = useCallback(async () => {
-    if (isLoading || !hasMore) return; // 로딩 중이거나 데이터 더 없으면 종료
-
-    setIsLoading(true); // 로딩 상태 설정
-
-    try {
-      const response = await axiosInstance.get('/posts', {
-        params: { page, pageSize: PAGE_SIZE },
-      });
-
-      setPosts((prevPosts) => [...prevPosts, ...response.data.data]);
-      setPage((prevPage) => prevPage + 1);
-      setHasMore(response.data.hasMore);
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setIsLoading(false);
-    }
+    // if (isLoading || !hasMore) return; // 로딩 중이거나 데이터 더 없으면 종료
+    // setIsLoading(true); // 로딩 상태 설정
+    // try {
+    //   const response = await axiosInstance.get('/post', { // 임시. 추후 백엔드 코드 변경시 엔드포인트 변경
+    //     params: { page, pageSize: PAGE_SIZE },
+    //   });
+    //   setPosts((prevPosts) => [...prevPosts, ...response.data.data]);
+    //   setPage((prevPage) => prevPage + 1);
+    //   setHasMore(response.data.hasMore);
+    // } catch (error) {
+    //   setError(error as Error);
+    // } finally {
+    //   setIsLoading(false);
+    // }
   }, [page, isLoading, hasMore]);
 
   // 옵저버 설정
-  const observerTarget = useRef<HTMLDivElement | null>(null);
+  // const observerTarget = useRef<HTMLDivElement | null>(null);
 
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
-          loadMorePosts();
-        }
-      },
-      { root: null, rootMargin: '100px', threshold: 0.1 }
-    );
+  // useEffect(() => {
+  //   const observer = new IntersectionObserver(
+  //     (entries) => {
+  //       if (entries[0].isIntersecting && hasMore) {
+  //         loadMorePosts();
+  //       }
+  //     },
+  //     { root: null, rootMargin: '100px', threshold: 0.1 }
+  //   );
 
-    const target = observerTarget.current;
-    if (target) {
-      observer.observe(target);
-    }
+  //   const target = observerTarget.current;
+  //   if (target) {
+  //     observer.observe(target);
+  //   }
 
-    return () => {
-      if (target) {
-        observer.unobserve(target);
-      }
-    };
-  }, [selectedPosts, hasMore, loadMorePosts, observerTarget]);
+  //   return () => {
+  //     if (target) {
+  //       observer.unobserve(target);
+  //     }
+  //   };
+  // }, [selectedPosts, hasMore, loadMorePosts, observerTarget]);
 
   // 카테고리(종) 옵션
   const SelectCategoryOptions = [
     { value: 'category', label: '종' },
-    { value: 0, label: '강아지' },
-    { value: 1, label: '고양이' },
+    { value: CATEGORY.dog, label: '강아지' },
+    { value: CATEGORY.cat, label: '고양이' },
   ];
 
-  // 커뮤니티 옵션
+  // 커뮤니티 옵션 ->
   const SelectCommunityOptions = [
     { value: 'community', label: '커뮤니티' },
     { value: '눈 / 피부 / 귀', label: '눈 / 피부 / 귀' },
@@ -260,7 +280,17 @@ const Home: React.FC = () => {
           )}
         </FeedBoxContainer>
         <div>
-          <SidePanel name="추천 커뮤니티" elementArray={tempGroup} />
+          <SidePanel
+            name="추천 커뮤니티"
+            elementArray={recommendedCommunities?.map((community) => (
+              <CommunityElement
+                key={community._id}
+                communityId={community._id}
+                name={community.community}
+                introduction={community.introduction}
+              />
+            ))}
+          />
         </div>
       </ContentContainer>
     </>

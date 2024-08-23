@@ -1,3 +1,5 @@
+// 임시 - 남은 작업: 유저 정보 연결해서 가입 상태 확인(recoil 적용 이후)
+
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';

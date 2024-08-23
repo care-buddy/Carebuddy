@@ -72,7 +72,9 @@ const Post: React.FC = () => {
   useEffect(() => {
     // 댓글
     if (post !== null) {
-      const comment = post.commentId.filter((commentId) => commentId.deletedAt === null);
+      const comment = post.commentId.filter(
+        (commentId) => commentId.deletedAt === null
+      );
       setComments(comment);
     }
 
