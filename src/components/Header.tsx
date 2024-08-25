@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useRecoilState } from 'recoil';
 
 import logo from '@assets/carebuddyLogo.png';
 import { LuBell, LuUser2, LuSearch, LuX } from 'react-icons/lu';
@@ -12,6 +13,10 @@ import Button from '@/components/common/Button';
 import Notification from '@/components/Notification';
 import SmallModal from '@/components/common/SmallModal';
 
+import axiosInstance from '@/utils/asioxInstance';
+
+import authState from '@/recoil/atoms/authState';
+
 import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
 
 const Header: React.FC = () => {
@@ -21,6 +26,7 @@ const Header: React.FC = () => {
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
+  const [auth, setAuth] = useRecoilState(authState);
 
   const navigate = useNavigate();
 
@@ -75,6 +81,34 @@ const Header: React.FC = () => {
     }
   }, [searchTerm]);
 
+  // 로그아웃
+  const handleLogout = async () => {
+    try {
+      const email = 'yushinTest@gmail.com'; // 임시 이메일
+      const response = await axiosInstance.post(
+        'auth/logout',
+        { email },
+        { withCredentials: true }
+      );
+
+      navigate('/');
+
+      setAuth({
+        isAuthenticated: false,
+        accessToken: null,
+      });
+
+      // 로컬 스토리지에서 accessToken 제거 (만약 사용하고 있다면) //임시 - 나중에 로직 추가
+      localStorage.removeItem('accessToken');
+
+      console.log('로그아웃 성공')
+
+      // 기타 필요에 따라 쿠키 삭제 등 추가적인 클리닝 작업 수행
+    } catch (error) {
+      console.error(error); // 임시. 나중에 변경
+    }
+  };
+
   // 임시
   const InfoMenuItems = [
     { to: '/hosInfo', label: '병원 검색' },
@@ -82,7 +116,7 @@ const Header: React.FC = () => {
   ];
 
   const CommunityMenuItems = [
-    { to: '/community', label: '커뮤니티' }, 
+    { to: '/community', label: '커뮤니티' },
     { to: '/post/66b9a2f06928b8fede303284', label: '포스트' }, // 임시
   ];
 
@@ -157,13 +191,23 @@ const Header: React.FC = () => {
             <Link to="/mypage">
               <LuUser2 />
             </Link>
-            <Button
-              buttonStyle="grey"
-              buttonSize="sm"
-              onClick={() => handleLoginModal(true)}
-            >
-              로그인
-            </Button>
+            {!auth.isAuthenticated ? (
+              <Button
+                buttonStyle="grey"
+                buttonSize="sm"
+                onClick={() => handleLoginModal(true)}
+              >
+                로그인
+              </Button>
+            ) : (
+              <Button
+                buttonStyle="grey"
+                buttonSize="sm"
+                onClick={() => handleLogout()}
+              >
+                로그아웃
+              </Button>
+            )}
             {loginModalOpen && (
               <SmallModal
                 onClose={() => handleLoginModal(false)}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import reset from 'styled-reset';
@@ -18,6 +18,8 @@ import {
   GlobalSearch,
   LostPage,
 } from '@/pages';
+
+import { handleSilentRefresh } from './utils/auth/handleSilentRefresh';
 
 const router = createBrowserRouter([
   {
@@ -46,6 +48,22 @@ const router = createBrowserRouter([
     element: <LostPage />,
   },
 ]);
+
+const App: React.FC = () => {
+  // 페이지 리로드(새로고침)시 로그인 연장
+  useEffect(() => {
+    handleSilentRefresh()
+  }, []); // 컴포넌트가 처음 마운트될 때 실행됨
+
+  return (
+    <RecoilRoot>
+      <GlobalStyles />
+      <RouterProvider router={router} />
+    </RecoilRoot>
+  );
+};
+
+export default App;
 
 // 전역 공통 스타일
 const GlobalStyles = createGlobalStyle`
@@ -129,12 +147,3 @@ const GlobalStyles = createGlobalStyle`
     overflow-x: hidden;
   }
 `;
-
-const App: React.FC = () => (
-  <RecoilRoot>
-    <GlobalStyles />
-    <RouterProvider router={router} />
-  </RecoilRoot>
-);
-
-export default App;
