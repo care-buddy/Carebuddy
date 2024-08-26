@@ -22,7 +22,7 @@ import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
-import axiosInstance from '@/utils/axiosInstance';
+import axiosInstance from '@/utils/asioxInstance';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
 // import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
@@ -187,7 +187,7 @@ const Diary: React.FC = () => {
     try {
       setLoading(true);
       // mock.onGet('/buddies').reply(200, dummyBuddies);
-      const response = await axiosInstance.get('/buddies', {
+      const response = await axiosInstance.get('buddies', {
         params: { userId: '66b9b34ae9a13c88c643e361' },
       });
 
@@ -224,7 +224,7 @@ const Diary: React.FC = () => {
     // /api/hospitals로 GET 요청 모킹
     setRecordLoading(true);
     try {
-      const response = await axiosInstance.get(`/hospitals/${buddyId}`);
+      const response = await axiosInstance.get(`hospitals/${buddyId}`);
 
       setRecords(response.data);
     } catch (error) {
@@ -323,7 +323,7 @@ const Diary: React.FC = () => {
       formData
     ) {
       axiosInstance
-        .post(`/hospitals`, formData)
+        .post(`hospitals`, formData)
         .then(() => {
           handleCloseModal();
         })
@@ -389,7 +389,7 @@ const Diary: React.FC = () => {
 
           setLoading(true);
           // 서버에 삭제 요청
-          await axiosInstance.put(`/hospitals/${recordId}/d`, deletedRecord);
+          await axiosInstance.put(`hospitals/${recordId}/d`, deletedRecord);
 
           // 상태 업데이트: 삭제 요청한 id만 deletedRecord로 업데이트 해줌
           setRecords((prevRecords) =>
