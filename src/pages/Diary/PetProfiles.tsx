@@ -23,7 +23,7 @@ import selectedIdState from '@/recoil/atoms/selectedIdState';
 // import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
-import axiosInstance from '@/utils/axiosInstance';
+import axiosInstance from '@/utils/asioxInstance';
 
 import { CardsWrapper, Cards } from './card-components';
 import PetCard from './PetCard';
@@ -160,7 +160,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
       // mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
       // mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
 
-      const response = await axiosInstance.get(`/buddies/${buddyId}`);
+      const response = await axiosInstance.get(`buddies/${buddyId}`);
 
       console.log(response.data.message[0]);
       setSelectedBuddy(response.data.message[0]); // 가져온 반려동물 정보 설정, 수정(PUT) 요청 시 여기서 id를 가져올 수 있다
@@ -233,7 +233,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
             ...filterdProfile,
             deletedAt: new Date(),
           };
-          await axiosInstance.put(`/buddies/${buddyId}/d`);
+          await axiosInstance.put(`buddies/${buddyId}/d`);
 
           const updatedProfiles = profiles.map((profile) =>
             profile._id === buddyId ? deletedProfile : profile
@@ -309,7 +309,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
         // 아직 로그인 로직이 구현되어 있지 않기 때문에, 폼데이터에 id 지정해줘야함
         formData?.append('userId', '66b9b34ae9a13c88c643e361');
 
-        const response = await axiosInstance.post('/buddies', formData);
+        const response = await axiosInstance.post('buddies', formData);
 
         handleClosePetModal();
         await fetchBuddiesData();
@@ -409,7 +409,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
         // 이미지 로직 적용 시 완전 바뀌어야 하므로 임시 구현(formData만 전송하도록 바꿔야한다) / formDataToJson 함수 삭제해야함
         const res = await axiosInstance.put(
-          `/buddies/${buddyId}`,
+          `buddies/${buddyId}`,
           formDataToJson(formData)
         );
 
