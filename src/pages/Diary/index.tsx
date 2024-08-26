@@ -7,14 +7,14 @@ import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
 // import MockAdapter from 'axios-mock-adapter';
-import { Record } from '@/interfaces';
+import { IRecord } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';
 import {
   useRecoilState,
   // eslint-disable-next-line camelcase
-  useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
+  // useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
 import buddyState from '@/recoil/atoms/buddyState';
 import selectedIdState from '@/recoil/atoms/selectedIdState';
@@ -22,7 +22,7 @@ import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
 // import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
@@ -133,7 +133,7 @@ const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
 
-  const nullData: Record = {
+  const nullData: IRecord = {
     _id: '',
     doctorName: null,
     address: null,
@@ -150,7 +150,7 @@ const Diary: React.FC = () => {
   };
 
   // 기록 등록을 위한 Record 상태
-  const [formData, setFormData] = useState<Record>(nullData);
+  const [formData, setFormData] = useState<IRecord>(nullData);
 
   // const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
   //   null
@@ -159,17 +159,17 @@ const Diary: React.FC = () => {
 
   // const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useRecoilState(selectedIdState);
-  // const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   // state에 transition을 적용하기 위해 사용
-  const [isLoading, setLoading] =
-    useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
+  // const [isLoading, setLoading] =
+  //   useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
   // 화면 렌더링 시 버디와 로딩 상태를 공유할 경우, 버디만 렌더링 완료된 경우에 로딩 상태가 false가 되므로 분리한다.
   const [isRecordLoading, setRecordLoading] = useState(false);
   // const [error, setError] = useState<Error | null>(null);
   const [error, setError] = useRecoilState(errorState);
 
   // 반려동물 1마리의 병원 기록들을 저장할 상태
-  const [recordsData, setRecords] = useState<Record[] | null>([]);
+  const [recordsData, setRecords] = useState<IRecord[] | null>([]);
 
   // 유효성 검사 알림 상태
   // const [showAlert, setShowAlert] = useState(false);
@@ -181,6 +181,14 @@ const Diary: React.FC = () => {
 
   const [isCheckSymptom, setCheckSymptom] = useState(false);
   const [isCheckTreat, setCheckTreat] = useState(false);
+  // deletedAt !== null 인 프로필이 하나라도 있으면 false
+  const [isAllProfilesDeleted, setIsAllProfilesDeleted] = useState(true);
+
+  const sortedProfileByCreatedAt = (fetchedBuddies) =>
+    [...fetchedBuddies].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
   const fetchBuddiesData = async () => {
     // /api/buddies로 GET 요청 모킹
@@ -193,12 +201,18 @@ const Diary: React.FC = () => {
 
       const fetchedBuddies = response.data.message;
 
+      if (fetchedBuddies.length === 0 || isAllProfilesDeleted) {
+        setBuddiesData({
+          name: '임시 유저 이름', // 로그인 미구현 시 제대로 로직 짤 수 없음
+          buddies: sortedProfileByCreatedAt(fetchedBuddies),
+        });
+        console.log(buddiesData);
+        return;
+      }
+
       setBuddiesData({
         name: fetchedBuddies[0].name,
-        buddies: [...fetchedBuddies].sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        ),
+        buddies: sortedProfileByCreatedAt(fetchedBuddies),
       });
 
       if (buddiesData.buddies.length > 0 && !selectedId) {
@@ -256,7 +270,10 @@ const Diary: React.FC = () => {
         setSelectedId(firstValidBuddy._id);
       }
     }
-  }, [buddiesData, selectedId]);
+
+    const isAllDeleted = !buddiesData.buddies.some((buddy) => !buddy.deletedAt);
+    setIsAllProfilesDeleted(isAllDeleted);
+  }, [buddiesData, selectedId, isAllProfilesDeleted]);
 
   // useEffect(() => {
   //   if (recordsData) {
@@ -343,7 +360,7 @@ const Diary: React.FC = () => {
   //   setSelectedId(buddyId);
   // };
 
-  const handleUpdateRecord = (updatedRecord: Record) => {
+  const handleUpdateRecord = (updatedRecord: IRecord) => {
     if (recordsData) {
       const updatedRecords = recordsData.map((record) =>
         record._id === updatedRecord._id ? updatedRecord : record
@@ -382,7 +399,7 @@ const Diary: React.FC = () => {
           }
 
           // deletedAt을 업데이트한 레코드
-          const deletedRecord: Record = {
+          const deletedRecord: IRecord = {
             ...updatedRecord,
             deletedAt: new Date(),
           };
@@ -467,7 +484,7 @@ const Diary: React.FC = () => {
 
         <DiaryWrapper>
           <NameInTitle>
-            {buddiesData?.buddies && buddiesData.buddies.length > 0 ? (
+            {!isAllProfilesDeleted ? (
               <>
                 {
                   buddiesData.buddies.find((buddy) => buddy._id === selectedId)

@@ -1,17 +1,13 @@
 import axios from 'axios';
 
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 import { JWT_EXPIRY_TIME } from '@/constants/auth/authConstants';
 import authState from '@/recoil/atoms/authState';
 
 // 자동로그인 연장 설정
 const handleLoginSuccess = (accessToken) => {
-
-  console.log(
-    'handleLoginSuccess called with response:',
-    accessToken
-  ); // 추가한 부분 - 테스트용
+  console.log('handleLoginSuccess called with response:', accessToken); // 추가한 부분 - 테스트용
 
   // const { accessToken } = response.data;
 

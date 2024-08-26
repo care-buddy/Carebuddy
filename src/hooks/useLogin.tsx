@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useRecoilState } from 'recoil';
 import authState from '@/recoil/atoms/authState';
 import { JWT_EXPIRY_TIME } from '@/constants/auth/authConstants';
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 const useLogin = () => {
   const [auth, setAuth] = useRecoilState(authState);

@@ -18,7 +18,7 @@ import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 
 import usePostCreate from '@/hooks/usePostCreate';
 
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
 import { Community } from '@/constants/tempInterface';

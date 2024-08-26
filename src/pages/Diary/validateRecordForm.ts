@@ -1,7 +1,7 @@
-import { Record } from '@/interfaces';
+import { IRecord } from '@/interfaces';
 
 const validateRecordForm = (
-  formData: Record,
+  formData: IRecord,
   setAlertState: React.Dispatch<
     React.SetStateAction<{
       showAlert: boolean;

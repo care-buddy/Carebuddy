@@ -18,7 +18,7 @@ import { LuThumbsUp, LuChevronLeft } from 'react-icons/lu';
 
 import formatDateIncludeTime from '@/utils/formatDateIncludeTime';
 
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 import type { PostData, CommentData } from '@constants/tempInterface';
 

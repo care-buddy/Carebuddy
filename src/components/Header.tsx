@@ -13,7 +13,7 @@ import Button from '@/components/common/Button';
 import Notification from '@/components/Notification';
 import SmallModal from '@/components/common/SmallModal';
 
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 import authState from '@/recoil/atoms/authState';
 

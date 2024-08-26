@@ -13,7 +13,7 @@ import {
   LuMessageSquarePlus,
 } from 'react-icons/lu';
 import ActionButton from '@/components/common/ActtionButton';
-import { Record } from '@/interfaces';
+import { IRecord } from '@/interfaces';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import Loading from '@/components/common/Loading';
@@ -150,8 +150,8 @@ const Doctor = styled.span`
 /* 다이어리 상세 끝  */
 
 interface Props {
-  record: Record;
-  onUpdate: (updatedRecord: Record) => void;
+  record: IRecord;
+  onUpdate: (updatedRecord: IRecord) => void;
   onDelete: () => void;
 }
 
@@ -166,9 +166,9 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
   // const [isLoading, setLoading] = useState(false);
   const [isLoading, setLoading] = useRecoilState(loadingState);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [formData, setFormData] = useState<Record>(record);
+  const [formData, setFormData] = useState<IRecord>(record);
   // 모달을 닫았을 때 다시 백업 데이터로 세팅
-  const [backupFormData, setBackupFormData] = useState<Record>(record);
+  const [backupFormData, setBackupFormData] = useState<IRecord>(record);
 
   // 유효성 검사 알림 상태
   // const [showAlert, setShowAlert] = useState(false);

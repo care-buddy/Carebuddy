@@ -11,8 +11,7 @@ import Button from '@components/common/Button';
 import Input from '@components/common/Input';
 import CheckBox from '@components/common/CheckBox';
 
-import axiosInstance from '@/utils/asioxInstance';
-
+import axiosInstance from '@/utils/axiosInstance';
 
 import { LuEye, LuEyeOff } from 'react-icons/lu';
 

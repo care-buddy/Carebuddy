@@ -1,4 +1,4 @@
-export interface Buddy {
+export interface IBuddy {
   _id: string;
   name: string;
   species: number;
@@ -13,7 +13,7 @@ export interface Buddy {
   deletedAt: string | null;
 }
 
-export interface Record {
+export interface IRecord {
   _id: string;
   doctorName: string | null;
   address: string | null;
@@ -29,7 +29,7 @@ export interface Record {
   deletedAt?: Date | null;
 }
 
-export interface BuddyProfile {
+export interface IBuddyProfile {
   _id: string;
   name: string;
   kind: string;
@@ -38,8 +38,8 @@ export interface BuddyProfile {
   deletedAt: Date | null;
 }
 
-export interface ProfilesWrapperProps {
-  buddies?: BuddyProfile[];
+export interface IProfilesWrapperProps {
+  buddies?: IBuddyProfile[];
   isMe: boolean;
   fetchBuddiesData: () => void;
 }

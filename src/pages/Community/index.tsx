@@ -8,7 +8,7 @@ import CommunityCard from '@/components/Community/CommunityCard';
 import Button from '@/components/common/Button';
 import TopBar from '@/components/common/TopBar';
 
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 import CATEGORY from '@/constants/communityConstants';
 import type { CommunityData } from '@/constants/tempInterface';

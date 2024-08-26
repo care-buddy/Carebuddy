@@ -4,7 +4,7 @@ import Input from '@/components/common/Input';
 import Radio from '@/components/common/Radio';
 import CheckBox from '@/components/common/CheckBox';
 import TextArea from '@/components/common/TextArea';
-import { Record } from '@/interfaces';
+import { IRecord } from '@/interfaces';
 import { LuPlusCircle, LuMinusCircle } from 'react-icons/lu';
 import { CSSTransition } from 'react-transition-group';
 
@@ -169,8 +169,8 @@ const Required = styled.span`
 `;
 
 interface HosRecordsProps {
-  formData: Record;
-  setFormData: React.Dispatch<React.SetStateAction<Record>>;
+  formData: IRecord;
+  setFormData: React.Dispatch<React.SetStateAction<IRecord>>;
   setCheckTreat: React.Dispatch<React.SetStateAction<boolean>>;
   setCheckSymptom: React.Dispatch<React.SetStateAction<boolean>>;
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 interface FormData {
   title: string;

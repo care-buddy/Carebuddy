@@ -8,7 +8,7 @@ import { Pagination, Virtual } from 'swiper/modules';
 import { LuPlus } from 'react-icons/lu';
 import Modal from '@/components/common/Modal';
 import PetRegister from '@/components/PetRegister/PetRegister';
-import { Buddy, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
+import { IBuddy, IBuddyProfile, IProfilesWrapperProps } from '@/interfaces';
 // import MockAdapter from 'axios-mock-adapter';
 // import { tempProfileSrc } from '@constants/tempData';
 // import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
@@ -17,13 +17,14 @@ import ValidationAlert from '@/components/common/ValidationAlert';
 import {
   useRecoilState,
   // eslint-disable-next-line camelcase
-  // useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
+  useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
 import selectedIdState from '@/recoil/atoms/selectedIdState';
 // import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
-import axiosInstance from '@/utils/asioxInstance';
+import loadingState from '@/recoil/atoms/loadingState';
+import axiosInstance from '@/utils/axiosInstance';
 
 import { CardsWrapper, Cards } from './card-components';
 import PetCard from './PetCard';
@@ -112,7 +113,7 @@ const AddProfileMsg = styled.p`
 // });
 
 // 회원 이름과 버디 정보들을 받아와서 카드에 렌더링해준다.
-const PetProfiles: React.FC<ProfilesWrapperProps> = ({
+const PetProfiles: React.FC<IProfilesWrapperProps> = ({
   buddies,
   isMe = true,
   fetchBuddiesData,
@@ -122,20 +123,20 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
   const [petModalOpen, setPetModalOpen] = useState(false);
   const [petEditModalOpen, setPetEditModalOpen] = useState(false);
-  const [selectedBuddy, setSelectedBuddy] = useState<Buddy | null>(null); // 선택된 반려동물, 모달용
+  const [selectedBuddy, setSelectedBuddy] = useState<IBuddy | null>(null); // 선택된 반려동물, 모달용
   const [formData, setFormData] = useState<FormData | null>(null); // 수정/등록을 위한 폼데이터 상태
 
-  const [profiles, setProfiles] = useState<BuddyProfile[]>(buddies || []); // 반려동물 전체 프로필 상태: 등록 및 수정을 위함
+  const [profiles, setProfiles] = useState<IBuddyProfile[]>(buddies || []); // 반려동물 전체 프로필 상태: 등록 및 수정을 위함
 
   // 반려동물이 있는 경우에만, 처음 렌더링될 때 처음 버디를 선택된 상태로 설정
   // 병원 기록, 선택된 카드 활성화를 위한 상태
   // const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useRecoilState(selectedIdState);
 
-  const [isLoading, setLoading] = useState(false);
+  // const [isLoading, setLoading] = useState(false);
   // API 적용 후 recoil 적용
-  // const [isLoading, setLoading] =
-  //   useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
+  const [isLoading, setLoading] =
+    useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
   // const [, setError] = useState<Error | null>(null);
   const [, setError] = useRecoilState(errorState);
 
@@ -148,18 +149,9 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     setPetModalOpen(true);
   };
 
-  // 모킹 설정
-  // mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
-  // mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
-  // mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
-  // mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
-  // 수정 모달
   const handleOpenPetEditModal = async (buddyId: string) => {
     setLoading(true);
     try {
-      // mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
-      // mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
-
       const response = await axiosInstance.get(`buddies/${buddyId}`);
 
       console.log(response.data.message[0]);
@@ -189,33 +181,9 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   // 폼데이터가 변화할때마다 상태 업데이트
   const handleFormDataChange = (data: FormData) => {
     setFormData(data);
-    // console.log(data);
-    // console.log(data);
   };
 
-  // mock
-  //   .onPut(`/buddies/1a/d`)
-  //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
-  // mock
-  //   .onPut(`/buddies/1a/d`)
-  //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
-
-  // mock
-  //   .onPut(`/buddies/2b/d`)
-  //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
-  // mock
-  //   .onPut(`/buddies/2b/d`)
-  //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
-
   const deleteProfile = async (buddyId: string) => {
-    // 가짜 DELETE 요청 처리
-    // mock
-    //   .onPut(`/buddies/${buddyId}/d`)
-    //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
-    // mock
-    //   .onPut(`/buddies/${buddyId}/d`)
-    //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
-
     if (window.confirm('프로필 삭제 알림')) {
       try {
         setLoading(true);
@@ -229,10 +197,11 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
             return;
           }
 
-          const deletedProfile: BuddyProfile = {
+          const deletedProfile: IBuddyProfile = {
             ...filterdProfile,
             deletedAt: new Date(),
           };
+          await axiosInstance.put(`buddies/${buddyId}/d`);
           await axiosInstance.put(`buddies/${buddyId}/d`);
 
           const updatedProfiles = profiles.map((profile) =>
@@ -240,12 +209,19 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
           );
 
           setProfiles([...updatedProfiles]);
-        }
 
-        // setProfiles(updatedProfiles); // 상태 업데이트
-        // // API 적용 시, 프로필 삭제 후 카드 선택 상태를 첫 번째 카드로 지정해주는 로직을 사용한다.
-        // // 지금은 목데이터도 업데이트 되기 때문에 삭제만 해놓은 상태
-        // // if (updatedProfiles.length > 0) setSelectedId(updatedProfiles[0]._id);
+          // 삭제된 카드를 컴포넌트에서 보이지 않게 업데이트
+          await fetchBuddiesData();
+
+          // 프로필 삭제 후 카드 선택 상태를 삭제하지 않은 첫 번째 카드로 지정
+          const firstValidBuddy = updatedProfiles.find(
+            (buddy) => !buddy.deletedAt
+          );
+
+          if (firstValidBuddy) {
+            setSelectedId(firstValidBuddy._id);
+          }
+        }
       } catch (error) {
         setError(error as Error);
       } finally {
@@ -256,53 +232,6 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
   // 로딩처리 필요
   const handleFormSubmit = async () => {
-    // 가짜 POST 요청 처리
-    // mock.onPost('/buddies').reply((config) => {
-    //   const formData = config.data;
-    //   // post 요청 확인 용 코드입니다.
-    //   // const entries = formData.entries();
-    //   // Mock Post 확인용이므로 룰을 잠시 삭제
-    //   // eslint-disable-next-line no-restricted-syntax
-    //   // for (const [key, value] of entries) {
-    //   //   console.log(`${key}: ${value}`);
-    //   // }
-    //   const newBuddy: BuddyProfile = {
-    //     _id: String(Date.now()), // 임시 id
-    //     name: formData.get('name'),
-    //     kind: formData.get('kind'),
-    //     age: formData.get('age'),
-    //     buddyImage: formData.get('buddyImage'),
-    //     deletedAt: null,
-    //   };
-    // mock.onPost('/buddies').reply((config) => {
-    //   const formData = config.data;
-    //   // post 요청 확인 용 코드입니다.
-    //   // const entries = formData.entries();
-    //   // Mock Post 확인용이므로 룰을 잠시 삭제
-    //   // eslint-disable-next-line no-restricted-syntax
-    //   // for (const [key, value] of entries) {
-    //   //   console.log(`${key}: ${value}`);
-    //   // }
-    //   const newBuddy: BuddyProfile = {
-    //     _id: String(Date.now()), // 임시 id
-    //     name: formData.get('name'),
-    //     kind: formData.get('kind'),
-    //     age: formData.get('age'),
-    //     buddyImage: formData.get('buddyImage'),
-    //     deletedAt: null,
-    //   };
-
-    //   setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
-    //   // 필요 없는 로직인가?
-    //   // onSubmitBuddy(newBuddy);
-    //   return [200, { success: true, message: '반려동물 등록 성공' }];
-    // });
-    //   setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
-    //   // 필요 없는 로직인가?
-    //   // onSubmitBuddy(newBuddy);
-    //   return [200, { success: true, message: '반려동물 등록 성공' }];
-    // });
-
     if (validateForm() && formData) {
       setLoading(true);
       try {
@@ -343,53 +272,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
   const handleEditSubmit = async () => {
     const buddyId = selectedBuddy?._id;
-    // 가짜 PUT 요청 처리
-    // mock.onPut(`/buddies/${buddyId}`).reply((config) => {
-    //   // console.log('요청 정보:', config);
-    //   const formData = config.data;
-    //   // put 요청 확인용 코드입니다.
-    //   // const entries = formData.entries();
-    //   // // eslint-disable-next-line no-restricted-syntax
-    //   // for (const [key, value] of entries) {
-    //   //   console.log(`${key}: ${value}`);
-    //   // }
-    // mock.onPut(`/buddies/${buddyId}`).reply((config) => {
-    //   // console.log('요청 정보:', config);
-    //   const formData = config.data;
-    //   // put 요청 확인용 코드입니다.
-    //   // const entries = formData.entries();
-    //   // // eslint-disable-next-line no-restricted-syntax
-    //   // for (const [key, value] of entries) {
-    //   //   console.log(`${key}: ${value}`);
-    //   // }
 
-    //   const updatedBuddy = {
-    //     _id: buddyId,
-    //     name: formData.get('name'),
-    //     kind: formData.get('kind'),
-    //     age: formData.get('age'),
-    //     buddyImage: formData.get('buddyImage'),
-    //     sex: formData.get('sex'),
-    //     species: formData.get('species'),
-    //     isNeutered: formData.get('isNeutered'),
-    //     weight: formData.get('weight'),
-    //     deletedAt: null,
-    //   };
-    //   const updatedBuddy = {
-    //     _id: buddyId,
-    //     name: formData.get('name'),
-    //     kind: formData.get('kind'),
-    //     age: formData.get('age'),
-    //     buddyImage: formData.get('buddyImage'),
-    //     sex: formData.get('sex'),
-    //     species: formData.get('species'),
-    //     isNeutered: formData.get('isNeutered'),
-    //     weight: formData.get('weight'),
-    //     deletedAt: null,
-    //   };
-
-    //   return [200, updatedBuddy]; // 성공 응답 반환
-    // });
     const printFormData = (formData: FormData) => {
       // FormData.entries()를 사용하여 모든 항목을 순회합니다.
       for (const [key, value] of formData.entries()) {
@@ -409,6 +292,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
         // 이미지 로직 적용 시 완전 바뀌어야 하므로 임시 구현(formData만 전송하도록 바꿔야한다) / formDataToJson 함수 삭제해야함
         const res = await axiosInstance.put(
+          `buddies/${buddyId}`,
           `buddies/${buddyId}`,
           formDataToJson(formData)
         );
