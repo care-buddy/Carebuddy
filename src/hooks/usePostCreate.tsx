@@ -4,7 +4,7 @@ import axiosInstance from '@/utils/asioxInstance';
 interface FormData {
   title: string;
   content: string;
-  categoryId: string; 
+  categoryId: string;
   postImage: string[];
 }
 
@@ -12,7 +12,7 @@ const usePostCreate = (onSuccess: () => void) => {
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',
-    categoryId: '', 
+    categoryId: '',
     postImage: [],
   });
 
@@ -35,7 +35,7 @@ const usePostCreate = (onSuccess: () => void) => {
       //   console.log('게시물 생성:', { title, content, groupId, postImage });
       //   return [200, { title, content, groupId, postImage }];
       // });
-      
+
       const response = await axiosInstance.post('post', formData); // 임시. 추후 백엔드에서 엔드포인트 변경 시 수정
       console.log('게시물 생성됨:', response.data);
       alert('게시글 작성 완료');

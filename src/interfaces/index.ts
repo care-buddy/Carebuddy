@@ -7,7 +7,7 @@ export interface Buddy {
   sex: number;
   weight: number;
   isNeutered: number | null;
-  buddyImage: string;
+  buddyImage: File | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;
@@ -39,9 +39,7 @@ export interface BuddyProfile {
 }
 
 export interface ProfilesWrapperProps {
-  name?: string;
   buddies?: BuddyProfile[];
-  onSubmitBuddy?: (newBuddy: BuddyProfile) => void;
-  onBuddySelect?: (buddyId: string) => void;
   isMe: boolean;
+  fetchBuddiesData: () => void;
 }

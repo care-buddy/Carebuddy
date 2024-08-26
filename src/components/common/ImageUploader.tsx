@@ -1,16 +1,17 @@
 import React from 'react';
 import styled from 'styled-components';
+import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 
 import { LuCamera } from 'react-icons/lu';
 
 interface ImageUploaderProps {
-  transferFile: string; // 전송할 이미지
-  selectFile: string | undefined; // 화면에 보여줄 이미지
-  onSelectFile: (value: string) => void;
+  imgView: string | File; // 화면에 보여줄 이미지
+  selectFile: File | null; // 전송할 이미지
+  onSelectFile: (value: File) => void;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
-  transferFile,
+  imgView,
   selectFile,
   onSelectFile,
 }) => {
@@ -19,15 +20,31 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     const file = e?.target.files?.[0];
 
     if (file) {
-      const imageUrl = URL.createObjectURL(file);
-      onSelectFile(imageUrl);
+      // const imageUrl = URL.createObjectURL(file);
+      onSelectFile(file);
     }
   };
+
+  // const imageSrc = selectFile ? URL.createObjectURL(selectFile) : imgView;
+  // 선택된 파일이 있으면 해당 파일의 URL을 생성하여 사용
+  // 그렇지 않으면, imgView가 URL인지 확인하고 해당 URL을 사용
+  // imgView가 File일 경우 URL.createObjectURL로 변환
+  let imageSrc: string;
+  if (selectFile) {
+    imageSrc = URL.createObjectURL(selectFile);
+  } else if (typeof imgView === 'string') {
+    imageSrc = imgView;
+  } else if (imgView) {
+    imageSrc = URL.createObjectURL(imgView);
+  } else {
+    imageSrc = DefaultPetProfileImg; // 기본 이미지 URL
+  }
 
   return (
     <>
       <Img
-        src={selectFile === undefined ? transferFile : selectFile}
+        // src={selectFile === undefined ? transferFile : selectFile}
+        src={imageSrc}
         alt="프로필 이미지"
       />
       <LabelForFileInput>
