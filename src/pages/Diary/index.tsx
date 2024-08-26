@@ -6,8 +6,7 @@ import 'swiper/css/navigation';
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+// import MockAdapter from 'axios-mock-adapter';
 import { Record } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
@@ -23,9 +22,10 @@ import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
+import axiosInstance from '@/utils/asioxInstance';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
-import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
+// import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
 import RecordWrapper from './Record';
 import validateRecordForm from './validateRecordForm';
 
@@ -123,13 +123,13 @@ const ProfilesTitle = styled.div`
   margin: 20px 0 30px 0;
 `;
 
-const axiosInstance = axios.create({
-  baseURL: '/api', // 기본 URL 설정
-  timeout: 5000, // 타임아웃 설정 (ms)
-});
+// const axiosInstance = axios.create({
+//   baseURL: 'http://localhost:3003/api', // 기본 URL 설정
+//   timeout: 10000, // 타임아웃 설정 (ms)
+// });
 
 const Diary: React.FC = () => {
-  const mock = new MockAdapter(axiosInstance);
+  // const mock = new MockAdapter(axiosInstance);
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
 
@@ -158,7 +158,7 @@ const Diary: React.FC = () => {
   const [buddiesData, setBuddiesData] = useRecoilState(buddyState);
 
   // const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [selectedId] = useRecoilState(selectedIdState);
+  const [selectedId, setSelectedId] = useRecoilState(selectedIdState);
   // const [isLoading, setLoading] = useState(false);
   // state에 transition을 적용하기 위해 사용
   const [isLoading, setLoading] =
@@ -176,7 +176,8 @@ const Diary: React.FC = () => {
   // const [alertMessage, setAlertMessage] = useState('');
   const [alertState, setAlertState] = useRecoilState(validationAlertState);
 
-  const [hasRecords, setHasRecords] = useState(false);
+  // const [hasRecords, setHasRecords] = useState(false);
+  const [hasRecords] = useState(false);
 
   const [isCheckSymptom, setCheckSymptom] = useState(false);
   const [isCheckTreat, setCheckTreat] = useState(false);
@@ -185,23 +186,45 @@ const Diary: React.FC = () => {
     // /api/buddies로 GET 요청 모킹
     try {
       setLoading(true);
-      mock.onGet('/buddies').reply(200, dummyBuddies);
-      const response = await axiosInstance.get('/buddies');
-      setBuddiesData(response.data);
-      setLoading(false);
+      // mock.onGet('/buddies').reply(200, dummyBuddies);
+      const response = await axiosInstance.get('buddies', {
+        params: { userId: '66b9b34ae9a13c88c643e361' },
+      });
+
+      const fetchedBuddies = response.data.message;
+
+      setBuddiesData({
+        name: fetchedBuddies[0].name,
+        buddies: [...fetchedBuddies].sort(
+          (a, b) =>
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        ),
+      });
+
+      if (buddiesData.buddies.length > 0 && !selectedId) {
+        const firstValidBuddy = buddiesData.buddies.find(
+          (buddy) => !buddy.deletedAt
+        );
+
+        if (firstValidBuddy) {
+          setSelectedId(firstValidBuddy._id);
+        }
+      }
     } catch (error) {
       setError(error as Error);
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   };
 
-  mock.onGet('/hospitals/1a').reply(200, dummyRecord);
-  mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
+  // mock.onGet('/hospitals/1a').reply(200, dummyRecord);
+  // mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
   const fetchRecordsData = async (buddyId: string) => {
     // /api/hospitals로 GET 요청 모킹
     setRecordLoading(true);
     try {
-      const response = await axiosInstance.get(`/hospitals/${buddyId}`);
+      const response = await axiosInstance.get(`hospitals/${buddyId}`);
 
       setRecords(response.data);
     } catch (error) {
@@ -211,24 +234,42 @@ const Diary: React.FC = () => {
       setRecordLoading(false);
     }
   };
-  useEffect(() => {
-    fetchBuddiesData();
-    // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
-    if (selectedId) fetchRecordsData(selectedId);
-  }, [selectedId]);
+  // useEffect(() => {
+  //   // fetchBuddiesData();
+  //   // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
+  //   if (selectedId) fetchRecordsData(selectedId);
+  // }, [selectedId]);
 
   useEffect(() => {
-    if (recordsData) {
-      // 모든 기록이 삭제된 경우에만(null이 아닌 경우) false를 반환
-      // 즉 false인 경우에는 기록이 없다는 안내 문구를 보여주면 된다.
-      const hasNonDeletedRecords = recordsData.some(
-        (record) => record.deletedAt === null
+    fetchBuddiesData();
+  }, []);
+
+  useEffect(() => {
+    // 버디가 있는 경우, selectedId가 null일 때(초기상태)
+    // 첫 버디가 삭제된 상태일 수 있으니, deletedAt이 null이 아닌 가장 첫 버디를 선택된 상태로 설정한다
+    if (buddiesData.buddies.length > 0 && !selectedId) {
+      const firstValidBuddy = buddiesData.buddies.find(
+        (buddy) => !buddy.deletedAt
       );
-      setHasRecords(hasNonDeletedRecords);
-    } else {
-      setHasRecords(false);
+
+      if (firstValidBuddy) {
+        setSelectedId(firstValidBuddy._id);
+      }
     }
-  }, [recordsData]);
+  }, [buddiesData, selectedId]);
+
+  // useEffect(() => {
+  //   if (recordsData) {
+  //     // 모든 기록이 삭제된 경우에만(null이 아닌 경우) false를 반환
+  //     // 즉 false인 경우에는 기록이 없다는 안내 문구를 보여주면 된다.
+  //     const hasNonDeletedRecords = recordsData.some(
+  //       (record) => record.deletedAt === null
+  //     );
+  //     setHasRecords(hasNonDeletedRecords);
+  //   } else {
+  //     setHasRecords(false);
+  //   }
+  // }, [recordsData]);
 
   if (error) {
     return <ErrorAlert />;
@@ -257,20 +298,20 @@ const Diary: React.FC = () => {
 
   const handleFormSubmit = () => {
     // POST 요청 모킹
-    mock.onPost(`/hospitals`).reply((config) => {
-      console.log('요청 정보:', config);
-      const formData = JSON.parse(config.data);
+    // mock.onPost(`/hospitals`).reply((config) => {
+    //   console.log('요청 정보:', config);
+    //   const formData = JSON.parse(config.data);
 
-      const newRecord: Record = {
-        ...formData,
-        _id: String(Date.now()),
-      };
+    //   const newRecord: Record = {
+    //     ...formData,
+    //     _id: String(Date.now()),
+    //   };
 
-      if (recordsData) {
-        setRecords([...recordsData, newRecord]);
-      } else setRecords([newRecord]);
-      return [200, { success: true, message: '병원 기록 등록 성공' }];
-    });
+    //   if (recordsData) {
+    //     setRecords([...recordsData, newRecord]);
+    //   } else setRecords([newRecord]);
+    //   return [200, { success: true, message: '병원 기록 등록 성공' }];
+    // });
 
     if (
       validateRecordForm(
@@ -282,7 +323,7 @@ const Diary: React.FC = () => {
       formData
     ) {
       axiosInstance
-        .post(`/hospitals`, formData)
+        .post(`hospitals`, formData)
         .then(() => {
           handleCloseModal();
         })
@@ -311,22 +352,22 @@ const Diary: React.FC = () => {
     }
   };
 
-  mock.onPut(`/hospitals/1r/d`).reply((config) => {
-    const deletedRecord = JSON.parse(config.data);
-    return [200, deletedRecord];
-  });
-  mock.onPut(`/hospitals/2r/d`).reply((config) => {
-    const deletedRecord = JSON.parse(config.data);
+  // mock.onPut(`/hospitals/1r/d`).reply((config) => {
+  //   const deletedRecord = JSON.parse(config.data);
+  //   return [200, deletedRecord];
+  // });
+  // mock.onPut(`/hospitals/2r/d`).reply((config) => {
+  //   const deletedRecord = JSON.parse(config.data);
 
-    return [200, deletedRecord];
-  });
+  //   return [200, deletedRecord];
+  // });
   const handleDeleteRecord = async (recordId: string) => {
     // 삭제 PUT 요청 설정
-    mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
-      const deletedRecord = JSON.parse(config.data);
+    // mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
+    //   const deletedRecord = JSON.parse(config.data);
 
-      return [200, deletedRecord];
-    });
+    //   return [200, deletedRecord];
+    // });
     if (window.confirm('삭제하시겠습니까?')) {
       try {
         // id로 삭제 요청한 record를 찾음
@@ -348,7 +389,7 @@ const Diary: React.FC = () => {
 
           setLoading(true);
           // 서버에 삭제 요청
-          await axiosInstance.put(`/hospitals/${recordId}/d`, deletedRecord);
+          await axiosInstance.put(`hospitals/${recordId}/d`, deletedRecord);
 
           // 상태 업데이트: 삭제 요청한 id만 deletedRecord로 업데이트 해줌
           setRecords((prevRecords) =>
@@ -419,11 +460,9 @@ const Diary: React.FC = () => {
         <ProfilesTitle>{buddiesData?.name} 님의 반려동물</ProfilesTitle>
         {/* props drilling 유지하는 이유: userPage에서는 유저마다 다른 buddieData를 전달해줘야하기 때문에 */}
         <PetProfiles
-          // name={buddiesData?.name}
           buddies={buddiesData?.buddies}
-          // onSubmitBuddy={handleSubmitBuddy}
-          // onBuddySelect={handleSelectedId}
           isMe
+          fetchBuddiesData={fetchBuddiesData}
         />
 
         <DiaryWrapper>
