@@ -22,7 +22,7 @@ import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
 // import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';

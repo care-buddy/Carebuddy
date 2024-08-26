@@ -19,15 +19,12 @@ import NoPostsFound from '@/components/common/NoPostsFound';
 import usePostCreate from '@/hooks/usePostCreate';
 
 import formatDate from '@/utils/formatDate';
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 import type { PostData } from '@constants/tempInterface';
 
 // 임시 데이터
-import {
-  tempGroupArray1,
-  tempGroupMember,
-} from '@constants/tempData';
+import { tempGroupArray1, tempGroupMember } from '@constants/tempData';
 
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
@@ -154,7 +151,6 @@ const CommunityFeed: React.FC = () => {
   // };
 
   // {isSearching ? renderPosts(filteredPosts) : renderPosts(posts)}
-
 
   // 복잡한 JSX코드 변수에 넣어 정리
   const renderAllPosts = () =>

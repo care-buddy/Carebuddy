@@ -23,9 +23,9 @@ import selectedIdState from '@/recoil/atoms/selectedIdState';
 // import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
-import axiosInstance from '@/utils/asioxInstance';
-
 import loadingState from '@/recoil/atoms/loadingState';
+import axiosInstance from '@/utils/axiosInstance';
+
 import { CardsWrapper, Cards } from './card-components';
 import PetCard from './PetCard';
 
@@ -202,6 +202,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
             deletedAt: new Date(),
           };
           await axiosInstance.put(`buddies/${buddyId}/d`);
+          await axiosInstance.put(`buddies/${buddyId}/d`);
 
           const updatedProfiles = profiles.map((profile) =>
             profile._id === buddyId ? deletedProfile : profile
@@ -291,6 +292,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
 
         // 이미지 로직 적용 시 완전 바뀌어야 하므로 임시 구현(formData만 전송하도록 바꿔야한다) / formDataToJson 함수 삭제해야함
         const res = await axiosInstance.put(
+          `buddies/${buddyId}`,
           `buddies/${buddyId}`,
           formDataToJson(formData)
         );
