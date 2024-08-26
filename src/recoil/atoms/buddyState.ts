@@ -1,9 +1,9 @@
 import { atom } from 'recoil';
-import { BuddyProfile } from '@/interfaces';
+import { IBuddyProfile } from '@/interfaces';
 
 interface Buddy {
   name: string | null;
-  buddies: BuddyProfile[];
+  buddies: IBuddyProfile[];
 }
 
 // 로그인하면, 여기에 default 값을 설정해준다

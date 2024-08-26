@@ -7,7 +7,7 @@ import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
 // import MockAdapter from 'axios-mock-adapter';
-import { Record } from '@/interfaces';
+import { IRecord } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';
@@ -133,7 +133,7 @@ const Diary: React.FC = () => {
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
 
-  const nullData: Record = {
+  const nullData: IRecord = {
     _id: '',
     doctorName: null,
     address: null,
@@ -150,7 +150,7 @@ const Diary: React.FC = () => {
   };
 
   // 기록 등록을 위한 Record 상태
-  const [formData, setFormData] = useState<Record>(nullData);
+  const [formData, setFormData] = useState<IRecord>(nullData);
 
   // const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
   //   null
@@ -169,7 +169,7 @@ const Diary: React.FC = () => {
   const [error, setError] = useRecoilState(errorState);
 
   // 반려동물 1마리의 병원 기록들을 저장할 상태
-  const [recordsData, setRecords] = useState<Record[] | null>([]);
+  const [recordsData, setRecords] = useState<IRecord[] | null>([]);
 
   // 유효성 검사 알림 상태
   // const [showAlert, setShowAlert] = useState(false);
@@ -343,7 +343,7 @@ const Diary: React.FC = () => {
   //   setSelectedId(buddyId);
   // };
 
-  const handleUpdateRecord = (updatedRecord: Record) => {
+  const handleUpdateRecord = (updatedRecord: IRecord) => {
     if (recordsData) {
       const updatedRecords = recordsData.map((record) =>
         record._id === updatedRecord._id ? updatedRecord : record
@@ -382,7 +382,7 @@ const Diary: React.FC = () => {
           }
 
           // deletedAt을 업데이트한 레코드
-          const deletedRecord: Record = {
+          const deletedRecord: IRecord = {
             ...updatedRecord,
             deletedAt: new Date(),
           };

@@ -8,7 +8,7 @@ import { Pagination, Virtual } from 'swiper/modules';
 import { LuPlus } from 'react-icons/lu';
 import Modal from '@/components/common/Modal';
 import PetRegister from '@/components/PetRegister/PetRegister';
-import { Buddy, BuddyProfile, ProfilesWrapperProps } from '@/interfaces';
+import { IBuddy, IBuddyProfile, IProfilesWrapperProps } from '@/interfaces';
 // import MockAdapter from 'axios-mock-adapter';
 // import { tempProfileSrc } from '@constants/tempData';
 // import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
@@ -16,9 +16,8 @@ import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import {
   useRecoilState,
-  useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
   // eslint-disable-next-line camelcase
-  // useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
+  useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
 import selectedIdState from '@/recoil/atoms/selectedIdState';
 // import loadingState from '@/recoil/atoms/loadingState';
@@ -114,7 +113,7 @@ const AddProfileMsg = styled.p`
 // });
 
 // 회원 이름과 버디 정보들을 받아와서 카드에 렌더링해준다.
-const PetProfiles: React.FC<ProfilesWrapperProps> = ({
+const PetProfiles: React.FC<IProfilesWrapperProps> = ({
   buddies,
   isMe = true,
   fetchBuddiesData,
@@ -124,10 +123,10 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
 
   const [petModalOpen, setPetModalOpen] = useState(false);
   const [petEditModalOpen, setPetEditModalOpen] = useState(false);
-  const [selectedBuddy, setSelectedBuddy] = useState<Buddy | null>(null); // 선택된 반려동물, 모달용
+  const [selectedBuddy, setSelectedBuddy] = useState<IBuddy | null>(null); // 선택된 반려동물, 모달용
   const [formData, setFormData] = useState<FormData | null>(null); // 수정/등록을 위한 폼데이터 상태
 
-  const [profiles, setProfiles] = useState<BuddyProfile[]>(buddies || []); // 반려동물 전체 프로필 상태: 등록 및 수정을 위함
+  const [profiles, setProfiles] = useState<IBuddyProfile[]>(buddies || []); // 반려동물 전체 프로필 상태: 등록 및 수정을 위함
 
   // 반려동물이 있는 경우에만, 처음 렌더링될 때 처음 버디를 선택된 상태로 설정
   // 병원 기록, 선택된 카드 활성화를 위한 상태
@@ -184,7 +183,6 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     setFormData(data);
   };
 
-  console.log(profiles);
   const deleteProfile = async (buddyId: string) => {
     if (window.confirm('프로필 삭제 알림')) {
       try {
@@ -199,7 +197,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
             return;
           }
 
-          const deletedProfile: BuddyProfile = {
+          const deletedProfile: IBuddyProfile = {
             ...filterdProfile,
             deletedAt: new Date(),
           };

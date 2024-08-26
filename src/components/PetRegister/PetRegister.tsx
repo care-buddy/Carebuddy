@@ -7,12 +7,12 @@ import Input from '@components/common/Input';
 import Button from '@components/common/Button';
 import ImageUploader from '@components/common/ImageUploader';
 
-import { Buddy } from '@/interfaces';
+import { IBuddy } from '@/interfaces';
 
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 
 interface PetRegisterProps {
-  petData: Buddy | null;
+  petData: IBuddy | null;
   onFormDataChange: (FormData: FormData) => void; // 폼데이터를 수집해 부모 컴포넌트로 전달하기 위한 콜백 함수
 }
 
