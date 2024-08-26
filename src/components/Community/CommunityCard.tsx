@@ -11,7 +11,7 @@ import Button from '../common/Button';
 type CommunityCardProps = {
   name: string;
   introduction: string;
-  onButtonClick: () => void;
+  onButtonClick?: () => void; // 임시
   joined: boolean;
 };
 

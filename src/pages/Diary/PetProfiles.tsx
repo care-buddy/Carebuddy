@@ -118,6 +118,7 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   fetchBuddiesData,
 }) => {
   // const mock = new MockAdapter(axiosInstance);
+  // const mock = new MockAdapter(axiosInstance);
 
   const [petModalOpen, setPetModalOpen] = useState(false);
   const [petEditModalOpen, setPetEditModalOpen] = useState(false);
@@ -148,6 +149,8 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   };
 
   // 모킹 설정
+  // mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
+  // mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
   // mock.onGet('/buddies/1a').reply(200, dummyBuddy1);
   // mock.onGet('/buddies/2b').reply(200, dummyBuddy2);
   // 수정 모달
@@ -187,8 +190,12 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   const handleFormDataChange = (data: FormData) => {
     setFormData(data);
     // console.log(data);
+    // console.log(data);
   };
 
+  // mock
+  //   .onPut(`/buddies/1a/d`)
+  //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
   // mock
   //   .onPut(`/buddies/1a/d`)
   //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
@@ -196,9 +203,15 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
   // mock
   //   .onPut(`/buddies/2b/d`)
   //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
+  // mock
+  //   .onPut(`/buddies/2b/d`)
+  //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
 
   const deleteProfile = async (buddyId: string) => {
     // 가짜 DELETE 요청 처리
+    // mock
+    //   .onPut(`/buddies/${buddyId}/d`)
+    //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
     // mock
     //   .onPut(`/buddies/${buddyId}/d`)
     //   .reply(200, { success: true, message: '반려동물 삭제 성공' });
@@ -261,7 +274,29 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     //     buddyImage: formData.get('buddyImage'),
     //     deletedAt: null,
     //   };
+    // mock.onPost('/buddies').reply((config) => {
+    //   const formData = config.data;
+    //   // post 요청 확인 용 코드입니다.
+    //   // const entries = formData.entries();
+    //   // Mock Post 확인용이므로 룰을 잠시 삭제
+    //   // eslint-disable-next-line no-restricted-syntax
+    //   // for (const [key, value] of entries) {
+    //   //   console.log(`${key}: ${value}`);
+    //   // }
+    //   const newBuddy: BuddyProfile = {
+    //     _id: String(Date.now()), // 임시 id
+    //     name: formData.get('name'),
+    //     kind: formData.get('kind'),
+    //     age: formData.get('age'),
+    //     buddyImage: formData.get('buddyImage'),
+    //     deletedAt: null,
+    //   };
 
+    //   setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
+    //   // 필요 없는 로직인가?
+    //   // onSubmitBuddy(newBuddy);
+    //   return [200, { success: true, message: '반려동물 등록 성공' }];
+    // });
     //   setProfiles([...profiles, newBuddy]); // 지금 프로필에 새로운 버디를 추가
     //   // 필요 없는 로직인가?
     //   // onSubmitBuddy(newBuddy);
@@ -318,7 +353,28 @@ const PetProfiles: React.FC<ProfilesWrapperProps> = ({
     //   // for (const [key, value] of entries) {
     //   //   console.log(`${key}: ${value}`);
     //   // }
+    // mock.onPut(`/buddies/${buddyId}`).reply((config) => {
+    //   // console.log('요청 정보:', config);
+    //   const formData = config.data;
+    //   // put 요청 확인용 코드입니다.
+    //   // const entries = formData.entries();
+    //   // // eslint-disable-next-line no-restricted-syntax
+    //   // for (const [key, value] of entries) {
+    //   //   console.log(`${key}: ${value}`);
+    //   // }
 
+    //   const updatedBuddy = {
+    //     _id: buddyId,
+    //     name: formData.get('name'),
+    //     kind: formData.get('kind'),
+    //     age: formData.get('age'),
+    //     buddyImage: formData.get('buddyImage'),
+    //     sex: formData.get('sex'),
+    //     species: formData.get('species'),
+    //     isNeutered: formData.get('isNeutered'),
+    //     weight: formData.get('weight'),
+    //     deletedAt: null,
+    //   };
     //   const updatedBuddy = {
     //     _id: buddyId,
     //     name: formData.get('name'),

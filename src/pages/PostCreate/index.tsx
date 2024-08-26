@@ -1,3 +1,7 @@
+// 게시글 작성 말고, 게시글 수정의 경우에는 카테고리 변경 불가능하도록 수정 ! 
+// + 이미 카테고리가 있을 경우 받아오도록 수정
+// groupId -> CommunityId(필드명 수정 필요!)
+
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Select from '@/components/common/Select';

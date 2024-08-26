@@ -30,9 +30,9 @@ const router = createBrowserRouter([
     ),
     children: [
       { path: '', element: <Home /> },
-      { path: 'community-feed', element: <CommunityFeed /> },
-      { path: 'post', element: <Post /> },
-      { path: 'community', element: <Community /> },
+      { path: 'community-feed/:communityId', element: <CommunityFeed /> },
+      { path: 'post/:postId', element: <Post /> },
+      { path: 'community/', element: <Community /> },
       { path: 'diary', element: <Diary /> },
       { path: 'mypage', element: <Mypage /> },
       { path: 'userpage', element: <Userpage /> },

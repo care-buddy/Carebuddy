@@ -1,7 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope */
 import profile from '@assets/profile.png'; // 임시
 
-import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 import MemberElement from '@/components/Home&CommunityFeed/MemberElement';
 
 // FeedBox
@@ -157,7 +156,7 @@ const dummyPosts = [
       community: '뇌·신경',
       deletedAt: null,
     },
-    title: '제목2',
+    title: '제목2 - 검색',
     likedUsers: ['ㅇ', 'ㅇㄹ', 'ㅇ'],
     content:
       '콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2콘텐츠내용 2',
@@ -168,7 +167,7 @@ const dummyPosts = [
   {
     _id: '6621f4ae536c1c762432479a9df4',
     userId: {
-      nickName: '김지연',
+      nickName: '김지연 - localhost3001;',
       profileImage: ['https://picsum.photos/200'],
       deletedAt: null,
     },
@@ -189,7 +188,7 @@ const dummyPosts = [
   {
     _id: '662f4ae536c1c2767923434a9df4',
     userId: {
-      nickName: '박유신',
+      nickName: '테스트용 !!!!!!',
       profileImage: ['https://picsum.photos/200'],
       deletedAt: null,
     },
@@ -1271,33 +1270,6 @@ export {
   dummyNewComment,
 };
 
-// tempGroup(컴포넌트까지)
-
-const tempGroup = [
-  <CommunityElement
-    key={tempGroupArray1.groupId + 1}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-  <CommunityElement
-    key={tempGroupArray1.groupId + 2}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-  <CommunityElement
-    key={tempGroupArray1.groupId + 3}
-    groupId={tempGroupArray1.groupId}
-    name={tempGroupArray1.groupName}
-    introduction={tempGroupArray1.introduction}
-    memberCount={tempGroupArray1.memberCount}
-  />,
-];
-
-export { tempGroup };
 
 // tempGroupMember(커뮤니티피드)
 // 작동 테스트용

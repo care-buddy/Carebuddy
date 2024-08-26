@@ -161,7 +161,7 @@ const axiosInstance = axios.create({
 });
 
 const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
-  const mock = new MockAdapter(axiosInstance);
+  // const mock = new MockAdapter(axiosInstance);
 
   // const [isLoading, setLoading] = useState(false);
   const [isLoading, setLoading] = useRecoilState(loadingState);
@@ -202,30 +202,30 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
   // 1. 가짜 PUT mock 생성
   //  - 업데이트할 객체 생성
   //  - 위 객체로 res 반환
-  mock.onPut(`/hospitals/${record._id}`).reply((config) => {
-    // put 요청 중 data만 추출, config.data가 문자열로 오기 때문에 추출을 위해 JSON 객체로 파싱해준다
-    const recordForm = JSON.parse(config.data);
+  // mock.onPut(`/hospitals/${record._id}`).reply((config) => {
+  //   // put 요청 중 data만 추출, config.data가 문자열로 오기 때문에 추출을 위해 JSON 객체로 파싱해준다
+  //   const recordForm = JSON.parse(config.data);
 
-    // 업데이트된 정보의 객체를 만들어준다. 이 정보로 response를 보내줄 것임!
-    const updatedRecord = {
-      _id: record._id,
-      doctorName: recordForm.doctorName,
-      address: recordForm.address,
-      isConsultation: recordForm.isConsultation,
-      consultationDate: recordForm.consultationDate,
-      hospitalizationStatus: recordForm.hospitalizationStatus,
-      disease: recordForm.disease,
-      symptom: recordForm.symptom,
-      treatment: recordForm.treatment,
-      memo: recordForm.memo,
-      createdAt: recordForm.createdAt,
-      deletedAt: recordForm.deletedAt,
-      updatedAt: new Date(),
-    };
-    console.log(updatedRecord);
-    // 확인용으로 return 해주지만, 실제로는 message와 id만 올 것임
-    return [200, updatedRecord];
-  });
+  //   // 업데이트된 정보의 객체를 만들어준다. 이 정보로 response를 보내줄 것임!
+  //   const updatedRecord = {
+  //     _id: record._id,
+  //     doctorName: recordForm.doctorName,
+  //     address: recordForm.address,
+  //     isConsultation: recordForm.isConsultation,
+  //     consultationDate: recordForm.consultationDate,
+  //     hospitalizationStatus: recordForm.hospitalizationStatus,
+  //     disease: recordForm.disease,
+  //     symptom: recordForm.symptom,
+  //     treatment: recordForm.treatment,
+  //     memo: recordForm.memo,
+  //     createdAt: recordForm.createdAt,
+  //     deletedAt: recordForm.deletedAt,
+  //     updatedAt: new Date(),
+  //   };
+  //   console.log(updatedRecord);
+  //   // 확인용으로 return 해주지만, 실제로는 message와 id만 올 것임
+  //   return [200, updatedRecord];
+  // });
 
   // const validateForm = () => {
   //   if (formData.isConsultation && formData.address === '') {

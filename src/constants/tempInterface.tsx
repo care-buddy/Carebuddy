@@ -5,7 +5,7 @@ export interface CommentData {
   userId: {
     _id: string;
     nickName: string;
-    profileImage: string[];
+    profileImage?: string[];
   };
   text: string;
   deletedAt: string;
@@ -35,6 +35,7 @@ export interface PostData {
   deletedAt: string;
   postImage: string[];
   createdAt: string;
+  commentId: CommentData[];
 }
 
 // 커뮤니티
@@ -44,4 +45,10 @@ export interface CommunityData {
   community: string;
   introduction: string;
   deletedAt: null | string;
+}
+
+export interface Community {
+  _id: string;
+  community: string;
+  introduction: string;
 }
