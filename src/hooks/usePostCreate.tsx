@@ -2,19 +2,6 @@ import { useState } from 'react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 
-const mock = new MockAdapter(axios, { delayResponse: 500 });
-
-const axiosInstance = axios.create({
-  baseURL: '/api', // 기본 URL 설정
-  timeout: 5000, // 타임아웃 설정 (ms)
-});
-
-mock.onPost('/api/posts').reply((config) => {
-  const { title, content, groupId, postImage } = JSON.parse(config.data);
-  // console.log('게시물 생성:', { title, content, groupId, postImage });
-  return [200, { title, content, groupId, postImage }];
-});
-
 interface FormData {
   title: string;
   content: string;
@@ -23,6 +10,19 @@ interface FormData {
 }
 
 const usePostCreate = (onSuccess: () => void) => {
+  const mock = new MockAdapter(axios, { delayResponse: 500 });
+
+  const axiosInstance = axios.create({
+    baseURL: '/api', // 기본 URL 설정
+    timeout: 5000, // 타임아웃 설정 (ms)
+  });
+
+  mock.onPost('/api/posts').reply((config) => {
+    const { title, content, groupId, postImage } = JSON.parse(config.data);
+    // console.log('게시물 생성:', { title, content, groupId, postImage });
+    return [200, { title, content, groupId, postImage }];
+  });
+
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',

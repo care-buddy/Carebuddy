@@ -10,6 +10,7 @@ import {
   SearchWrapper,
   Text,
 } from '@/pages/Info/info-components';
+import axios from 'axios';
 
 // UI확인용 임시데이터
 const SelectDummyCityOptions = [
@@ -39,6 +40,15 @@ interface DataItem {
   Age: string;
   City: string;
 }
+
+const axiosInstance = axios.create({
+  baseURL: 'http://localhost:3003/api', // 기본 URL 설정
+  timeout: 10000, // 타임아웃 설정 (ms)
+  headers: {
+    'Content-Type': 'application/json', // 요청 본문의 데이터 형식
+    Accept: 'application/json', // 서버가 응답으로 JSON을 반환하도록 기대
+  },
+});
 
 const HosInfo: React.FC = () => {
   // 테이블에 표시할 데이터 예시 및 임시 상태
@@ -96,9 +106,34 @@ const HosInfo: React.FC = () => {
     setCurrentPage(page);
   };
 
+  const handleClick = async () => {
+    // if (validateForm() && formData) {
+    if (true) {
+      // setLoading(true);
+      try {
+        // const response = await axiosInstance.post('/buddies', {
+        //   species: 0,
+        //   kind: '말티즈',
+        //   userId: '66b9b34ae9a13c88c643e361',
+        // });
+
+        const response = await axiosInstance.post('auth/login', {
+          email: 'goldengooooose2024@gmail.com',
+          password: 'carebuddy2024',
+        });
+
+        console.log('Response:', response.data);
+      } catch (error) {
+        console.error('Error:', error);
+      }
+      // } else setShowAlert(true);
+    }
+  };
+
   return (
     <>
       <TopBar category="정보" title="동물 병원 검색" />
+      <Button onClick={handleClick}>버튼</Button>
       <Wrapper>
         <BorderWrapper>
           <Title>동물 병원 검색</Title>
