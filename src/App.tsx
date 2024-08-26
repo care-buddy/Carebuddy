@@ -19,7 +19,7 @@ import {
   LostPage,
 } from '@/pages';
 
-import { handleSilentRefresh } from './utils/auth/handleSilentRefresh';
+import useLogin from './hooks/useLogin';
 
 const router = createBrowserRouter([
   {
@@ -49,21 +49,29 @@ const router = createBrowserRouter([
   },
 ]);
 
-const App: React.FC = () => {
+const App: React.FC = () => (
+  <RecoilRoot>
+    <AppContent />
+  </RecoilRoot>
+);
+
+export default App;
+
+const AppContent: React.FC = () => {
+  const { handleSilentRefresh } = useLogin();
+
   // 페이지 리로드(새로고침)시 로그인 연장
   useEffect(() => {
-    handleSilentRefresh()
+    handleSilentRefresh();
   }, []); // 컴포넌트가 처음 마운트될 때 실행됨
 
   return (
-    <RecoilRoot>
+    <>
       <GlobalStyles />
       <RouterProvider router={router} />
-    </RecoilRoot>
+    </>
   );
 };
-
-export default App;
 
 // 전역 공통 스타일
 const GlobalStyles = createGlobalStyle`
@@ -81,19 +89,19 @@ const GlobalStyles = createGlobalStyle`
 
     --font-size-lg-1: 1.625rem; // 26
     --font-size-lg-2: 2rem; // 32
-    --font-size-lg-3: 2.25rem; 
+    --font-size-lg-3: 2.25rem;
 
     --font-size-exlg-1: 10rem;
-    
-    /* h1,h2: bold, h3~h5: semibold, h6: medium 
+
+    /* h1,h2: bold, h3~h5: semibold, h6: medium
       p: regular and bold
       buttons and labels: semibold */
 
     --font-weight-extrabold: 900;
     --font-weight-bold: 700;
     --font-weight-semibold: 600;
-    --font-weight-medium: 500; 
-    --font-weight-regular: 400; 
+    --font-weight-medium: 500;
+    --font-weight-regular: 400;
 
     --color-green-main: #6D987A;
     --color-green-sub-1: #98B99C;
@@ -129,7 +137,7 @@ const GlobalStyles = createGlobalStyle`
     font-style: normal;
 }
 
-    *, *::before, *::after { 
+    *, *::before, *::after {
     font-family: 'Pretendard-Regular', sans-serif;
     margin: 0;
     padding: 0;

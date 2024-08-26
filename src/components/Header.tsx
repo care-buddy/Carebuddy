@@ -81,11 +81,18 @@ const Header: React.FC = () => {
     }
   }, [searchTerm]);
 
+  // 로그인 클릭 시 모달 닫기
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      setLoginModalOpen(false);
+    }
+  }, [auth.isAuthenticated]);
+
   // 로그아웃
   const handleLogout = async () => {
     try {
       const email = 'yushinTest@gmail.com'; // 임시 이메일
-      const response = await axiosInstance.post(
+      await axiosInstance.post(
         'auth/logout',
         { email },
         { withCredentials: true }
@@ -95,13 +102,9 @@ const Header: React.FC = () => {
 
       setAuth({
         isAuthenticated: false,
-        accessToken: null,
       });
 
-      // 로컬 스토리지에서 accessToken 제거 (만약 사용하고 있다면) //임시 - 나중에 로직 추가
-      localStorage.removeItem('accessToken');
-
-      console.log('로그아웃 성공')
+      console.log('로그아웃 성공');
 
       // 기타 필요에 따라 쿠키 삭제 등 추가적인 클리닝 작업 수행
     } catch (error) {

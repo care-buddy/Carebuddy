@@ -1,6 +1,5 @@
 /* eslint-disable no-console */
 // 임시
-// 로그인 코드 짜는 중(한참 미완성임), refresh 토큰 받아야 하고 모달 닫는 함수 인자로 받아야하고 남은 거 많음!
 
 import React, { useState, useEffect } from 'react';
 // import { useEffect,  } from 'react'; // 임시 - 가끔 필요해서 냅둠
@@ -14,12 +13,10 @@ import CheckBox from '@components/common/CheckBox';
 
 import axiosInstance from '@/utils/asioxInstance';
 
-import { error } from 'console';
-
-import { handleLoginSuccess } from '@/utils/auth/handleSilentRefresh';
 
 import { LuEye, LuEyeOff } from 'react-icons/lu';
 
+import useLogin from '@/hooks/useLogin';
 import authState from '@/recoil/atoms/authState';
 
 interface LoginProps {
@@ -34,6 +31,8 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [auth, setAuth] = useRecoilState(authState);
+
+  const { handleSilentRefresh } = useLogin();
 
   // 로그인을 위한 아이디, 비밀번호 업데이트 핸들러
   const updateLoginInfo = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +73,7 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
         // Recoil 상태(로그인 상태) 업데이트
         setAuth({
           isAuthenticated: true,
-          accessToken,
+          // accessToken,
         });
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
@@ -90,7 +89,8 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
   // 상태가 업데이트되면 자동 로그인 연장 처리
   useEffect(() => {
     if (auth.isAuthenticated) {
-      handleLoginSuccess(auth.accessToken, auth); // 상태가 업데이트된 후 자동 로그인 연장
+      handleSilentRefresh(); // 상태가 업데이트된 후 자동 로그인 연장
+      // handleSilentRefresh(auth.accessToken); // 상태가 업데이트된 후 자동 로그인 연장
     }
   }, [auth]); // auth 상태가 변경될 때마다 실행
 

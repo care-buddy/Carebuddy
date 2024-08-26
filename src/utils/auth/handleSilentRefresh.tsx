@@ -7,6 +7,7 @@ import authState from '@/recoil/atoms/authState';
 
 // 자동로그인 연장 설정
 const handleLoginSuccess = (accessToken) => {
+
   console.log(
     'handleLoginSuccess called with response:',
     accessToken
@@ -21,9 +22,7 @@ const handleLoginSuccess = (accessToken) => {
   axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
   // accessToken이 만료되기 1분 전에 로그인 연장
-  // console.log("Setting timeout for silent refresh"); // 추가한 부분 - 테스트용
   // setTimeout(handleSilentRefresh, JWT_EXPIRY_TIME - 60000);
-  // setTimeout(handleSilentRefresh, JWT_EXPIRY_TIME - 10000); // 테스트용 시간
 
   // 로그인 상태일 때만 자동 로그인 연장 설정
   if (authState.isAuthenticated) {
@@ -33,7 +32,7 @@ const handleLoginSuccess = (accessToken) => {
     setTimeout(() => {
       console.log('Executing handleSilentRefresh'); // 이 로그가 표시되면 setTimeout이 실행된 것
       handleSilentRefresh();
-    }, JWT_EXPIRY_TIME - 10000); // JWT_EXPIRY_TIME - 10000은 20초 후에 실행됨
+    }, JWT_EXPIRY_TIME - 10000); // JWT_EXPIRY_TIME - 10000은 20초 후에 실행됨 - 테스트용시간
   }
 };
 
