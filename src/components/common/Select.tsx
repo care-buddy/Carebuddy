@@ -27,7 +27,9 @@ const selectSizes = {
   `,
 };
 
-const StyledSelect = styled.select<StyledSelectProps>`
+const StyledSelect = styled.select.withConfig({
+  shouldForwardProp: (prop) => !['selectStyle', 'selectSize'].includes(prop),
+})<StyledSelectProps>`
   border: 1px solid var(--color-grey-2);
   padding: 8px 12px;
   color: var(--color-grey-1);

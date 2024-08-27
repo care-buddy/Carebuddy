@@ -60,7 +60,9 @@ const ModalBackground = styled.div`
   z-index: 9999;
 `;
 
-const ModalContent = styled.div<StyledSmallModalProps>`
+const ModalContent = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['modalPaddingSize'].includes(prop),
+})<StyledSmallModalProps>`
   position: relative;
   width: 30vw;
   max-height: 70vh;
