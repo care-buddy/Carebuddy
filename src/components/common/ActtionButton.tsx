@@ -22,7 +22,7 @@ interface ActionButtonProps extends StyledActionButtonProps {
 const ActionButton: React.FC<ActionButtonProps> = ({
   buttonBorder,
   buttonSize = 'md',
-  direction='vertical',
+  direction = 'vertical',
   onEdit,
   onDelete,
 }) => {
@@ -98,7 +98,6 @@ const ActionButton: React.FC<ActionButtonProps> = ({
 
 export default ActionButton;
 
-
 const buttonBorders = {
   'border-solid': css`
     border: var(--color-grey-2) solid 1px;
@@ -119,7 +118,9 @@ const buttonSizes = {
   `,
 };
 
-const StyledActionButton = styled.button<StyledActionButtonProps>`
+const StyledActionButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['buttonBorder', 'buttonSize'].includes(prop),
+})<StyledActionButtonProps>`
   cursor: pointer;
   display: flex;
   flex-direction: row;
