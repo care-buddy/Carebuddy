@@ -63,7 +63,7 @@ const AppContent: React.FC = () => {
   // 페이지 리로드(새로고침)시 로그인 연장
   useEffect(() => {
     handleSilentRefresh();
-  }, []); // 컴포넌트가 처음 마운트될 때 실행됨
+  }, []);
 
   return (
     <>
