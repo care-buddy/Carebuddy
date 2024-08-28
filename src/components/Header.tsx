@@ -370,7 +370,9 @@ const NotificationIcon = styled.div`
   }
 `;
 
-const SearchWrapper = styled.div<{ isSearching: boolean }>`
+const SearchWrapper = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['isSearching'].includes(prop),
+})<{ isSearching: boolean }>`
   width: ${(props) => (props.isSearching ? `380px` : `auto`)};
   display: flex;
   align-items: center;

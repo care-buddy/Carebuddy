@@ -81,7 +81,9 @@ const Span = styled.span`
   }
 `;
 
-const Text = styled.p<StyledCheckBoxProps>`
+const Text = styled.p.withConfig({
+  shouldForwardProp: (prop) => !['textColor'].includes(prop),
+})<StyledCheckBoxProps>`
   margin: 0;
   font-size: var(--font-size-ft-1);
   ${(props) => props.textColor && textColors[props.textColor]}
