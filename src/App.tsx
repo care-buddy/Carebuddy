@@ -19,28 +19,37 @@ import {
   LostPage,
 } from '@/pages';
 
+import { useRecoilValue } from 'recoil';
+
 import useLogin from './hooks/useLogin';
+
+import isAuthenticatedState from './recoil/selectors/authSelector';
 
 const router = createBrowserRouter([
   {
-    path: '/',
-    // 로그인 유저만 접근
+    path: '/', // 로그인한 사용자만 접근 가능
     element: (
       <ProtectedRoute>
         <Layout />
       </ProtectedRoute>
     ),
     children: [
-      { path: '', element: <Home /> },
       { path: 'community-feed/:communityId', element: <CommunityFeed /> },
       { path: 'post/:postId', element: <Post /> },
-      { path: 'community/', element: <Community /> },
+      { path: 'community', element: <Community /> },
       { path: 'diary', element: <Diary /> },
       { path: 'mypage', element: <Mypage /> },
       { path: 'userpage', element: <Userpage /> },
+    ],
+  },
+  {
+    path: '/not-protected/',
+    element: <Layout />, // 로그인하지 않은 사용자도 접근 가능
+    children: [
+      { path: 'home', element: <Home /> },
+      { path: 'global-search', element: <GlobalSearch /> },
       { path: 'hosInfo', element: <HosInfo /> },
       { path: 'pharInfo', element: <PharInfo /> },
-      { path: 'global-search', element: <GlobalSearch /> },
     ],
   },
   {
@@ -59,10 +68,18 @@ export default App;
 
 const AppContent: React.FC = () => {
   const { handleSilentRefresh } = useLogin();
+  const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   // 페이지 리로드(새로고침)시 로그인 연장
   useEffect(() => {
-    handleSilentRefresh();
+    // if (isAuthenticated) {
+    handleSilentRefresh(isAuthenticated);
+    // }
+  }, []);
+
+  useEffect(() => {
+    console.log('로그인 페이지 시작점, isAuthenticated', isAuthenticated);
+    // console.log('auth.accessToken', auth.accessToken);
   }, []);
 
   return (

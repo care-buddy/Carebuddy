@@ -1,7 +1,7 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import logo from '@assets/carebuddyLogo.png';
 import { LuBell, LuUser2, LuSearch, LuX } from 'react-icons/lu';
@@ -18,6 +18,7 @@ import axiosInstance from '@/utils/axiosInstance';
 import authState from '@/recoil/atoms/authState';
 
 import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
+import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -27,6 +28,7 @@ const Header: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
   const [auth, setAuth] = useRecoilState(authState);
+  const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   const navigate = useNavigate();
 
@@ -83,13 +85,17 @@ const Header: React.FC = () => {
 
   // 로그인 클릭 시 모달 닫기
   useEffect(() => {
-    if (auth.isAuthenticated) {
+    if (isAuthenticated) {
       setLoginModalOpen(false);
     }
-  }, [auth.isAuthenticated]);
+  }, []);
 
   // 로그아웃
   const handleLogout = async () => {
+    const deleteCookie = (name: string) => {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    };
+
     try {
       const email = 'yushinTest@gmail.com'; // 임시 이메일
       await axiosInstance.post(
@@ -100,8 +106,10 @@ const Header: React.FC = () => {
 
       navigate('/');
 
+      deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
+
       setAuth({
-        isAuthenticated: false,
+        accessToken: null,
       });
 
       console.log('로그아웃 성공');
@@ -111,6 +119,11 @@ const Header: React.FC = () => {
       console.error(error); // 임시. 나중에 변경
     }
   };
+
+  useEffect(() => {
+    console.log('isAuthenticated', isAuthenticated);
+    console.log('auth.accessToken', auth.accessToken);
+  }, [isAuthenticated]);
 
   // 임시
   const InfoMenuItems = [
@@ -194,21 +207,21 @@ const Header: React.FC = () => {
             <Link to="/mypage">
               <LuUser2 />
             </Link>
-            {!auth.isAuthenticated ? (
-              <Button
-                buttonStyle="grey"
-                buttonSize="sm"
-                onClick={() => handleLoginModal(true)}
-              >
-                로그인
-              </Button>
-            ) : (
+            {isAuthenticated ? (
               <Button
                 buttonStyle="grey"
                 buttonSize="sm"
                 onClick={() => handleLogout()}
               >
                 로그아웃
+              </Button>
+            ) : (
+              <Button
+                buttonStyle="grey"
+                buttonSize="sm"
+                onClick={() => handleLoginModal(true)}
+              >
+                로그인
               </Button>
             )}
             {loginModalOpen && (
@@ -219,6 +232,7 @@ const Header: React.FC = () => {
                     onOpenRegistrationModal={() =>
                       handleRegistrationModal(true)
                     }
+                    handleLoginModal={() => handleLoginModal(false)}
                   />
                 }
               />
