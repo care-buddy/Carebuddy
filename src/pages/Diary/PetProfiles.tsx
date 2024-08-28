@@ -68,59 +68,12 @@ const AddProfileMsg = styled.p`
   color: #7d7d7d;
 `;
 
-// const dummyBuddy1: Buddy = {
-//   _id: '1a',
-//   name: '후이',
-//   species: 0,
-//   kind: '말티즈',
-//   sex: 2,
-//   age: 3,
-//   buddyImage: tempProfileSrc,
-//   isNeutered: 1,
-//   weight: 3,
-//   createdAt: '2024-04-19T09:00:00.463Z',
-//   updatedAt: '2024-04-19T09:00:00.463Z',
-//   deletedAt: null,
-// };
-
-// const dummyBuddy2: Buddy = {
-//   _id: '2b',
-//   name: '쿠키',
-//   species: 1,
-//   kind: '샴',
-//   sex: 1,
-//   age: 2,
-//   buddyImage: DefaultPetProfileImg,
-//   isNeutered: null,
-//   weight: 6,
-//   createdAt: '2024-04-19T09:00:00.463Z',
-//   updatedAt: '2024-04-19T09:00:00.463Z',
-//   deletedAt: null,
-// };
-
-// const axiosInstance = axios.create({
-//   baseURL: '/api', // 기본 URL 설정
-//   timeout: 5000, // 타임아웃 설정 (ms)
-// });
-
-// const axiosInstance = axios.create({
-//   baseURL: 'http://localhost:3003/api', // 기본 URL 설정
-//   timeout: 10000, // 타임아웃 설정 (ms)
-//   // headers: {
-//   //   'Content-Type': 'application/json', // 요청 본문의 데이터 형식
-//   //   Accept: 'application/json', // 서버가 응답으로 JSON을 반환하도록 기대
-//   // },
-// });
-
 // 회원 이름과 버디 정보들을 받아와서 카드에 렌더링해준다.
 const PetProfiles: React.FC<IProfilesWrapperProps> = ({
   buddies,
   isMe = true,
   fetchBuddiesData,
 }) => {
-  // const mock = new MockAdapter(axiosInstance);
-  // const mock = new MockAdapter(axiosInstance);
-
   const [petModalOpen, setPetModalOpen] = useState(false);
   const [petEditModalOpen, setPetEditModalOpen] = useState(false);
   const [selectedBuddy, setSelectedBuddy] = useState<IBuddy | null>(null); // 선택된 반려동물, 모달용

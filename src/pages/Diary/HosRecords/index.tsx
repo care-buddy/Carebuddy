@@ -182,7 +182,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
   setCheckSymptom,
 }) => {
   const [checked, setChecked] = useState(
-    formData ? !formData.isConsultation : false
+    formData ? !formData.consultationStatus : false
   );
 
   const [date, setDate] = useState(
@@ -209,7 +209,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
 
     setFormData((prevData) => ({
       ...prevData,
-      isConsultation: checked,
+      consultationStatus: checked,
     }));
   };
 
@@ -303,6 +303,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
         setSymptomInput,
         'symptom'
       );
+      setCheckSymptom(false);
     }
   };
 
@@ -343,6 +344,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
         setTreatmentInput,
         'treatment'
       );
+      setCheckTreat(false);
     }
   };
 
@@ -355,7 +357,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
             <ContentTitle>진단 확인 여부</ContentTitle>
             <ContentBody>
               <CheckBox
-                value="isConsultation"
+                value="consultationStatus"
                 checked={checked}
                 text="의료진에 진단 받은 기록이 없습니다."
                 onChange={handleCheckboxChange}
@@ -474,7 +476,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
         <ContentCard>
           <Content>
             <Input
-              placeholder="리스트에 추가해주세요"
+              placeholder="엔터 키 입력으로 항목 추가"
               name="symptom"
               value={symptomInput}
               focusColor="green"
@@ -514,7 +516,7 @@ const HosRecords: React.FC<HosRecordsProps> = ({
         <ContentCard>
           <Content>
             <Input
-              placeholder="리스트에 추가해주세요."
+              placeholder="엔터 키 입력으로 항목 추가"
               focusColor="green"
               name="treatment"
               value={treatmentInput}
