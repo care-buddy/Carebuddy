@@ -11,6 +11,7 @@ import {
   Text,
 } from '@/pages/Info/info-components';
 import axios from 'axios';
+import axiosInstance from '@/utils/axiosInstance';
 
 // UI확인용 임시데이터
 const SelectDummyCityOptions = [
@@ -35,24 +36,20 @@ const SelectDummyCityOptions = [
 ];
 
 interface DataItem {
-  ID: string;
-  Name: string;
-  Age: string;
-  City: string;
+  _id: string;
+  name: string;
+  address: string;
+  telephone: string;
 }
-
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3003/api', // 기본 URL 설정
-  timeout: 10000, // 타임아웃 설정 (ms)
-  headers: {
-    'Content-Type': 'application/json', // 요청 본문의 데이터 형식
-    Accept: 'application/json', // 서버가 응답으로 JSON을 반환하도록 기대
-  },
-});
 
 const HosInfo: React.FC = () => {
   // 테이블에 표시할 데이터 예시 및 임시 상태
-  const headers = ['ID', 'Name', 'Age', 'City'];
+  // const headers = ['name', 'address', 'telephone'];
+  const headers = [
+    { value: 'name', label: '병원명' },
+    { value: 'telephone', label: '전화번호' },
+    { value: 'address', label: '주소' },
+  ];
   const [data, setData] = useState<DataItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
@@ -62,7 +59,7 @@ const HosInfo: React.FC = () => {
   // API 구현 후 수정합니다. 지금은 테이블 컴포넌트 확인 용 임시 함수 사용
   useEffect(() => {
     const fetchData = async () => {
-      setIsLoading(true);
+      // setIsLoading(true);
       setIsError(false);
 
       try {
@@ -86,72 +83,92 @@ const HosInfo: React.FC = () => {
   const fetchPaginatedData = async (page: number) => {
     // 실제로는 여기서 API를 호출하여 페이징된 데이터를 가져올 수 있습니다.
     // 이 예시에서는 임의의 데이터를 반환합니다.
-    const itemsPerPage = 2; // 한 페이지당 보여줄 항목 수
-    const startIndex = (page - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedData: DataItem[] = [
-      { ID: '1', Name: 'John Doe', Age: '30', City: 'New York' },
-      { ID: '2', Name: 'Jane Smith', Age: '25', City: 'Los Angeles' },
-      { ID: '3', Name: 'Mike Johnson', Age: '40', City: 'Chicago' },
-      { ID: '4', Name: 'Emily Brown', Age: '35', City: 'San Francisco' },
-    ].slice(startIndex, endIndex);
+    // const itemsPerPage = 2; // 한 페이지당 보여줄 항목 수
+    // const startIndex = (page - 1) * itemsPerPage;
+    // const endIndex = startIndex + itemsPerPage;
+    // const paginatedData: DataItem[] = [
+    //   { ID: '1', Name: 'John Doe', Age: '30', City: 'New York' },
+    //   { ID: '2', Name: 'Jane Smith', Age: '25', City: 'Los Angeles' },
+    //   { ID: '3', Name: 'Mike Johnson', Age: '40', City: 'Chicago' },
+    //   { ID: '4', Name: 'Emily Brown', Age: '35', City: 'San Francisco' },
+    // ].slice(startIndex, endIndex);
 
-    const totalDataCount = 4; // 예시 데이터 전체 개수
-    const totalPages = Math.ceil(totalDataCount / itemsPerPage);
+    // const totalDataCount = 4; // 예시 데이터 전체 개수
+    // const totalPages = Math.ceil(totalDataCount / itemsPerPage);
 
-    return { data: paginatedData, totalPages };
+    // return { data: paginatedData, totalPages };
+    try {
+      const response = await axiosInstance.get(`search/AllH?page=${page}`);
+      console.log(response);
+      const itemsPerPage = response.data.message.perPage;
+      const startIndex = (page - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      // const paginatedData: DataItem[] = [
+      //   { ID: '1', Name: 'John Doe', Age: '30', City: 'New York' },
+      //   { ID: '2', Name: 'Jane Smith', Age: '25', City: 'Los Angeles' },
+      //   { ID: '3', Name: 'Mike Johnson', Age: '40', City: 'Chicago' },
+      //   { ID: '4', Name: 'Emily Brown', Age: '35', City: 'San Francisco' },
+      // ].slice(startIndex, endIndex);
+      // const paginatedData: DataItem[] = response.data.message.datas.map((data) => {
+      //   {_id: data_id, name: data.name, address:data.address, telephone:data.telephone}
+      // })
+      const totalDataCount = response.data.message.totalPage;
+      const totalPages = Math.ceil(totalDataCount / itemsPerPage);
+      console.log(response.data.message.datas);
+      return { data: response.data.message.datas, totalPages };
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const handleClick = async () => {
-    // if (validateForm() && formData) {
-    if (true) {
-      // setLoading(true);
-      try {
-        // const response = await axiosInstance.post('/buddies', {
-        //   species: 0,
-        //   kind: '말티즈',
-        //   userId: '66b9b34ae9a13c88c643e361',
-        // });
-
-        const response = await axiosInstance.post('auth/login', {
-          email: 'goldengooooose2024@gmail.com',
-          password: 'carebuddy2024',
-        });
-
-        console.log('Response:', response.data);
-      } catch (error) {
-        console.error('Error:', error);
-      }
-      // } else setShowAlert(true);
+  const handlesSearch = () => {
+    // fetchSearchData();
+  };
+  // search/hospitals?address=${city} ${district}&page=${page}
+  const fetchSearchData = async (page, city, district) => {
+    try {
+      const response = await axiosInstance.get(
+        `search/hospitals?address=${city} ${district}&page=${page}`
+      );
+      console.log(response);
+    } catch (error) {
+      console.error('Error fetching data:', error);
     }
   };
+
+  const handleCityChange = (e) => {};
+
+  const fetchDataByPage = async () => {};
 
   return (
     <>
       <TopBar category="정보" title="동물 병원 검색" />
-      <Button onClick={handleClick}>버튼</Button>
       <Wrapper>
         <BorderWrapper>
           <Title>동물 병원 검색</Title>
           <SearchWrapper>
             <Text>지역: </Text>
+            <Select
+              options={SelectDummyCityOptions}
+              onChange={handleCityChange}
+            />
             <Select options={SelectDummyCityOptions} />
-            <Select options={SelectDummyCityOptions} />
-            <Button buttonStyle="square-green">검색</Button>
+            <Button buttonStyle="square-green" onClick={() => {}}>
+              검색
+            </Button>
           </SearchWrapper>
         </BorderWrapper>
         <Table
           headers={headers}
           // data={data} 이렇게 쓰는게 아니라 명시해줘야함
           data={data.map((item) => ({
-            ID: item.ID,
-            Name: item.Name,
-            Age: item.Age,
-            City: item.City,
+            name: item.name,
+            address: item.address,
+            telephone: item.telephone,
           }))}
           isLoading={isLoading}
           isError={isError}
@@ -160,7 +177,7 @@ const HosInfo: React.FC = () => {
           onPageChange={handlePageChange}
           hasPagination // 페이지네이션을 표시할지 여부를 설정
         />
-      </Wrapper>{' '}
+      </Wrapper>
     </>
   );
 };
