@@ -21,7 +21,8 @@ const BasicRegistration: React.FC = () => {
   const [emailVerification, setEmailVerification] = useState({
     status: 'idle',
   }); // 이메일 인증 상태
-  const [formData, setFormData] = useState({ // formData
+  const [formData, setFormData] = useState({
+    // formData
     email: '',
     nickName: '',
     mobileNumber: '',
@@ -29,10 +30,13 @@ const BasicRegistration: React.FC = () => {
 
   // 이메일 인증 핸들러(인증과정 이후 추가되어야 함)
   const submitEmailVerification = () => {
-    if (emailVerification.status === 'idle' && formData.email !== '') {
-      setEmailVerification({ status: 'inProgress' });
-      // 이메일 인증
-
+    if (emailVerification.status === 'idle') {
+      if (formData.email !== '') {
+        alert('이메일을 입력해주세요.');
+      } else {
+        setEmailVerification({ status: 'inProgress' });
+        // 이메일 인증 로직
+      }
     }
   };
 
@@ -46,10 +50,6 @@ const BasicRegistration: React.FC = () => {
       [name]: e.target.value,
     });
   };
-
-  // useEffect(() => { // 확인용 - 임시
-  //   console.log(formData);
-  // }, [formData]);
 
   // 체크박스 핸들러
   const handleCheckBoxChange = () => {
@@ -90,13 +90,16 @@ const BasicRegistration: React.FC = () => {
             placeholderColor="light-grey"
             onChange={(e) => handleFormData(e, 'email')}
           />
-          <Button
-            buttonSize="sm"
-            buttonStyle="square-grey"
-            onClick={submitEmailVerification}
-          >
-            발송
-          </Button>
+          {emailVerification.status === 'idle' && (
+            <Button
+              buttonSize="sm"
+              buttonStyle="square-grey"
+              onClick={submitEmailVerification}
+            >
+              발송
+            </Button>
+          )}
+          {emailVerification.status === 'inProgress' && <Timer>3:21</Timer>}
         </EmailContainer>
         {emailVerification.status === 'inProgress' && (
           <EmailContainer>
@@ -256,11 +259,24 @@ const EmailContainer = styled.div`
   display: flex;
   justify-content: space-between;
 
-  button {
-    // width: 18%
+  button,
+  div {
+    width: 18%;
   }
 
   input {
     width: 80%;
   }
+`;
+
+const Timer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0;
+  background-color: var(--color-grey-3);
+  color: black;
+  border: none;
+  padding: 8px 16px;
+  font-size: var(--font-size-ft-1);
 `;

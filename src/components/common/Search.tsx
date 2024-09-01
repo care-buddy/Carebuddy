@@ -34,7 +34,9 @@ interface StyledSearchProps {
   searchStyle?: 'round' | 'square';
 }
 
-const SearchBox = styled.div<StyledSearchProps>`
+const SearchBox = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['searchSize', 'searchStyle'].includes(prop),
+})<StyledSearchProps>`
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -46,7 +48,9 @@ const SearchBox = styled.div<StyledSearchProps>`
   ${(props) => props.searchStyle && searchStyles[props.searchStyle]}
 `;
 
-const StyledInput = styled.input<StyledSearchProps>`
+const StyledInput = styled.input.withConfig({
+  shouldForwardProp: (prop) => !['searchSize'].includes(prop),
+})<StyledSearchProps>`
   border: none;
   width: 100%;
   ${(props) => props.searchSize && searchSizes[props.searchSize]}

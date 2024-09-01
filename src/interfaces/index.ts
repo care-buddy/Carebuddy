@@ -1,4 +1,4 @@
-export interface Buddy {
+export interface IBuddy {
   _id: string;
   name: string;
   species: number;
@@ -7,17 +7,18 @@ export interface Buddy {
   sex: number;
   weight: number;
   isNeutered: number | null;
-  buddyImage: string;
-  createdAt: string;
+  buddyImage: File | null;
+  createdAt: Date;
   updatedAt: string;
   deletedAt: string | null;
 }
 
-export interface Record {
-  _id: string;
+export interface IRecord {
+  _id?: string; // 모킹용입니다.
+  buddyId: string; // 버디 수정 후 Record fetch 시 필요
   doctorName: string | null;
   address: string | null;
-  isConsultation: boolean;
+  consultationStatus: boolean;
   consultationDate: Date | null;
   hospitalizationStatus: boolean | null;
   disease: string;
@@ -29,19 +30,18 @@ export interface Record {
   deletedAt?: Date | null;
 }
 
-export interface BuddyProfile {
+export interface IBuddyProfile {
   _id: string;
   name: string;
   kind: string;
   age: number;
   buddyImage: string;
+  createdAt: Date;
   deletedAt: Date | null;
 }
 
-export interface ProfilesWrapperProps {
-  name?: string;
-  buddies?: BuddyProfile[];
-  onSubmitBuddy?: (newBuddy: BuddyProfile) => void;
-  onBuddySelect?: (buddyId: string) => void;
+export interface IProfilesWrapperProps {
+  buddies?: IBuddyProfile[];
   isMe: boolean;
+  fetchBuddiesData: () => void;
 }

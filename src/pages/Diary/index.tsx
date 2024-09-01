@@ -6,16 +6,15 @@ import 'swiper/css/navigation';
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
-import { Record } from '@/interfaces';
+// import MockAdapter from 'axios-mock-adapter';
+import { IBuddy, IBuddyProfile, IRecord } from '@/interfaces';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';
 import {
   useRecoilState,
   // eslint-disable-next-line camelcase
-  useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
+  // useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
 import buddyState from '@/recoil/atoms/buddyState';
 import selectedIdState from '@/recoil/atoms/selectedIdState';
@@ -23,9 +22,10 @@ import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
+import axiosInstance from '@/utils/axiosInstance';
 import HosRecords from './HosRecords';
 import PetProfiles from './PetProfiles';
-import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
+// import { dummyBuddies, dummyRecord, dummyRecord2 } from './dummyData';
 import RecordWrapper from './Record';
 import validateRecordForm from './validateRecordForm';
 
@@ -122,22 +122,18 @@ const ProfilesTitle = styled.div`
   font-weight: var(--font-weight-bold);
   margin: 20px 0 30px 0;
 `;
-
-const axiosInstance = axios.create({
-  baseURL: '/api', // 기본 URL 설정
-  timeout: 5000, // 타임아웃 설정 (ms)
-});
+interface ICreatedAt {
+  createdAt: Date;
+}
 
 const Diary: React.FC = () => {
-  const mock = new MockAdapter(axiosInstance);
   // 모달 관련 상태 관리
   const [modalOpen, setModalOpen] = useState(false);
 
-  const nullData: Record = {
-    _id: '',
+  const nullData: IRecord = {
     doctorName: null,
     address: null,
-    isConsultation: true,
+    consultationStatus: true,
     consultationDate: null,
     hospitalizationStatus: false,
     disease: '',
@@ -150,7 +146,7 @@ const Diary: React.FC = () => {
   };
 
   // 기록 등록을 위한 Record 상태
-  const [formData, setFormData] = useState<Record>(nullData);
+  const [formData, setFormData] = useState<IRecord>(nullData);
 
   // const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
   //   null
@@ -158,52 +154,95 @@ const Diary: React.FC = () => {
   const [buddiesData, setBuddiesData] = useRecoilState(buddyState);
 
   // const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [selectedId] = useRecoilState(selectedIdState);
-  // const [isLoading, setLoading] = useState(false);
+  const [selectedId, setSelectedId] = useRecoilState(selectedIdState);
+  const [isLoading, setLoading] = useState(true);
   // state에 transition을 적용하기 위해 사용
-  const [isLoading, setLoading] =
-    useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
+  // const [isLoading, setLoading] =
+  //   useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
   // 화면 렌더링 시 버디와 로딩 상태를 공유할 경우, 버디만 렌더링 완료된 경우에 로딩 상태가 false가 되므로 분리한다.
   const [isRecordLoading, setRecordLoading] = useState(false);
   // const [error, setError] = useState<Error | null>(null);
   const [error, setError] = useRecoilState(errorState);
 
   // 반려동물 1마리의 병원 기록들을 저장할 상태
-  const [recordsData, setRecords] = useState<Record[] | null>([]);
+  const [recordsData, setRecords] = useState<IRecord[] | null>([]);
 
   // 유효성 검사 알림 상태
   // const [showAlert, setShowAlert] = useState(false);
   // const [alertMessage, setAlertMessage] = useState('');
   const [alertState, setAlertState] = useRecoilState(validationAlertState);
 
+  // const [hasRecords, setHasRecords] = useState(false);
   const [hasRecords, setHasRecords] = useState(false);
 
   const [isCheckSymptom, setCheckSymptom] = useState(false);
   const [isCheckTreat, setCheckTreat] = useState(false);
+  // deletedAt !== null 인 프로필이 하나라도 있으면 false
+  const [isAllProfilesDeleted, setIsAllProfilesDeleted] = useState(true);
+
+  const sortedByCreatedAt = <T extends ICreatedAt>(data: T[]): T[] =>
+    [...data].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
 
   const fetchBuddiesData = async () => {
     // /api/buddies로 GET 요청 모킹
     try {
       setLoading(true);
-      mock.onGet('/buddies').reply(200, dummyBuddies);
-      const response = await axiosInstance.get('/buddies');
-      setBuddiesData(response.data);
-      setLoading(false);
+      // mock.onGet('/buddies').reply(200, dummyBuddies);
+      const response = await axiosInstance.get(
+        'buddies/66b9b34ae9a13c88c643e361'
+      );
+
+      const fetchedBuddies = response.data.message;
+
+      if (fetchedBuddies.length === 0 || isAllProfilesDeleted) {
+        setBuddiesData({
+          name: '임시 유저 이름', // 로그인 미구현 시 제대로 로직 짤 수 없음
+          buddies: sortedByCreatedAt(fetchedBuddies),
+        });
+
+        return;
+      }
+
+      setBuddiesData({
+        name: fetchedBuddies[0].name,
+        buddies: sortedByCreatedAt(fetchedBuddies),
+      });
+
+      console.log(typeof fetchedBuddies);
+      if (buddiesData.buddies.length > 0 && !selectedId) {
+        const firstValidBuddy = buddiesData.buddies.find(
+          (buddy) => !buddy.deletedAt
+        );
+
+        if (firstValidBuddy) {
+          setSelectedId(firstValidBuddy._id);
+        }
+      }
     } catch (error) {
       setError(error as Error);
+      setLoading(false);
+    } finally {
       setLoading(false);
     }
   };
 
-  mock.onGet('/hospitals/1a').reply(200, dummyRecord);
-  mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
+  // mock.onGet('/hospitals/1a').reply(200, dummyRecord);
+  // mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
   const fetchRecordsData = async (buddyId: string) => {
     // /api/hospitals로 GET 요청 모킹
     setRecordLoading(true);
     try {
-      const response = await axiosInstance.get(`/hospitals/${buddyId}`);
+      // 66cd86651d15e7a5a4228d32
+      const response = await axiosInstance.get(`hospitals/${buddyId}`);
+      // 수정 전 임시
 
-      setRecords(response.data);
+      console.log(response.data.message);
+      const sortedRecords: IRecord[] = sortedByCreatedAt(response.data.message);
+      setRecords(sortedRecords);
+      console.log(recordsData);
     } catch (error) {
       setError(error as Error);
     } finally {
@@ -211,8 +250,30 @@ const Diary: React.FC = () => {
       setRecordLoading(false);
     }
   };
+
   useEffect(() => {
     fetchBuddiesData();
+  }, []);
+
+  useEffect(() => {
+    // 버디가 있는 경우, selectedId가 null일 때(초기상태)
+    // 첫 버디가 삭제된 상태일 수 있으니, deletedAt이 null이 아닌 가장 첫 버디를 선택된 상태로 설정한다
+    if (buddiesData.buddies.length > 0 && !selectedId) {
+      const firstValidBuddy = buddiesData.buddies.find(
+        (buddy) => !buddy.deletedAt
+      );
+
+      if (firstValidBuddy) {
+        setSelectedId(firstValidBuddy._id);
+      }
+    }
+
+    const isAllDeleted = !buddiesData.buddies.some((buddy) => !buddy.deletedAt);
+    setIsAllProfilesDeleted(isAllDeleted);
+  }, [buddiesData, selectedId, isAllProfilesDeleted]);
+
+  useEffect(() => {
+    // fetchBuddiesData();
     // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
     if (selectedId) fetchRecordsData(selectedId);
   }, [selectedId]);
@@ -255,23 +316,8 @@ const Diary: React.FC = () => {
     setFormData(nullData);
   };
 
-  const handleFormSubmit = () => {
-    // POST 요청 모킹
-    mock.onPost(`/hospitals`).reply((config) => {
-      console.log('요청 정보:', config);
-      const formData = JSON.parse(config.data);
-
-      const newRecord: Record = {
-        ...formData,
-        _id: String(Date.now()),
-      };
-
-      if (recordsData) {
-        setRecords([...recordsData, newRecord]);
-      } else setRecords([newRecord]);
-      return [200, { success: true, message: '병원 기록 등록 성공' }];
-    });
-
+  const handleFormSubmit = async () => {
+    console.log(formData);
     if (
       validateRecordForm(
         formData,
@@ -279,19 +325,30 @@ const Diary: React.FC = () => {
         isCheckSymptom,
         isCheckTreat
       ) &&
+      selectedId &&
       formData
     ) {
-      axiosInstance
-        .post(`/hospitals`, formData)
-        .then(() => {
-          handleCloseModal();
-        })
-        .catch((error) => {
-          console.log(error);
+      setRecordLoading(true);
+      try {
+        // 로그인 미구현되어 임시
+        const formData2 = {
+          ...formData,
+          hospitalizationStatus: new Date(),
+          userId: '66b9b34ae9a13c88c643e361',
+          buddyId: '66cc3b431d15e7a5a4228bc8',
+        };
+        await axiosInstance.post('hospitals', formData2);
+        handleCloseModal();
+        await fetchRecordsData(selectedId);
+      } catch (error) {
+        console.error('Error posting data:', error);
+        setAlertState({
+          showAlert: true,
+          alertMessage: alertState.alertMessage,
         });
-      // } else setShowAlert(true);
-      // } else
-      //   setAlertState({ showAlert: true, alertMessage: alertState.alertMessage });
+      } finally {
+        setRecordLoading(false);
+      }
     }
   };
 
@@ -302,31 +359,32 @@ const Diary: React.FC = () => {
   //   setSelectedId(buddyId);
   // };
 
-  const handleUpdateRecord = (updatedRecord: Record) => {
+  const handleUpdateRecord = (updatedRecord: IRecord) => {
     if (recordsData) {
       const updatedRecords = recordsData.map((record) =>
         record._id === updatedRecord._id ? updatedRecord : record
       );
       setRecords(updatedRecords);
+      fetchRecordsData(updatedRecord.buddyId);
     }
   };
 
-  mock.onPut(`/hospitals/1r/d`).reply((config) => {
-    const deletedRecord = JSON.parse(config.data);
-    return [200, deletedRecord];
-  });
-  mock.onPut(`/hospitals/2r/d`).reply((config) => {
-    const deletedRecord = JSON.parse(config.data);
+  // mock.onPut(`/hospitals/1r/d`).reply((config) => {
+  //   const deletedRecord = JSON.parse(config.data);
+  //   return [200, deletedRecord];
+  // });
+  // mock.onPut(`/hospitals/2r/d`).reply((config) => {
+  //   const deletedRecord = JSON.parse(config.data);
 
-    return [200, deletedRecord];
-  });
+  //   return [200, deletedRecord];
+  // });
   const handleDeleteRecord = async (recordId: string) => {
     // 삭제 PUT 요청 설정
-    mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
-      const deletedRecord = JSON.parse(config.data);
+    // mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
+    //   const deletedRecord = JSON.parse(config.data);
 
-      return [200, deletedRecord];
-    });
+    //   return [200, deletedRecord];
+    // });
     if (window.confirm('삭제하시겠습니까?')) {
       try {
         // id로 삭제 요청한 record를 찾음
@@ -341,14 +399,14 @@ const Diary: React.FC = () => {
           }
 
           // deletedAt을 업데이트한 레코드
-          const deletedRecord: Record = {
+          const deletedRecord: IRecord = {
             ...updatedRecord,
             deletedAt: new Date(),
           };
 
           setLoading(true);
           // 서버에 삭제 요청
-          await axiosInstance.put(`/hospitals/${recordId}/d`, deletedRecord);
+          await axiosInstance.put(`hospitals/${recordId}/d`, deletedRecord);
 
           // 상태 업데이트: 삭제 요청한 id만 deletedRecord로 업데이트 해줌
           setRecords((prevRecords) =>
@@ -369,46 +427,6 @@ const Diary: React.FC = () => {
     }
   };
 
-  // const validateForm = () => {
-  //   if (formData.isConsultation && formData.address === null) {
-  //     // setAlertMessage('병원 정보를 입력해주세요.');
-  //     setAlertState({
-  //       showAlert: true,
-  //       alertMessage: '병원 정보를 입력해주세요.',
-  //     });
-  //     return false;
-  //   }
-
-  //   if (formData.disease === '') {
-  //     // setAlertMessage('질병 정보를 입력해주세요.');
-  //     setAlertState({
-  //       showAlert: true,
-  //       alertMessage: '질병 정보를 입력해주세요.',
-  //     });
-  //     return false;
-  //   }
-
-  //   if (isCheckSymptom) {
-  //     // setAlertMessage('증상 내용을 추가하셨는지 확인해주세요.');
-  //     setAlertState({
-  //       showAlert: true,
-  //       alertMessage: '증상 내용을 추가하셨는지 확인해주세요.',
-  //     });
-  //     return false;
-  //   }
-
-  //   if (isCheckTreat) {
-  //     // setAlertMessage('처방 내용을 추가하셨는지 확인해주세요.');
-  //     setAlertState({
-  //       showAlert: true,
-  //       alertMessage: '처방 내용을 추가하셨는지 확인해주세요.',
-  //     });
-  //     return false;
-  //   }
-
-  //   return true;
-  // };
-
   if (isLoading) return <Loading />;
   if (isRecordLoading) return <Loading />;
 
@@ -419,16 +437,14 @@ const Diary: React.FC = () => {
         <ProfilesTitle>{buddiesData?.name} 님의 반려동물</ProfilesTitle>
         {/* props drilling 유지하는 이유: userPage에서는 유저마다 다른 buddieData를 전달해줘야하기 때문에 */}
         <PetProfiles
-          // name={buddiesData?.name}
           buddies={buddiesData?.buddies}
-          // onSubmitBuddy={handleSubmitBuddy}
-          // onBuddySelect={handleSelectedId}
           isMe
+          fetchBuddiesData={fetchBuddiesData}
         />
 
         <DiaryWrapper>
           <NameInTitle>
-            {buddiesData?.buddies && buddiesData.buddies.length > 0 ? (
+            {!isAllProfilesDeleted ? (
               <>
                 {
                   buddiesData.buddies.find((buddy) => buddy._id === selectedId)

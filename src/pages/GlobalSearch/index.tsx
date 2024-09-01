@@ -14,7 +14,7 @@ import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 
 import formatDate from '@/utils/formatDate';
-import axiosInstance from '@/utils/asioxInstance';
+import axiosInstance from '@/utils/axiosInstance';
 
 import usePostCreate from '@/hooks/usePostCreate';
 
@@ -45,7 +45,7 @@ const GlobalSearch: React.FC = () => {
     const fetchData = async () => {
       // 게시글 목록
       try {
-        const response = await axiosInstance.get(`post`); 
+        const response = await axiosInstance.get(`post`);
 
         // 등록일 formatting
         const formattedPosts = response.data.map((post: PostData) => ({

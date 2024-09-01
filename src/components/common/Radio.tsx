@@ -25,7 +25,9 @@ const activeOptions = {
 
 // 동적 스타일 지정 X 필요 시 생성
 // 기본 스타일을 여기서 지정: 기본 스타일 + 동적 스타일
-const StyledRadio = styled.input<StyledRadioProps>`
+const StyledRadio = styled.input.withConfig({
+  shouldForwardProp: (prop) => !['activeOption'].includes(prop),
+})<StyledRadioProps>`
   width: var(--font-size-ft-1);
   height: var(--font-size-ft-1);
   appearance: none;

@@ -1,84 +1,45 @@
 /* eslint-disable no-console */
 // 임시
-// 로그인 코드 짜는 중(한참 미완성임), refresh 토큰 받아야 하고 모달 닫는 함수 인자로 받아야하고 남은 거 많음!
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import { useEffect,  } from 'react'; // 임시 - 가끔 필요해서 냅둠
-import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import axios from 'axios';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
 import CheckBox from '@components/common/CheckBox';
 
+import axiosInstance from '@/utils/axiosInstance';
+
 import { LuEye, LuEyeOff } from 'react-icons/lu';
 
-const axiosInstance = axios.create({
-  baseURL: 'http://localhost:3003/api/', // 기본 URL 설정
-  timeout: 10000, // 타임아웃 설정 (ms)
-});
+import useLogin from '@/hooks/useLogin';
+import authState from '@/recoil/atoms/authState';
 
-// const REFRESH_URL = 'auth/token'; // 실제 refresh URL
-// const refresh = () => axiosInstance.post(REFRESH_URL); // 예시 구현
-
-// // 요청 인터셉터
-// axiosInstance.interceptors.request.use(
-//   (config) => {
-//     // 헤더에 엑세스 토큰 담기
-//     const accessToken: string | null = localStorage.getItem('accessToken');
-//     if (accessToken) {
-//       config.headers.Authorization = `Bearer ${accessToken}`;
-//       console.log('요청 인터셉터');
-//     }
-//     return config;
-//   },
-//   (error) => Promise.reject(error)
-// );
-
-// // access token 재발급
-// const getRefreshToken = async (): Promise<string | void> => {
-//   try {
-//     const res = await refresh();
-//     const accessToken = res.data.data?.accessToken;
-//     return accessToken;
-//   } catch (e) {
-//     logout();
-//   }
-// };
-
-// // 응답 인터셉터
-// axiosInstance.interceptors.response.use(
-//   (response) => response,
-//   async (error) => {
-//     const { config, response } = error;
-//     // 401에러가 아니거나 재요청이거나 refresh 요청인 경우 그냥 에러 발생
-//     if (response.status !== 401 || config.sent || config.url === REFRESH_URL) {
-//       return Promise.reject(error);
-//     }
-//     // 아닌 경우 토큰 갱신
-//     config.sent = true; // 무한 재요청 방지
-//     const accessToken = await getRefreshToken();
-//     if (accessToken) {
-//       localStorage.setItem('accessToken', accessToken);
-//       config.headers.Authorization = `Bearer ${accessToken}`;
-//     }
-//     return axios(config); // 재요청
-//   }
-// );
+import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
 interface LoginProps {
   onOpenRegistrationModal: () => void;
+  handleLoginModal: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
-  const navigate = useNavigate();
+const Login: React.FC<LoginProps> = ({
+  onOpenRegistrationModal,
+  handleLoginModal,
+}) => {
   const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
     email: '',
     password: '',
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [auth, setAuth] = useRecoilState(authState);
+
+  const isAuthenticated = useRecoilValue(isAuthenticatedState);
+
+  const { handleSilentRefresh } = useLogin();
 
   // 로그인을 위한 아이디, 비밀번호 업데이트 핸들러
   const updateLoginInfo = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -99,23 +60,30 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
     setKeepLogin((prevState) => !prevState);
   };
 
-  // 로그인 API
+  // 로그인 핸들러
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
       try {
-        const response = await axiosInstance.post('auth/login', loginInfo);
 
-        const { accessToken, refreshToken } = response.data.token;
+        const response = await axiosInstance.post('auth/login', loginInfo, {
+          withCredentials: true,
+        });
 
-        console.log(accessToken, refreshToken);
+        const { accessToken } = response.data;
 
-        if (accessToken) {
-          localStorage.setItem('accessToken', accessToken);
-        }
-        navigate('/');
+        // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
+        axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+
+
+        // Recoil 상태(로그인 상태) 업데이트
+        setAuth({
+          accessToken,
+        });
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
+        handleLoginModal();
       } catch (error) {
+        // 에러 처리
         console.error('Error during login:', error);
       }
     } else {
@@ -123,11 +91,19 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
     }
   };
 
-  // // 로그아웃
-  // const logout = () => {
-  //   localStorage.removeItem('accessToken');
-  //   navigate('/');
-  // };
+  // 상태가 업데이트되면 자동 로그인 연장 처리
+  useEffect(() => {
+    console.log('isAuthenticated changed:', isAuthenticated); // 상태 변경 확인
+
+    if (!isAuthenticated) {
+      return;
+    }
+    handleSilentRefresh(isAuthenticated); // 상태가 업데이트된 후 자동 로그인 연장
+  }, [isAuthenticated]); // auth 상태가 변경될 때마다 실행
+
+  useEffect(() => {
+    console.log('Current authState:', auth); // 현재 authState 확인
+  }, [auth]); // auth 상태가 변경될 때마다 실행
 
   return (
     <Container>

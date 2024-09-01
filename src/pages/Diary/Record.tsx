@@ -13,9 +13,8 @@ import {
   LuMessageSquarePlus,
 } from 'react-icons/lu';
 import ActionButton from '@/components/common/ActtionButton';
-import { Record } from '@/interfaces';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { IRecord } from '@/interfaces';
+import axiosInstance from '@/utils/axiosInstance';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { useRecoilState } from 'recoil';
@@ -150,15 +149,10 @@ const Doctor = styled.span`
 /* 다이어리 상세 끝  */
 
 interface Props {
-  record: Record;
-  onUpdate: (updatedRecord: Record) => void;
+  record: IRecord;
+  onUpdate: (updatedRecord: IRecord) => void;
   onDelete: () => void;
 }
-
-const axiosInstance = axios.create({
-  baseURL: '/api', // 기본 URL 설정
-  timeout: 5000, // 타임아웃 설정 (ms)
-});
 
 const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
   // const mock = new MockAdapter(axiosInstance);
@@ -166,9 +160,9 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
   // const [isLoading, setLoading] = useState(false);
   const [isLoading, setLoading] = useRecoilState(loadingState);
   const [editModalOpen, setEditModalOpen] = useState(false);
-  const [formData, setFormData] = useState<Record>(record);
+  const [formData, setFormData] = useState<IRecord>(record);
   // 모달을 닫았을 때 다시 백업 데이터로 세팅
-  const [backupFormData, setBackupFormData] = useState<Record>(record);
+  const [backupFormData, setBackupFormData] = useState<IRecord>(record);
 
   // 유효성 검사 알림 상태
   // const [showAlert, setShowAlert] = useState(false);
@@ -197,58 +191,6 @@ const RecordWrapper: React.FC<Props> = ({ record, onUpdate, onDelete }) => {
 
     return `${year}${slice}${month}${slice}${day}`;
   };
-
-  // PUT 요청 모킹
-  // 1. 가짜 PUT mock 생성
-  //  - 업데이트할 객체 생성
-  //  - 위 객체로 res 반환
-  // mock.onPut(`/hospitals/${record._id}`).reply((config) => {
-  //   // put 요청 중 data만 추출, config.data가 문자열로 오기 때문에 추출을 위해 JSON 객체로 파싱해준다
-  //   const recordForm = JSON.parse(config.data);
-
-  //   // 업데이트된 정보의 객체를 만들어준다. 이 정보로 response를 보내줄 것임!
-  //   const updatedRecord = {
-  //     _id: record._id,
-  //     doctorName: recordForm.doctorName,
-  //     address: recordForm.address,
-  //     isConsultation: recordForm.isConsultation,
-  //     consultationDate: recordForm.consultationDate,
-  //     hospitalizationStatus: recordForm.hospitalizationStatus,
-  //     disease: recordForm.disease,
-  //     symptom: recordForm.symptom,
-  //     treatment: recordForm.treatment,
-  //     memo: recordForm.memo,
-  //     createdAt: recordForm.createdAt,
-  //     deletedAt: recordForm.deletedAt,
-  //     updatedAt: new Date(),
-  //   };
-  //   console.log(updatedRecord);
-  //   // 확인용으로 return 해주지만, 실제로는 message와 id만 올 것임
-  //   return [200, updatedRecord];
-  // });
-
-  // const validateForm = () => {
-  //   if (formData.isConsultation && formData.address === '') {
-  //     setAlertMessage('병원 정보를 입력해 주세요.');
-  //     return false;
-  //   }
-
-  //   if (formData.disease === '') {
-  //     setAlertMessage('질병 정보를 입력해 주세요.');
-  //     return false;
-  //   }
-  //   if (isCheckSymptom) {
-  //     setAlertMessage('증상 내용을 추가하셨는지 확인해주세요.');
-  //     return false;
-  //   }
-
-  //   if (isCheckTreat) {
-  //     setAlertMessage('처방 내용을 추가하셨는지 확인해주세요.');
-  //     return false;
-  //   }
-
-  //   return true;
-  // };
 
   const handleEditSubmit = async () => {
     // 2. 위 정보로 상태 업데이트

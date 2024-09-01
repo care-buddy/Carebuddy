@@ -1,6 +1,7 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import logo from '@assets/carebuddyLogo.png';
 import { LuBell, LuUser2, LuSearch, LuX } from 'react-icons/lu';
@@ -12,7 +13,12 @@ import Button from '@/components/common/Button';
 import Notification from '@/components/Notification';
 import SmallModal from '@/components/common/SmallModal';
 
+import axiosInstance from '@/utils/axiosInstance';
+
+import authState from '@/recoil/atoms/authState';
+
 import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
+import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -21,6 +27,8 @@ const Header: React.FC = () => {
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
+  const [auth, setAuth] = useRecoilState(authState);
+  const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   const navigate = useNavigate();
 
@@ -75,6 +83,45 @@ const Header: React.FC = () => {
     }
   }, [searchTerm]);
 
+  // 로그인 클릭 시 모달 닫기
+  useEffect(() => {
+    if (isAuthenticated) {
+      setLoginModalOpen(false);
+    }
+  }, []);
+
+  // 로그아웃
+  const handleLogout = async () => {
+    const deleteCookie = (name: string) => {
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    };
+
+    try {
+      const email = 'yushinTest@gmail.com'; // 임시 이메일
+      await axiosInstance.post(
+        'auth/logout',
+        { email },
+        { withCredentials: true }
+      );
+
+      navigate('/');
+
+      deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
+
+      setAuth({
+        accessToken: null,
+      });
+
+    } catch (error) {
+      console.error(error); // 임시. 나중에 변경
+    }
+  };
+
+  // useEffect(() => {
+  //   console.log('isAuthenticated', isAuthenticated);
+  //   console.log('auth.accessToken', auth.accessToken);
+  // }, [isAuthenticated]);
+
   // 임시
   const InfoMenuItems = [
     { to: '/hosInfo', label: '병원 검색' },
@@ -82,7 +129,7 @@ const Header: React.FC = () => {
   ];
 
   const CommunityMenuItems = [
-    { to: '/community', label: '커뮤니티' }, 
+    { to: '/community', label: '커뮤니티' },
     { to: '/post/66b9a2f06928b8fede303284', label: '포스트' }, // 임시
   ];
 
@@ -157,13 +204,23 @@ const Header: React.FC = () => {
             <Link to="/mypage">
               <LuUser2 />
             </Link>
-            <Button
-              buttonStyle="grey"
-              buttonSize="sm"
-              onClick={() => handleLoginModal(true)}
-            >
-              로그인
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                buttonStyle="grey"
+                buttonSize="sm"
+                onClick={() => handleLogout()}
+              >
+                로그아웃
+              </Button>
+            ) : (
+              <Button
+                buttonStyle="grey"
+                buttonSize="sm"
+                onClick={() => handleLoginModal(true)}
+              >
+                로그인
+              </Button>
+            )}
             {loginModalOpen && (
               <SmallModal
                 onClose={() => handleLoginModal(false)}
@@ -172,6 +229,7 @@ const Header: React.FC = () => {
                     onOpenRegistrationModal={() =>
                       handleRegistrationModal(true)
                     }
+                    handleLoginModal={() => handleLoginModal(false)}
                   />
                 }
               />
@@ -309,7 +367,9 @@ const NotificationIcon = styled.div`
   }
 `;
 
-const SearchWrapper = styled.div<{ isSearching: boolean }>`
+const SearchWrapper = styled.div.withConfig({
+  shouldForwardProp: (prop) => !['isSearching'].includes(prop),
+})<{ isSearching: boolean }>`
   width: ${(props) => (props.isSearching ? `380px` : `auto`)};
   display: flex;
   align-items: center;

@@ -46,7 +46,9 @@ const linkSizes = {
 };
 
 // 정의된 스타일들을 props로 받아서 스타일링될 버튼 컴포넌트
-const StyledLink = styled(Link)<StyledLinkProps>`
+const StyledLink = styled(Link).withConfig({
+  shouldForwardProp: (prop) => !['linkStyle', 'linkSize'].includes(prop),
+})<StyledLinkProps>`
   padding: 8px 16px;
   cursor: pointer;
   border: none;
@@ -59,7 +61,9 @@ const StyledLink = styled(Link)<StyledLinkProps>`
 `;
 
 // 정의된 스타일들을 props로 받아서 스타일링될 버튼 컴포넌트
-const StyledButton = styled.button<StyledLinkProps>`
+const StyledButton = styled.button.withConfig({
+  shouldForwardProp: (prop) => !['linkStyle', 'linkSize'].includes(prop),
+})<StyledLinkProps>`
   padding: 8px 16px;
   cursor: pointer;
   border: none;
@@ -91,25 +95,23 @@ const LinkButton: React.FC<LinkProps> = ({
       <StyledLink
         linkStyle={linkStyle}
         linkSize={linkSize}
-        to={href} 
+        to={href}
         {...props}
       >
         {children}
       </StyledLink>
     );
-  } 
-    return (
-      <StyledButton
-        linkStyle={linkStyle}
-        linkSize={linkSize}
-        onClick={onClick} 
-        {...props}
-      >
-        {children}
-      </StyledButton>
-    );
-  
+  }
+  return (
+    <StyledButton
+      linkStyle={linkStyle}
+      linkSize={linkSize}
+      onClick={onClick}
+      {...props}
+    >
+      {children}
+    </StyledButton>
+  );
 };
-
 
 export default LinkButton;

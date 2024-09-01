@@ -44,6 +44,7 @@ interface DropdownProps {
   onLinkClick: () => void;
 }
 
+// a 태그를 중첩하면 안되는 문제 해결이 필요, 경고가 발생할 수 있습니다
 const Dropdown: React.FC<DropdownProps> = ({ subMenuItems, onLinkClick }) => (
   <DropdownMenu>
     {subMenuItems.map((item) => (

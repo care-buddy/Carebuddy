@@ -13,7 +13,7 @@ interface NotificationProps {
   onClose: () => void;
 }
 
-const NotificationContainer = styled.div<{ show: boolean }>`
+const NotificationContainer = styled.div<{ $show: boolean }>`
   width: 400px;
   position: absolute;
   top: calc(100% + 0px);
@@ -24,7 +24,7 @@ const NotificationContainer = styled.div<{ show: boolean }>`
   border-radius: 4px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
   z-index: 1000;
-  display: ${(props) => (props.show ? 'block' : 'none')};
+  display: ${(props) => (props.$show ? 'block' : 'none')};
   font-size: var(--font-size-ft-1);
 `;
 
@@ -115,7 +115,7 @@ const Notification: React.FC<NotificationProps> = ({
   show,
   onClose,
 }) => (
-  <NotificationContainer show={show}>
+  <NotificationContainer $show={show}>
     <CloseButton onClick={onClose}>&times;</CloseButton>
     <Header>알림</Header>
     <NotificationList>

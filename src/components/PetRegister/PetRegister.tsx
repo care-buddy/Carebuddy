@@ -7,12 +7,12 @@ import Input from '@components/common/Input';
 import Button from '@components/common/Button';
 import ImageUploader from '@components/common/ImageUploader';
 
-import { Buddy } from '@/interfaces';
+import { IBuddy } from '@/interfaces';
 
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 
 interface PetRegisterProps {
-  petData: Buddy | null;
+  petData: IBuddy | null;
   onFormDataChange: (FormData: FormData) => void; // 폼데이터를 수집해 부모 컴포넌트로 전달하기 위한 콜백 함수
 }
 
@@ -20,12 +20,10 @@ const PetRegister: React.FC<PetRegisterProps> = ({
   petData,
   onFormDataChange,
 }) => {
-  const [buddyImage, setBuddyImage] = useState<string>(DefaultPetProfileImg);
+  const [buddyImage, setBuddyImage] = useState<File | string | null>(null);
   // 전송할 이미지
   // 변경할 이미지를 고르고, 바로 변경되는 것이 아니기 때문에 저장할 상태가 필요
-  const [selectedFile, setSelectedFile] = useState<string | undefined>(
-    undefined
-  );
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // petInfo 객체 초기화
   const [petInfo, setPetInfo] = useState({
@@ -37,7 +35,8 @@ const PetRegister: React.FC<PetRegisterProps> = ({
     kind: petData?.kind ?? '',
     age: petData?.age ?? '',
     weight: petData?.weight ?? '',
-    buddyImage: petData?.buddyImage ?? '',
+    // 없을 시 null로 수정해야함
+    buddyImage: petData?.buddyImage,
   });
 
   // formData - input 핸들러
@@ -92,9 +91,14 @@ const PetRegister: React.FC<PetRegisterProps> = ({
     formData.append('weight', String(petInfo.weight));
     formData.append('kind', petInfo.kind);
     // 선택 파일이 있을 때에는 그 파일을 append 해준다
+    // 폼데이터에는 null 값을 보낼 수 없으니, 선택된 파일이나 버디이미지가 없는 경우에는 append하지 않습니다: 서버 default 값이 null
     if (selectedFile) {
       formData.append('buddyImage', selectedFile);
-    } else formData.append('buddyImage', buddyImage);
+
+      // } else formData.append('buddyImage', buddyImage);
+    } else if (buddyImage) {
+      formData.append('buddyImage', buddyImage);
+    }
 
     return formData;
   };
@@ -111,7 +115,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({
           <Heading>프로필 등록</Heading>
           <ImageContainer>
             <ImageUploader
-              transferFile={buddyImage}
+              imgView={buddyImage ?? DefaultPetProfileImg}
               selectFile={selectedFile}
               onSelectFile={setSelectedFile}
             />
