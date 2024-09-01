@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import reset from 'styled-reset';
-import { RecoilRoot } from 'recoil';
+import { RecoilRoot, useRecoilValue } from 'recoil';
 import ProtectedRoute from '@/routes/protectedRoute';
 import Layout from '@/components/Layout';
 import {
@@ -19,13 +19,21 @@ import {
   LostPage,
 } from '@/pages';
 
-import { useRecoilValue } from 'recoil';
-
 import useLogin from './hooks/useLogin';
 
 import isAuthenticatedState from './recoil/selectors/authSelector';
 
 const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <Layout />, // 로그인하지 않은 사용자도 접근 가능
+    children: [
+      { path: '', element: <Home /> },
+      { path: 'global-search', element: <GlobalSearch /> },
+      { path: 'hosInfo', element: <HosInfo /> },
+      { path: 'pharInfo', element: <PharInfo /> },
+    ],
+  },
   {
     path: '/', // 로그인한 사용자만 접근 가능
     element: (
@@ -40,16 +48,6 @@ const router = createBrowserRouter([
       { path: 'diary', element: <Diary /> },
       { path: 'mypage', element: <Mypage /> },
       { path: 'userpage', element: <Userpage /> },
-    ],
-  },
-  {
-    path: '/not-protected/',
-    element: <Layout />, // 로그인하지 않은 사용자도 접근 가능
-    children: [
-      { path: 'home', element: <Home /> },
-      { path: 'global-search', element: <GlobalSearch /> },
-      { path: 'hosInfo', element: <HosInfo /> },
-      { path: 'pharInfo', element: <PharInfo /> },
     ],
   },
   {
@@ -72,14 +70,7 @@ const AppContent: React.FC = () => {
 
   // 페이지 리로드(새로고침)시 로그인 연장
   useEffect(() => {
-    // if (isAuthenticated) {
     handleSilentRefresh(isAuthenticated);
-    // }
-  }, []);
-
-  useEffect(() => {
-    console.log('로그인 페이지 시작점, isAuthenticated', isAuthenticated);
-    // console.log('auth.accessToken', auth.accessToken);
   }, []);
 
   return (

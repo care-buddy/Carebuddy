@@ -112,18 +112,15 @@ const Header: React.FC = () => {
         accessToken: null,
       });
 
-      console.log('로그아웃 성공');
-
-      // 기타 필요에 따라 쿠키 삭제 등 추가적인 클리닝 작업 수행
     } catch (error) {
       console.error(error); // 임시. 나중에 변경
     }
   };
 
-  useEffect(() => {
-    console.log('isAuthenticated', isAuthenticated);
-    console.log('auth.accessToken', auth.accessToken);
-  }, [isAuthenticated]);
+  // useEffect(() => {
+  //   console.log('isAuthenticated', isAuthenticated);
+  //   console.log('auth.accessToken', auth.accessToken);
+  // }, [isAuthenticated]);
 
   // 임시
   const InfoMenuItems = [
