@@ -26,28 +26,23 @@ import isAuthenticatedState from './recoil/selectors/authSelector';
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Layout />, // 로그인하지 않은 사용자도 접근 가능
-    children: [
-      { path: '', element: <Home /> },
-      { path: 'global-search', element: <GlobalSearch /> },
-      { path: 'hosInfo', element: <HosInfo /> },
-      { path: 'pharInfo', element: <PharInfo /> },
-    ],
-  },
-  {
-    path: '/', // 로그인한 사용자만 접근 가능
+    // 로그인 유저만 접근
     element: (
       <ProtectedRoute>
         <Layout />
       </ProtectedRoute>
     ),
     children: [
+      { path: '', element: <Home /> },
       { path: 'community-feed/:communityId', element: <CommunityFeed /> },
       { path: 'post/:postId', element: <Post /> },
-      { path: 'community', element: <Community /> },
+      { path: 'community/', element: <Community /> },
       { path: 'diary', element: <Diary /> },
       { path: 'mypage', element: <Mypage /> },
       { path: 'userpage', element: <Userpage /> },
+      { path: 'hosInfo', element: <HosInfo /> },
+      { path: 'pharInfo', element: <PharInfo /> },
+      { path: 'global-search', element: <GlobalSearch /> },
     ],
   },
   {
@@ -55,6 +50,39 @@ const router = createBrowserRouter([
     element: <LostPage />,
   },
 ]);
+
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     element: <Layout />, // 로그인하지 않은 사용자도 접근 가능
+//     children: [
+//       { path: '', element: <Home /> },
+//       { path: 'global-search', element: <GlobalSearch /> },
+//       { path: 'hosInfo', element: <HosInfo /> },
+//       { path: 'pharInfo', element: <PharInfo /> },
+//     ],
+//   },
+//   {
+//     path: '/', // 로그인한 사용자만 접근 가능
+//     element: (
+//       <ProtectedRoute>
+//         <Layout />
+//       </ProtectedRoute>
+//     ),
+//     children: [
+//       { path: 'community-feed/:communityId', element: <CommunityFeed /> },
+//       { path: 'post/:postId', element: <Post /> },
+//       { path: 'community', element: <Community /> },
+//       { path: 'diary', element: <Diary /> },
+//       { path: 'mypage', element: <Mypage /> },
+//       { path: 'userpage', element: <Userpage /> },
+//     ],
+//   },
+//   {
+//     path: '*',
+//     element: <LostPage />,
+//   },
+// ]);
 
 const App: React.FC = () => (
   <RecoilRoot>
