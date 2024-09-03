@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-// import MockAdapter from 'axios-mock-adapter';
 import Button from '@/components/common/Button';
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
@@ -16,38 +15,13 @@ import ProfileContainer from '@components/Mypage&Userpage/ProfileContainer';
 import { useRecoilState } from 'recoil';
 import buddyState from '@/recoil/atoms/buddyState';
 
-// Mock API 설정
+// Mock API 설정 (이 부분을 주석 처리하여 실제 API 호출이 이루어지도록 합니다.)
 // const mock = new MockAdapter(axios, { delayResponse: 500 });
 
-// 초기 API 응답 설정
-// mock.onGet('/api/user').reply(200, {
-//   email: 'carebuddy@naver.com',
-//   nickname: '케어버디',
-//   introduction: '소개글입니다^^',
-//   profileImage: [],
-//   communityId: [
-//     { id: '1', category: 0, community: '눈', createdAt: '2024-01-01' },
-//     { id: '2', category: 0, community: '위식도', createdAt: '2024-01-02' },
-//     { id: '3', category: 1, community: '중성화', createdAt: '2024-01-03' },
-//   ],
-//   postId: [
-//     { title: '안녕하세요' },
-//     { title: '글제목입니다 ㅎㅎ' },
-//     { title: '동물이 최고야!!' },
-//   ],
-// });
-
-// mock.onPut('/api/user').reply((config) => {
-//   const { nickname, introduction, profileImage } = JSON.parse(config.data);
-//   // console.log('받은 데이터:', { nickname, introduction, profileImage });
-//   return [200, { nickname, introduction, profileImage }];
-// });
-
-// mock.onPost('/api/posts').reply((config) => {
-//   const { title, content, groupId, postImage } = JSON.parse(config.data);
-//   // console.log('게시물 생성:', { title, content, groupId, postImage });
-//   return [200, { title, content, groupId, postImage }];
-// });
+// 초기 API 응답 설정 (이 부분도 주석 처리합니다.)
+// mock.onGet('/api/user').reply(200, { ... });
+// mock.onPut('/api/user').reply((config) => { ... });
+// mock.onPost('/api/posts').reply((config) => { ... });
 
 const Container = styled.div`
   margin: 30px 0;
@@ -105,39 +79,6 @@ interface FormData {
 }
 
 const Mypage: React.FC = () => {
-  // Mock API 설정
-  const mock = new MockAdapter(axios, { delayResponse: 500 });
-
-  // 초기 API 응답 설정
-  mock.onGet('/api/user').reply(200, {
-    email: 'carebuddy@naver.com',
-    nickname: '케어버디',
-    introduction: '소개글입니다^^',
-    profileImage: [],
-    communityId: [
-      { id: '1', category: 0, community: '눈', createdAt: '2024-01-01' },
-      { id: '2', category: 0, community: '위식도', createdAt: '2024-01-02' },
-      { id: '3', category: 1, community: '중성화', createdAt: '2024-01-03' },
-    ],
-    postId: [
-      { title: '안녕하세요' },
-      { title: '글제목입니다 ㅎㅎ' },
-      { title: '동물이 최고야!!' },
-    ],
-  });
-
-  mock.onPut('/api/user').reply((config) => {
-    const { nickname, introduction, profileImage } = JSON.parse(config.data);
-    // console.log('받은 데이터:', { nickname, introduction, profileImage });
-    return [200, { nickname, introduction, profileImage }];
-  });
-
-  mock.onPost('/api/posts').reply((config) => {
-    const { title, content, groupId, postImage } = JSON.parse(config.data);
-    // console.log('게시물 생성:', { title, content, groupId, postImage });
-    return [200, { title, content, groupId, postImage }];
-  });
-
   const [userData, setUserData] = useState<UserData>({
     email: '',
     nickname: '',
@@ -165,6 +106,7 @@ const Mypage: React.FC = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
+        // 실제 API 호출
         const response = await axios.get('/api/user');
         setUserData(response.data);
       } catch (error) {
@@ -273,7 +215,7 @@ const Mypage: React.FC = () => {
     {
       id: '3',
       content: '반려동물 관리',
-      component: <PetCardContainer buddyData={buddiesData.buddies} isMe />,
+      component: <PetCardContainer buddyData={buddiesData.buddies} isMe={false} />,
     },
     {
       id: '4',

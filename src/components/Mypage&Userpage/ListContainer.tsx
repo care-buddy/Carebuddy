@@ -46,27 +46,31 @@ interface ListContainerProps {
   isLoading: boolean;
 }
 
-const ListContainer: React.FC<ListContainerProps> = ({ communityPosts, postIds, isLoading }) => (
-  <Container>
-    <DataContainer>
-      <Title>그룹</Title>
-      <Title>글제목</Title>
-      <Title>작성일</Title>
-    </DataContainer>
-    {isLoading ? (
-      <div>Loading...</div>
-    ) : (
-      <>
-        {communityPosts.map((post, index) => (
-          <DataContainer key={post.id}>
-            <GroupContent>[{post.category === 0 ? '강아지' : '고양이'}] {post.community}</GroupContent>
-            <ContentList>{postIds[index].title}</ContentList>
-            <ContentList>{post.createdAt}</ContentList>
-          </DataContainer>
-        ))}
-      </>
-    )}
-  </Container>
-);
+const ListContainer: React.FC<ListContainerProps> = ({ communityPosts, postIds, isLoading }) => {
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!communityPosts || !postIds || communityPosts.length === 0 || postIds.length === 0) {
+    return <div>데이터가 없습니다.</div>;
+  }
+
+  return (
+    <Container>
+      <DataContainer>
+        <Title>그룹</Title>
+        <Title>글제목</Title>
+        <Title>작성일</Title>
+      </DataContainer>
+      {communityPosts.map((post, index) => (
+        <DataContainer key={post.id}>
+          <GroupContent>[{post.category === 0 ? '강아지' : '고양이'}] {post.community}</GroupContent>
+          <ContentList>{postIds[index]?.title || '제목 없음'}</ContentList>
+          <ContentList>{post.createdAt}</ContentList>
+        </DataContainer>
+      ))}
+    </Container>
+  );
+};
 
 export default ListContainer;
