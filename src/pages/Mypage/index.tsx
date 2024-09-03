@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import axios from 'axios';
 import Button from '@/components/common/Button';
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
 import SmallModal from '@/components/common/SmallModal';
 import UserAsk from '@/pages/Mypage/UserAsk';
-import Modal from '@/components/common/Modal/index';
-import PostCreate from '@/pages/PostCreate/index';
 import TopBar from '@/components/common/TopBar';
 import Loading from '@/components/common/Loading';
 import UserInfoContainer from '@components/Mypage&Userpage/UserInfoContainer';
 import ProfileContainer from '@components/Mypage&Userpage/ProfileContainer';
 import { useRecoilState } from 'recoil';
 import buddyState from '@/recoil/atoms/buddyState';
-
-// Mock API 설정 (이 부분을 주석 처리하여 실제 API 호출이 이루어지도록 합니다.)
-// const mock = new MockAdapter(axios, { delayResponse: 500 });
-
-// 초기 API 응답 설정 (이 부분도 주석 처리합니다.)
-// mock.onGet('/api/user').reply(200, { ... });
-// mock.onPut('/api/user').reply((config) => { ... });
-// mock.onPost('/api/posts').reply((config) => { ... });
+import axiosInstance from '@/utils/axiosInstance';
 
 const Container = styled.div`
   margin: 30px 0;
@@ -53,8 +43,8 @@ const Withdraw = styled.div`
 
 interface UserData {
   email: string;
-  nickname: string;
-  introduction: string;
+  nickName: string;
+  introduce: string;
   profileImage: string[];
   communityId: CommunityPost[];
   postId: PostId[];
@@ -81,8 +71,8 @@ interface FormData {
 const Mypage: React.FC = () => {
   const [userData, setUserData] = useState<UserData>({
     email: '',
-    nickname: '',
-    introduction: '',
+    nickName: '',
+    introduce: '',
     profileImage: [],
     communityId: [],
     postId: [],
@@ -90,9 +80,6 @@ const Mypage: React.FC = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
-  const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
-
   const [formData, setFormData] = useState<FormData>({
     title: '',
     content: '',
@@ -102,13 +89,37 @@ const Mypage: React.FC = () => {
 
   const [buddiesData] = useRecoilState(buddyState);
 
+  const userId = '668ce6fa73b15595e620fd41';
+
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // 실제 API 호출
-        const response = await axios.get('/api/user');
-        setUserData(response.data);
+        const response = await axiosInstance.get(`user/mypage/${userId}`);
+        const data = response.data.message;
+
+        // 데이터 매핑
+        const mappedData: UserData = {
+          email: data.email || '', // 기본값 설정
+          nickName: data.nickName || '', // nickName 필드에 값 설정
+          introduce: data.introduce || '', // introduce 필드에 값 설정
+          profileImage: data.profileImage || [], // profileImage 필드에 값 설정
+          communityId: data.communityId || [], // communityId 필드에 값 설정
+          postId: data.postId || [], // postId 필드에 값 설정
+        };
+
+        console.log('user 데이터', mappedData);
+        console.log('post 데이터', response.data.message.postId);
+
+        setUserData(mappedData);
+
+        // Fetch된 데이터를 formData에 넣기
+        setFormData({
+          title: data.nickName || '', // 예시로 nickname을 title로 설정
+          content: data.introduce || '', // 예시로 introduction을 content로 설정
+          groupId: data.communityId.length > 0 ? data.communityId[0].id : '', // 첫 번째 커뮤니티 ID
+          postImage: data.profileImage || [], // 프로필 이미지를 postImage로 설정
+        });
       } catch (error) {
         console.error('사용자 데이터 가져오기 오류:', error);
       } finally {
@@ -117,27 +128,16 @@ const Mypage: React.FC = () => {
     };
 
     fetchData();
-  }, []);
-
-  const handlePostSubmit = async () => {
-    try {
-      const response = await axios.post('/api/posts', formData);
-      console.log('게시물 생성됨:', response.data);
-      alert('게시글 작성 완료');
-      setIsWriteModalOpen(false);
-    } catch (error) {
-      console.error('게시물 생성 오류:', error);
-    }
-  };
+  }, [userId]);
 
   const handleIntroductionChange = (newIntroduction: string) => {
-    setUserData((prevData) => ({ ...prevData, introduction: newIntroduction }));
-    handleUserDataUpdate({ ...userData, introduction: newIntroduction });
+    setUserData((prevData) => ({ ...prevData, introduce: newIntroduction }));
+    handleUserDataUpdate({ ...userData, introduce: newIntroduction });
   };
 
   const handleNicknameChange = (newNickname: string) => {
-    setUserData((prevData) => ({ ...prevData, nickname: newNickname }));
-    handleUserDataUpdate({ ...userData, nickname: newNickname });
+    setUserData((prevData) => ({ ...prevData, nickName: newNickname }));
+    handleUserDataUpdate({ ...userData, nickName: newNickname });
   };
 
   const handleProfileImageChange = (newImage: string[]) => {
@@ -147,7 +147,7 @@ const Mypage: React.FC = () => {
 
   const handleUserDataUpdate = async (updatedUserData: UserData) => {
     try {
-      const response = await axios.put('/api/user', updatedUserData);
+      const response = await axiosInstance.put('user', updatedUserData);
       console.log('사용자 데이터 업데이트:', response.data);
     } catch (error) {
       console.error('사용자 데이터 업데이트 오류:', error);
@@ -164,34 +164,6 @@ const Mypage: React.FC = () => {
 
   const handleConfirmWithdraw = () => {
     setIsModalOpen(false);
-  };
-
-  const handleWriteClick = () => {
-    setIsWriteModalOpen(true);
-  };
-
-  const handleCloseWriteModal = () => {
-    setIsWriteModalOpen(false);
-  };
-
-  const handleEditClick = () => {
-    setIsEditModalOpen(true);
-  };
-
-  const handleCloseEditModal = () => {
-    setIsEditModalOpen(false);
-  };
-
-  const handleFormDataChange = (data: {
-    title?: string;
-    content?: string;
-    groupId?: string;
-    postImage?: string[];
-  }) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      ...data,
-    }));
   };
 
   const contentItems = [
@@ -233,35 +205,6 @@ const Mypage: React.FC = () => {
   return (
     <Container>
       <TopBar category="회원 정보 수정" title="마이 페이지" />
-      <Button onClick={handleWriteClick}>글 작성하기</Button>
-      {isWriteModalOpen && (
-        <Modal
-          title="글 작성하기"
-          value="등록"
-          component={
-            <PostCreate
-              formData={formData}
-              onFormDataChange={handleFormDataChange}
-            />
-          }
-          onClose={handleCloseWriteModal}
-          onHandleClick={handlePostSubmit}
-        />
-      )}
-      <Button onClick={handleEditClick}>글 수정하기</Button>
-      {isEditModalOpen && (
-        <Modal
-          title="글 수정하기"
-          value="수정"
-          component={
-            <PostCreate
-              formData={formData}
-              onFormDataChange={handleFormDataChange}
-            />
-          }
-          onClose={handleCloseEditModal}
-        />
-      )}
       {isLoading ? (
         <Loading />
       ) : (

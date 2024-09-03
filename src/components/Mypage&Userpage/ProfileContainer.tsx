@@ -63,8 +63,8 @@ const Data = styled.span``;
 
 interface ProfileContainerProps {
   userData: {
-    nickname: string;
-    introduction: string;
+    nickName: string;
+    introduce: string;
     profileImage: string[];
   };
   onIntroductionChange: (newIntroduction: string) => void;
@@ -73,8 +73,8 @@ interface ProfileContainerProps {
 }
 
 const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData, onIntroductionChange, onNicknameChange, onProfileImageChange }) => {
-  const [introduction, setIntroduction] = useState(userData.introduction);
-  const [nickname, setNickname] = useState(userData.nickname);
+  const [introduction, setIntroduction] = useState(userData.introduce);
+  const [nickname, setNickname] = useState(userData.nickName);
   const [profileImage, setProfileImage] = useState<string[]>(userData.profileImage || []);
 
   useEffect(() => {
