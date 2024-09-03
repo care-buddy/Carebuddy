@@ -132,7 +132,7 @@ interface TableProps {
   data: { [key: string]: string }[];
   //   임시 props
   isLoading: boolean;
-  isError: boolean;
+  isError: Error | null;
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -149,8 +149,6 @@ const TableList: React.FC<TableProps> = ({
   onPageChange,
   hasPagination,
 }) => {
-  console.log(data); // 테이블에 렌더링 될 데이터 배열 확인용 로그
-
   const renderLoading = () => (
     <tr>
       <td colSpan={headers.length}>
@@ -213,6 +211,16 @@ const TableList: React.FC<TableProps> = ({
             }
 
             cellValue = trimmedValue;
+          }
+
+          if (header.value === 'telephone' && typeof cellValue === 'string') {
+            // 공백일 경우 '-'로 대체
+            if (cellValue.trim() === '' || null) {
+              cellValue = '-';
+            } else {
+              // ')' 또는 ') '를 '-'로 대체
+              cellValue = cellValue.replace(/\)\s?/g, '-');
+            }
           }
 
           return (

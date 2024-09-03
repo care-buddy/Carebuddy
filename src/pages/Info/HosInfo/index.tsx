@@ -10,30 +10,11 @@ import {
   SearchWrapper,
   Text,
 } from '@/pages/Info/info-components';
-import axios from 'axios';
 import axiosInstance from '@/utils/axiosInstance';
-
-// UI확인용 임시데이터
-const SelectDummyCityOptions = [
-  { value: '', label: '시/도 선택' },
-  { value: '서울특별시', label: '서울특별시' },
-  { value: '부산광역시', label: '부산광역시' },
-  { value: '인천광역시', label: '인천광역시' },
-  { value: '대구광역시', label: '대구광역시' },
-  { value: '대전광역시', label: '대전광역시' },
-  { value: '광주광역시', label: '광주광역시' },
-  { value: '울산광역시', label: '울산광역시' },
-  { value: '세종특별자치시', label: '세종특별자치시' },
-  { value: '경기도', label: '경기도' },
-  { value: '충청북도', label: '충청북도' },
-  { value: '충청남도', label: '충청남도' },
-  { value: '전라남도', label: '전라남도' },
-  { value: '경상북도', label: '경상북도' },
-  { value: '경상남도', label: '경상남도' },
-  { value: '강원특별자치도', label: '강원특별자치도' },
-  { value: '전북특별자치도', label: '전북특별자치도' },
-  { value: '제주특별자치도', label: '제주특별자치도' },
-];
+import loadingState from '@/recoil/atoms/loadingState';
+import errorState from '@/recoil/atoms/errorState';
+import { useRecoilState } from 'recoil';
+import { CityOptions, DistrictOptions } from '../area';
 
 interface DataItem {
   _id: string;
@@ -43,80 +24,43 @@ interface DataItem {
 }
 
 const HosInfo: React.FC = () => {
-  // 테이블에 표시할 데이터 예시 및 임시 상태
-  // const headers = ['name', 'address', 'telephone'];
   const headers = [
     { value: 'name', label: '병원명' },
     { value: 'telephone', label: '전화번호' },
     { value: 'address', label: '주소' },
   ];
   const [data, setData] = useState<DataItem[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [isLoading, setLoading] = useRecoilState(loadingState);
+  const [isError, setError] = useRecoilState(errorState);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 
-  // API 구현 후 수정합니다. 지금은 테이블 컴포넌트 확인 용 임시 함수 사용
+  const [selectedCity, setSelectedCity] = useState('');
+  const [selectedDistrict, setSelectedDistrict] = useState('');
+
   useEffect(() => {
-    const fetchData = async () => {
-      // setIsLoading(true);
-      setIsError(false);
-
-      try {
-        // 예시로 페이징된 데이터를 시뮬레이션하기 위해 임의의 함수를 사용합니다.
-        const { data: fetchedData, totalPages: fetchedTotalPages } =
-          await fetchPaginatedData(currentPage);
-        setData(fetchedData);
-        setTotalPages(fetchedTotalPages);
-        setIsLoading(false);
-      } catch (error) {
-        setIsLoading(false);
-        setIsError(true);
-        console.error('Error fetching data:', error);
-      }
-    };
-
-    fetchData();
+    if (selectedCity !== '') {
+      fetchSearchData(currentPage, selectedCity, selectedDistrict);
+    } else {
+      fetchPaginatedData(currentPage);
+    }
   }, [currentPage]);
 
-  // 페이징된 데이터를 시뮬레이션하는 함수. API 구현 후 수정합니다.
   const fetchPaginatedData = async (page: number) => {
-    // 실제로는 여기서 API를 호출하여 페이징된 데이터를 가져올 수 있습니다.
-    // 이 예시에서는 임의의 데이터를 반환합니다.
-    // const itemsPerPage = 2; // 한 페이지당 보여줄 항목 수
-    // const startIndex = (page - 1) * itemsPerPage;
-    // const endIndex = startIndex + itemsPerPage;
-    // const paginatedData: DataItem[] = [
-    //   { ID: '1', Name: 'John Doe', Age: '30', City: 'New York' },
-    //   { ID: '2', Name: 'Jane Smith', Age: '25', City: 'Los Angeles' },
-    //   { ID: '3', Name: 'Mike Johnson', Age: '40', City: 'Chicago' },
-    //   { ID: '4', Name: 'Emily Brown', Age: '35', City: 'San Francisco' },
-    // ].slice(startIndex, endIndex);
-
-    // const totalDataCount = 4; // 예시 데이터 전체 개수
-    // const totalPages = Math.ceil(totalDataCount / itemsPerPage);
-
-    // return { data: paginatedData, totalPages };
     try {
       const response = await axiosInstance.get(`search/AllH?page=${page}`);
-      console.log(response);
+
       const itemsPerPage = response.data.message.perPage;
-      const startIndex = (page - 1) * itemsPerPage;
-      const endIndex = startIndex + itemsPerPage;
-      // const paginatedData: DataItem[] = [
-      //   { ID: '1', Name: 'John Doe', Age: '30', City: 'New York' },
-      //   { ID: '2', Name: 'Jane Smith', Age: '25', City: 'Los Angeles' },
-      //   { ID: '3', Name: 'Mike Johnson', Age: '40', City: 'Chicago' },
-      //   { ID: '4', Name: 'Emily Brown', Age: '35', City: 'San Francisco' },
-      // ].slice(startIndex, endIndex);
-      // const paginatedData: DataItem[] = response.data.message.datas.map((data) => {
-      //   {_id: data_id, name: data.name, address:data.address, telephone:data.telephone}
-      // })
+
       const totalDataCount = response.data.message.totalPage;
       const totalPages = Math.ceil(totalDataCount / itemsPerPage);
-      console.log(response.data.message.datas);
-      return { data: response.data.message.datas, totalPages };
+
+      setData(response.data.message.datas);
+      setTotalPages(totalPages);
+      setLoading(false);
     } catch (error) {
+      setLoading(false);
+      setError(error as Error);
       console.error('Error fetching data:', error);
     }
   };
@@ -125,24 +69,43 @@ const HosInfo: React.FC = () => {
     setCurrentPage(page);
   };
 
-  const handlesSearch = () => {
-    // fetchSearchData();
+  const handleSearch = () => {
+    setCurrentPage(1);
+    fetchSearchData(1, selectedCity, selectedDistrict);
   };
-  // search/hospitals?address=${city} ${district}&page=${page}
-  const fetchSearchData = async (page, city, district) => {
+
+  const fetchSearchData = async (
+    page: number,
+    city: string,
+    district: string
+  ) => {
+    setLoading(true);
     try {
       const response = await axiosInstance.get(
         `search/hospitals?address=${city} ${district}&page=${page}`
       );
-      console.log(response);
+      const { hospitals } = response.data;
+      console.log(hospitals);
+
+      setData(hospitals.datas);
+      setTotalPages(hospitals.totalPage);
+      setLoading(false);
     } catch (error) {
+      setError(error as Error);
+
       console.error('Error fetching data:', error);
     }
   };
 
-  const handleCityChange = (e) => {};
+  const handleCityChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const city = e.target.value;
+    setSelectedCity(city);
+  };
 
-  const fetchDataByPage = async () => {};
+  const handleDistrictChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const district = e.target.value;
+    setSelectedDistrict(district);
+  };
 
   return (
     <>
@@ -152,12 +115,12 @@ const HosInfo: React.FC = () => {
           <Title>동물 병원 검색</Title>
           <SearchWrapper>
             <Text>지역: </Text>
+            <Select options={CityOptions} onChange={handleCityChange} />
             <Select
-              options={SelectDummyCityOptions}
-              onChange={handleCityChange}
+              options={DistrictOptions[selectedCity]}
+              onChange={handleDistrictChange}
             />
-            <Select options={SelectDummyCityOptions} />
-            <Button buttonStyle="square-green" onClick={() => {}}>
+            <Button buttonStyle="square-green" onClick={handleSearch}>
               검색
             </Button>
           </SearchWrapper>
@@ -168,7 +131,7 @@ const HosInfo: React.FC = () => {
           data={data.map((item) => ({
             name: item.name,
             address: item.address,
-            telephone: item.telephone,
+            telephone: item.telephone ? item.telephone : '',
           }))}
           isLoading={isLoading}
           isError={isError}
