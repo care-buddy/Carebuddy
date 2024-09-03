@@ -20,23 +20,23 @@ const Data = styled.span``;
 
 interface UserData {
   email: string;
-  nickname: string;
-  introduction: string;
+  nickName: string;
+  introduce: string;
 }
 
 const UserInfoContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
   <Container>
     <InfoContainer>
       <Item>이메일</Item>
-      <Data>{userData.email}</Data>
+      <Data>{userData?.email}</Data>
     </InfoContainer>
     <InfoContainer>
       <Item>닉네임</Item>
-      <Data>{userData.nickname}</Data>
+      <Data>{userData?.nickName}</Data>
     </InfoContainer>
     <InfoContainer>
       <Item>소개글</Item>
-      <Data>{userData.introduction}</Data>
+      <Data>{userData?.introduce}</Data>
     </InfoContainer>
   </Container>
 );
