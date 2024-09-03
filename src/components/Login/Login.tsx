@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react';
 // import { useEffect,  } from 'react'; // 임시 - 가끔 필요해서 냅둠
 import styled from 'styled-components';
 import axios from 'axios';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
@@ -18,11 +18,17 @@ import { LuEye, LuEyeOff } from 'react-icons/lu';
 import useLogin from '@/hooks/useLogin';
 import authState from '@/recoil/atoms/authState';
 
+import isAuthenticatedState from '@/recoil/selectors/authSelector';
+
 interface LoginProps {
   onOpenRegistrationModal: () => void;
+  handleLoginModal: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
+const Login: React.FC<LoginProps> = ({
+  onOpenRegistrationModal,
+  handleLoginModal,
+}) => {
   const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
     email: '',
@@ -30,6 +36,8 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [auth, setAuth] = useRecoilState(authState);
+
+  const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   const { handleSilentRefresh } = useLogin();
 
@@ -56,7 +64,6 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
       try {
-        console.log('Login attempt with:', loginInfo); // 추가한 부분 - 테스트용
 
         const response = await axiosInstance.post('auth/login', loginInfo, {
           withCredentials: true,
@@ -64,18 +71,17 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
 
         const { accessToken } = response.data;
 
-        console.log('Received accessToken:', accessToken); // 추가한 부분 - 테스트용
-
         // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
+
         // Recoil 상태(로그인 상태) 업데이트
         setAuth({
-          isAuthenticated: true,
-          // accessToken,
+          accessToken,
         });
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
+        handleLoginModal();
       } catch (error) {
         // 에러 처리
         console.error('Error during login:', error);
@@ -87,10 +93,16 @@ const Login: React.FC<LoginProps> = ({ onOpenRegistrationModal }) => {
 
   // 상태가 업데이트되면 자동 로그인 연장 처리
   useEffect(() => {
-    if (auth.isAuthenticated) {
-      handleSilentRefresh(); // 상태가 업데이트된 후 자동 로그인 연장
-      // handleSilentRefresh(auth.accessToken); // 상태가 업데이트된 후 자동 로그인 연장
+    console.log('isAuthenticated changed:', isAuthenticated); // 상태 변경 확인
+
+    if (!isAuthenticated) {
+      return;
     }
+    handleSilentRefresh(isAuthenticated); // 상태가 업데이트된 후 자동 로그인 연장
+  }, [isAuthenticated]); // auth 상태가 변경될 때마다 실행
+
+  useEffect(() => {
+    console.log('Current authState:', auth); // 현재 authState 확인
   }, [auth]); // auth 상태가 변경될 때마다 실행
 
   return (
