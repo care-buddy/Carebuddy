@@ -16,7 +16,8 @@ const Container = styled.div`
 const Table = styled.table`
   border-spacing: 0;
   border-collapse: collapse;
-  width: 80%;
+  max-width: 80%;
+  min-width: 880px;
 
   th:first-child {
     border-top-left-radius: 6px;
@@ -29,9 +30,26 @@ const Table = styled.table`
   th,
   td {
     padding: 12px;
-    width: 200px;
+    min-width: 200px;
 
     border-bottom: 1px solid var(--color-grey-1);
+
+    &.telephone {
+      min-width: 200px;
+      max-width: 200px;
+    }
+
+    &.address {
+      min-width: 350px;
+      max-width: 350px;
+      text-align: start;
+      padding-left: 20px;
+    }
+
+    &.name {
+      min-width: 250px;
+      max-width: 250px;
+    }
   }
 
   th {
@@ -47,6 +65,10 @@ const Table = styled.table`
 
 const StyledPagination = styled(Pagination)`
   margin-top: 20px;
+  min-width: 900px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   .rc-pagination-item {
     min-width: 32px;
@@ -57,6 +79,13 @@ const StyledPagination = styled(Pagination)`
     list-style: none;
     border-radius: 4px;
     cursor: pointer;
+  }
+
+  .rc-pagination-next {
+    margin-left: 16px;
+  }
+  .rc-pagination-prev {
+    margin-right: 24px;
   }
 
   .rc-pagination-item-link {
@@ -82,14 +111,6 @@ const StyledPagination = styled(Pagination)`
   .rc-pagination-item:hover a {
     color: var(--color-green-main);
   }
-
-  /* .rc-pagination-item-disabled {
-    border-color: #d9d9d9;
-  }
-
-  .rc-pagination-item-disabled a {
-    color: #d9d9d9;
-  } */
 `;
 
 // 임시 컴포넌트, 실제 사용 시 수정
@@ -107,11 +128,11 @@ const ErrorMessage = styled.div`
 `;
 
 interface TableProps {
-  headers: string[]; // 테이블 헤더를 받는 props
+  headers: { value: string; label: string }[]; // 테이블 헤더를 받는 props
   data: { [key: string]: string }[];
   //   임시 props
   isLoading: boolean;
-  isError: boolean;
+  isError: Error | null;
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -128,8 +149,6 @@ const TableList: React.FC<TableProps> = ({
   onPageChange,
   hasPagination,
 }) => {
-  // console.log(data); // 테이블에 렌더링 될 데이터 배열 확인용 로그
-
   const renderLoading = () => (
     <tr>
       <td colSpan={headers.length}>
@@ -157,9 +176,59 @@ const TableList: React.FC<TableProps> = ({
   const renderResults = () =>
     data.map((row) => (
       <tr key={row.id}>
-        {headers.map((header) => (
-          <td key={`${row.id}-${header}`}>{row[header]}</td>
-        ))}
+        {headers.map((header) => {
+          let cellValue = row[header.value];
+
+          if (
+            header.value === 'name' &&
+            typeof cellValue === 'string' &&
+            cellValue.length >= 20
+          ) {
+            const parenIndex = cellValue.indexOf('(');
+            if (parenIndex !== -1) {
+              cellValue = cellValue.slice(0, parenIndex).trim(); // '(' 이전의 문자열만 남김
+            }
+
+            const parenIndexSecond = cellValue.indexOf('&');
+            if (parenIndexSecond !== -1) {
+              cellValue = cellValue.slice(0, parenIndexSecond).trim(); // '(' 이전의 문자열만 남김
+            }
+          }
+
+          if (header.value === 'address' && typeof cellValue === 'string') {
+            const words = cellValue.split(' '); // 공백을 기준으로 문자열을 분할
+            let trimmedValue = words.slice(0, 5).join(' '); // 앞의 세 단어만 결합
+
+            // 마지막 단어에 쉼표가 있을 경우 제거
+            if (trimmedValue.endsWith(',')) {
+              trimmedValue = trimmedValue.slice(0, -1); // 마지막 쉼표 제거
+            }
+
+            // 마지막 단어가 '('로 시작하고 ')'로 끝나지 않으면 ')' 추가
+            const lastWord = trimmedValue.split(' ').slice(-1)[0]; // 마지막 단어 추출
+            if (lastWord.startsWith('(') && !lastWord.endsWith(')')) {
+              trimmedValue += ')'; // ')'를 문자열 끝에 추가
+            }
+
+            cellValue = trimmedValue;
+          }
+
+          if (header.value === 'telephone' && typeof cellValue === 'string') {
+            // 공백일 경우 '-'로 대체
+            if (cellValue.trim() === '' || null) {
+              cellValue = '-';
+            } else {
+              // ')' 또는 ') '를 '-'로 대체
+              cellValue = cellValue.replace(/\)\s?/g, '-');
+            }
+          }
+
+          return (
+            <td className={header.value} key={`${row.id}-${header.value}`}>
+              {cellValue}
+            </td>
+          );
+        })}
       </tr>
     ));
 
@@ -184,7 +253,7 @@ const TableList: React.FC<TableProps> = ({
           <tr>
             {/* props로 받은 헤더 정보를 동적으로 생성 */}
             {headers.map((header) => (
-              <th key={header}>{header}</th>
+              <th key={header.value}>{header.label}</th>
             ))}
           </tr>
         </thead>
