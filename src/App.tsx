@@ -23,22 +23,59 @@ import useLogin from './hooks/useLogin';
 
 import isAuthenticatedState from './recoil/selectors/authSelector';
 
+// const router = createBrowserRouter([
+//   {
+//     path: '/',
+//     // 로그인 유저만 접근
+//     element: (
+//       <ProtectedRoute>
+//         <Layout />
+//       </ProtectedRoute>
+//     ),
+//     children: [
+//       { path: '', element: <Home /> },
+//       { path: 'community-feed/:communityId', element: <CommunityFeed /> },
+//       { path: 'post/:postId', element: <Post /> },
+//       { path: 'community/', element: <Community /> },
+//       { path: 'diary', element: <Diary /> },
+//       { path: 'mypage', element: <Mypage /> },
+//       { path: 'userpage', element: <Userpage /> },
+//       { path: 'hosInfo', element: <HosInfo /> },
+//       { path: 'pharInfo', element: <PharInfo /> },
+//       { path: 'global-search', element: <GlobalSearch /> },
+//     ],
+//   },
+//   {
+//     path: '*',
+//     element: <LostPage />,
+//   },
+// ]);
+
 const router = createBrowserRouter([
   {
     path: '/',
-    // 로그인 유저만 접근
-    element: (
-      <ProtectedRoute>
-        <Layout />
-      </ProtectedRoute>
-    ),
+    element: <Layout />,
     children: [
       { path: '', element: <Home /> },
       { path: 'community-feed/:communityId', element: <CommunityFeed /> },
       { path: 'post/:postId', element: <Post /> },
-      { path: 'community/', element: <Community /> },
-      { path: 'diary', element: <Diary /> },
-      { path: 'mypage', element: <Mypage /> },
+      { path: 'community', element: <Community /> },
+      {
+        path: 'diary',
+        element: (
+          <ProtectedRoute>
+            <Diary />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: 'mypage',
+        element: (
+          <ProtectedRoute>
+            <Mypage />
+          </ProtectedRoute>
+        ),
+      },
       { path: 'userpage', element: <Userpage /> },
       { path: 'hosInfo', element: <HosInfo /> },
       { path: 'pharInfo', element: <PharInfo /> },

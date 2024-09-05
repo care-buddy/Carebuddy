@@ -150,7 +150,7 @@ const TableList: React.FC<TableProps> = ({
   hasPagination,
 }) => {
   const renderLoading = () => (
-    <tr>
+    <tr key="loading">
       <td colSpan={headers.length}>
         <LoadingIndicator>Loading...</LoadingIndicator>
       </td>
@@ -158,7 +158,7 @@ const TableList: React.FC<TableProps> = ({
   );
 
   const renderError = () => (
-    <tr>
+    <tr key="error">
       <td colSpan={headers.length}>
         <ErrorMessage>
           데이터를 불러오는 데 오류가 발생했습니다. 다시 시도해주세요.
@@ -168,14 +168,15 @@ const TableList: React.FC<TableProps> = ({
   );
 
   const renderNoResults = () => (
-    <tr>
+    <tr key="noData">
       <td colSpan={headers.length}>검색된 데이터가 없습니다.</td>
     </tr>
   );
 
   const renderResults = () =>
     data.map((row) => (
-      <tr key={row.id}>
+      // 임시 키 값을 전화번호로
+      <tr key={row.telephone}>
         {headers.map((header) => {
           let cellValue = row[header.value];
 

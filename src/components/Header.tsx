@@ -1,4 +1,4 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -19,11 +19,13 @@ import authState from '@/recoil/atoms/authState';
 
 import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
+import loginModalState from '@/recoil/atoms/loginModalState';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
-  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  // const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
@@ -104,17 +106,15 @@ const Header: React.FC = () => {
         { withCredentials: true }
       );
 
-      navigate('/');
-
       deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
 
       setAuth({
         accessToken: null,
       });
-
     } catch (error) {
       console.error(error); // 임시. 나중에 변경
     }
+    navigate('/');
   };
 
   // useEffect(() => {
