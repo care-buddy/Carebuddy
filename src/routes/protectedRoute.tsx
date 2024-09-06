@@ -51,5 +51,6 @@ export default function ProtectedRoute({
     setLoginModalOpen(true);
     return <Navigate to="/" />;
   }
+
   return children;
 }

@@ -1,4 +1,5 @@
 import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
+
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -24,6 +25,8 @@ import loginModalState from '@/recoil/atoms/loginModalState';
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  // const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
   // const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
