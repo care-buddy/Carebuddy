@@ -1,4 +1,5 @@
 import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
+
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -24,6 +25,8 @@ import loginModalState from '@/recoil/atoms/loginModalState';
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   const [showNotification, setShowNotification] = useState(false);
+  // const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
   // const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
@@ -95,11 +98,11 @@ const Header: React.FC = () => {
   // 로그아웃
   const handleLogout = async () => {
     const deleteCookie = (name: string) => {
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax;`;
     };
 
     try {
-      const email = 'yushinTest@gmail.com'; // 임시 이메일
+      const email = 'goldengooooose2024@gmail.com'; // 임시 이메일
       await axiosInstance.post(
         'auth/logout',
         { email },
@@ -114,7 +117,7 @@ const Header: React.FC = () => {
     } catch (error) {
       console.error(error); // 임시. 나중에 변경
     }
-    navigate('/');
+    window.location.href = '/';
   };
 
   // useEffect(() => {

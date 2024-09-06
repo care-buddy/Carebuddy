@@ -3,9 +3,11 @@ import { useRecoilState } from 'recoil';
 import authState from '@/recoil/atoms/authState';
 import { JWT_EXPIRY_TIME } from '@/constants/auth/authConstants';
 import axiosInstance from '@/utils/axiosInstance';
+import loadingState from '@/recoil/atoms/loadingState';
 
 const useLogin = () => {
-  const [_, setAuth] = useRecoilState(authState);
+  const [, setAuth] = useRecoilState(authState);
+  const [, setLoading] = useRecoilState(loadingState);
 
   // 로그인 성공 후 호출되는 함수
   const handleLoginSuccess = (
@@ -26,6 +28,7 @@ const useLogin = () => {
 
   // 자동 로그인 연장(accessToken 갱신)
   const handleSilentRefresh = async (isAuthenticated: boolean) => {
+    setLoading(true);
     try {
       const response = await axiosInstance.post(
         'auth/silent-refresh',
@@ -58,6 +61,8 @@ const useLogin = () => {
       setAuth({
         accessToken: null,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
