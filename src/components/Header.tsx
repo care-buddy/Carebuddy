@@ -95,11 +95,11 @@ const Header: React.FC = () => {
   // 로그아웃
   const handleLogout = async () => {
     const deleteCookie = (name: string) => {
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax;`;
     };
 
     try {
-      const email = 'yushinTest@gmail.com'; // 임시 이메일
+      const email = 'goldengooooose2024@gmail.com'; // 임시 이메일
       await axiosInstance.post(
         'auth/logout',
         { email },
@@ -114,7 +114,7 @@ const Header: React.FC = () => {
     } catch (error) {
       console.error(error); // 임시. 나중에 변경
     }
-    navigate('/');
+    window.location.href = '/';
   };
 
   // useEffect(() => {
