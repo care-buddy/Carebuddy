@@ -27,8 +27,6 @@ const Header: React.FC = () => {
   const [showNotification, setShowNotification] = useState(false);
   // const [loginModalOpen, setLoginModalOpen] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
-  // const [loginModalOpen, setLoginModalOpen] = useState(false);
-  const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
