@@ -120,7 +120,6 @@ const ReportWrapper = styled.div`
 const ProfilesTitle = styled.div`
   font-size: var(--font-size-hd-2);
   font-weight: var(--font-weight-bold);
-  color: var(--color)
   margin: 20px 0 30px 0;
 `;
 interface ICreatedAt {
@@ -191,25 +190,25 @@ const Diary: React.FC = () => {
     // /api/buddies로 GET 요청 모킹
     try {
       setLoading(true);
+      setError(null);
       // mock.onGet('/buddies').reply(200, dummyBuddies);
-      const response = await axiosInstance.get(
-        'buddies/66b9b34ae9a13c88c643e361'
-      );
+      const response = await axiosInstance.get('buddies');
 
       const fetchedBuddies = response.data.message;
 
+      console.log(fetchedBuddies);
       if (fetchedBuddies.length === 0 || isAllProfilesDeleted) {
         setBuddiesData({
-          name: '임시 유저 이름', // 로그인 미구현 시 제대로 로직 짤 수 없음
-          buddies: sortedByCreatedAt(fetchedBuddies),
+          userName: fetchedBuddies.userName, // 로그인 미구현 시 제대로 로직 짤 수 없음
+          buddies: sortedByCreatedAt(fetchedBuddies.buddies),
         });
 
         return;
       }
 
       setBuddiesData({
-        name: fetchedBuddies[0].name,
-        buddies: sortedByCreatedAt(fetchedBuddies),
+        userName: fetchedBuddies.userName,
+        buddies: sortedByCreatedAt(fetchedBuddies.buddies),
       });
 
       console.log(typeof fetchedBuddies);
@@ -235,6 +234,7 @@ const Diary: React.FC = () => {
   const fetchRecordsData = async (buddyId: string) => {
     // /api/hospitals로 GET 요청 모킹
     setRecordLoading(true);
+    setError(null);
     try {
       // 66cd86651d15e7a5a4228d32
       const response = await axiosInstance.get(`hospitals/${buddyId}`);
@@ -330,6 +330,7 @@ const Diary: React.FC = () => {
       formData
     ) {
       setRecordLoading(true);
+      setError(null);
       try {
         // 로그인 미구현되어 임시
         const formData2 = {
@@ -406,6 +407,7 @@ const Diary: React.FC = () => {
           };
 
           setLoading(true);
+          setError(null);
           // 서버에 삭제 요청
           await axiosInstance.put(`hospitals/${recordId}/d`, deletedRecord);
 
@@ -435,7 +437,7 @@ const Diary: React.FC = () => {
     <>
       <TopBar category="건강관리" title="건강 다이어리" />
       <Wrapper>
-        <ProfilesTitle>{buddiesData?.name} 님의 반려동물</ProfilesTitle>
+        <ProfilesTitle>{buddiesData?.userName} 님의 반려동물</ProfilesTitle>
         {/* props drilling 유지하는 이유: userPage에서는 유저마다 다른 buddieData를 전달해줘야하기 때문에 */}
         <PetProfiles
           buddies={buddiesData?.buddies}

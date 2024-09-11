@@ -2,7 +2,7 @@ import { atom } from 'recoil';
 import { IBuddyProfile } from '@/interfaces';
 
 interface Buddy {
-  name: string | null;
+  userName: string | null;
   buddies: IBuddyProfile[];
 }
 
@@ -11,7 +11,7 @@ interface Buddy {
 const buddyState = atom<Buddy>({
   key: 'buddyState',
   default: {
-    name: null,
+    userName: null,
     buddies: [],
   },
 });
