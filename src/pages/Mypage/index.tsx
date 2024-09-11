@@ -59,6 +59,8 @@ interface CommunityPost {
 
 interface PostId {
   title: string;
+  content: string;
+  createdAt: Date;
 }
 
 interface FormData {
@@ -75,7 +77,7 @@ const Mypage: React.FC = () => {
     introduce: '',
     profileImage: [],
     communityId: [],
-    postId: [],
+    postId: [], // PostId 타입의 배열로 선언
   });
 
   const [isLoading, setIsLoading] = useState(true);
@@ -105,11 +107,22 @@ const Mypage: React.FC = () => {
           introduce: data.introduce || '', // introduce 필드에 값 설정
           profileImage: data.profileImage || [], // profileImage 필드에 값 설정
           communityId: data.communityId || [], // communityId 필드에 값 설정
-          postId: data.postId || [], // postId 필드에 값 설정
+          // postId를 content, title, createdAt로 매핑
+          postId: data.postId
+            ? data.postId.map((post: any) => ({
+              title: post.title,
+              content: post.content,
+              createdAt: post.createdAt,
+            }))
+            : [], // postId 필드에 값 설정
         };
 
         console.log('user 데이터', mappedData);
-        console.log('post 데이터', response.data.message.postId);
+        if (mappedData.postId.length > 0) {
+          mappedData.postId.forEach((post) => {
+            console.log('Post 데이터:', post);
+          });
+        }
 
         setUserData(mappedData);
 
@@ -194,7 +207,6 @@ const Mypage: React.FC = () => {
       content: '작성 글 목록',
       component: (
         <ListContainer
-          communityPosts={userData.communityId}
           postIds={userData.postId}
           isLoading={isLoading}
         />

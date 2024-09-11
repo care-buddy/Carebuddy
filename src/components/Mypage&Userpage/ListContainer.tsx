@@ -38,6 +38,7 @@ interface CommunityPost {
 
 interface PostId {
   title: string;
+  createdAt: Date;
 }
 
 interface ListContainerProps {
@@ -51,10 +52,6 @@ const ListContainer: React.FC<ListContainerProps> = ({ communityPosts, postIds, 
     return <div>Loading...</div>;
   }
 
-  if (!communityPosts || !postIds || communityPosts.length === 0 || postIds.length === 0) {
-    return <div>데이터가 없습니다.</div>;
-  }
-
   return (
     <Container>
       <DataContainer>
@@ -62,11 +59,11 @@ const ListContainer: React.FC<ListContainerProps> = ({ communityPosts, postIds, 
         <Title>글제목</Title>
         <Title>작성일</Title>
       </DataContainer>
-      {communityPosts.map((post, index) => (
+      {postIds.map((post, index) => (
         <DataContainer key={post.id}>
-          <GroupContent>[{post.category === 0 ? '강아지' : '고양이'}] {post.community}</GroupContent>
+          <GroupContent>[{post.title === 0 ? '강아지' : '고양이'}] {post.community}</GroupContent>
           <ContentList>{postIds[index]?.title || '제목 없음'}</ContentList>
-          <ContentList>{post.createdAt}</ContentList>
+          <ContentList>{new Date(post.createdAt).toLocaleDateString()}</ContentList>
         </DataContainer>
       ))}
     </Container>
