@@ -120,6 +120,7 @@ const ReportWrapper = styled.div`
 const ProfilesTitle = styled.div`
   font-size: var(--font-size-hd-2);
   font-weight: var(--font-weight-bold);
+  color: var(--color)
   margin: 20px 0 30px 0;
 `;
 interface ICreatedAt {
