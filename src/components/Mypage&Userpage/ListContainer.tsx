@@ -28,26 +28,17 @@ const DataContainer = styled.div`
 const GroupContent = styled(ContentList)`
   color: #6d987a;
 `;
-
-interface CommunityPost {
-  id: string;
-  category: number;
-  community: string;
-  createdAt: string;
-}
-
 interface PostId {
   title: string;
   createdAt: Date;
 }
 
 interface ListContainerProps {
-  communityPosts: CommunityPost[];
   postIds: PostId[];
   isLoading: boolean;
 }
 
-const ListContainer: React.FC<ListContainerProps> = ({ communityPosts, postIds, isLoading }) => {
+const ListContainer: React.FC<ListContainerProps> = ({ postIds, isLoading }) => {
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -60,9 +51,9 @@ const ListContainer: React.FC<ListContainerProps> = ({ communityPosts, postIds, 
         <Title>작성일</Title>
       </DataContainer>
       {postIds.map((post, index) => (
-        <DataContainer key={post.id}>
-          <GroupContent>[{post.title === 0 ? '강아지' : '고양이'}] {post.community}</GroupContent>
-          <ContentList>{postIds[index]?.title || '제목 없음'}</ContentList>
+        <DataContainer>
+          <GroupContent>[강아지] 말티즈</GroupContent>
+          <ContentList>{postIds[index]?.title }</ContentList>
           <ContentList>{new Date(post.createdAt).toLocaleDateString()}</ContentList>
         </DataContainer>
       ))}
