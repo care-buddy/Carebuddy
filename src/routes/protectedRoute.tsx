@@ -16,28 +16,23 @@ export default function ProtectedRoute({
 }: {
   children: React.ReactNode;
 }) {
-  const { accessToken } = useRecoilValue(authState);
-  const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const [redirect, setRedirect] = useState(false);
   const [isLoading, setLoading] = useRecoilState(loadingState);
   const [, setLoginModalOpen] = useRecoilState(loginModalState);
+  const [auth, setAuth] = useRecoilState(authState);
 
   useEffect(() => {
     const checkAuth = async () => {
       setLoading(true);
       try {
         // 토큰 리프레시 API 호출
-        const response = await axiosInstance.post(
-          'auth/silent-refresh',
-          {},
-          { withCredentials: true }
-        );
+        const response = await axiosInstance.post('auth/silent-refresh');
         const { accessToken } = response.data;
-        // 새 accessToken을 저장
-        localStorage.setItem('accessToken', accessToken);
+        setAuth({
+          accessToken,
+        });
       } catch (error) {
         console.error('Silent refresh error:', error);
-
         setRedirect(true);
       } finally {
         setLoading(false);
