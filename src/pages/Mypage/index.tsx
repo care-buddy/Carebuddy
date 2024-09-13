@@ -59,6 +59,8 @@ interface CommunityPost {
 
 interface PostId {
   title: string;
+  content: string;
+  createdAt: Date;
 }
 
 interface FormData {
@@ -66,6 +68,21 @@ interface FormData {
   content: string;
   groupId: string;
   postImage: string[];
+}
+
+interface ApiResponse {
+  email: string;
+  nickName: string;
+  introduce: string;
+  profileImage: string[];
+  communityId: CommunityPost[];
+  postId: ApiPostId[];
+}
+
+interface ApiPostId {
+  title: string;
+  content: string;
+  createdAt: string;
 }
 
 const Mypage: React.FC = () => {
@@ -78,48 +95,39 @@ const Mypage: React.FC = () => {
     postId: [],
   });
 
+  const [buddiesData, setBuddiesData] = useState<BuddiesData[]>([]);
+
   const [isLoading, setIsLoading] = useState(true);
-  const [isModalOpen, setIsModalOpen] = useState(false); // 회원탈퇴 모달
-  const [formData, setFormData] = useState<FormData>({
-    title: '',
-    content: '',
-    groupId: '',
-    postImage: [],
-  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [buddiesData] = useRecoilState(buddyState);
+  // const [buddiesData] = useRecoilState(buddyState);
 
-  const userId = '668ce6fa73b15595e620fd41';
+  const userId = '668ce6fa73b15595e620fd41'; // userId 지정 -> 추후 변환 예정
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.get(`user/mypage/${userId}`);
+        const response = await axiosInstance.get<{ message: ApiResponse }>(`user/mypage/${userId}`);
         const data = response.data.message;
 
-        // 데이터 매핑
         const mappedData: UserData = {
-          email: data.email || '', // 기본값 설정
-          nickName: data.nickName || '', // nickName 필드에 값 설정
-          introduce: data.introduce || '', // introduce 필드에 값 설정
-          profileImage: data.profileImage || [], // profileImage 필드에 값 설정
-          communityId: data.communityId || [], // communityId 필드에 값 설정
-          postId: data.postId || [], // postId 필드에 값 설정
+          email: data.email || '',
+          nickName: data.nickName || '',
+          introduce: data.introduce || '',
+          profileImage: data.profileImage || [],
+          communityId: data.communityId || [],
+          postId: data.postId
+            ? data.postId.map((post) => ({
+              title: post.title,
+              content: post.content,
+              createdAt: new Date(post.createdAt),
+            }))
+            : [],
         };
-
-        console.log('user 데이터', mappedData);
-        console.log('post 데이터', response.data.message.postId);
-
+        console.log('user 데이터: ', data)
         setUserData(mappedData);
 
-        // Fetch된 데이터를 formData에 넣기
-        setFormData({
-          title: data.nickName || '', // 예시로 nickname을 title로 설정
-          content: data.introduce || '', // 예시로 introduction을 content로 설정
-          groupId: data.communityId.length > 0 ? data.communityId[0].id : '', // 첫 번째 커뮤니티 ID
-          postImage: data.profileImage || [], // 프로필 이미지를 postImage로 설정
-        });
       } catch (error) {
         console.error('사용자 데이터 가져오기 오류:', error);
       } finally {
@@ -127,6 +135,19 @@ const Mypage: React.FC = () => {
       }
     };
 
+    const buddiesId = '66cc2f2d1d15e7a5a42285be';
+    const fetchBuddiesData = async () => {
+      try {
+        const response = await axiosInstance.get(`buddies/${buddiesId}`);
+        const buddyResponse = response.data.message;
+        console.log('buddy 데이터:', buddyResponse)
+        setBuddiesData(buddyResponse.buddies);
+      } catch (error) {
+        console.error('반려동물 데이터 가져오기 오류:', error);
+      }
+    };
+
+    fetchBuddiesData();
     fetchData();
   }, [userId]);
 
@@ -187,18 +208,12 @@ const Mypage: React.FC = () => {
     {
       id: '3',
       content: '반려동물 관리',
-      component: <PetCardContainer buddyData={buddiesData.buddies} isMe={false} />,
+      component: <PetCardContainer buddyData={buddiesData} isMe={false} />,
     },
     {
       id: '4',
       content: '작성 글 목록',
-      component: (
-        <ListContainer
-          communityPosts={userData.communityId}
-          postIds={userData.postId}
-          isLoading={isLoading}
-        />
-      ),
+      component: <ListContainer postIds={userData.postId} isLoading={isLoading} />,
     },
   ];
 
@@ -222,12 +237,7 @@ const Mypage: React.FC = () => {
       </WithdrawContainer>
       {isModalOpen && (
         <SmallModal
-          component={
-            <UserAsk
-              onConfirm={handleConfirmWithdraw}
-              onCancel={handleCloseModal}
-            />
-          }
+          component={<UserAsk onConfirm={handleConfirmWithdraw} onCancel={handleCloseModal} />}
           onClose={handleCloseModal}
         />
       )}
