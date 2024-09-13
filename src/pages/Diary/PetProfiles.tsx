@@ -91,11 +91,10 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
   const [isLoading, setLoading] =
     useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
   // const [, setError] = useState<Error | null>(null);
+  // 에러를 recoil로 사용하니 에러 띄운 화면에서 다른 화면 이동 시 에러가 유지되는 듯 함, 에러를 다른 api 호출 시 null로 만들어줘야함.. 에러는 리코일 활용을 안하는게 맞는지?
   const [, setError] = useRecoilState(errorState);
 
   // 유효성 검사 알림 상태
-  // const [showAlert, setShowAlert] = useState(false);
-  // const [alertMessage, setAlertMessage] = useState('');
   const [alertState, setAlertState] = useRecoilState(validationAlertState);
 
   const handleOpenPetModal = () => {

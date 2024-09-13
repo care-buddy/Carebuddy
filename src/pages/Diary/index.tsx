@@ -191,7 +191,6 @@ const Diary: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
-      // mock.onGet('/buddies').reply(200, dummyBuddies);
       const response = await axiosInstance.get('buddies');
 
       const fetchedBuddies = response.data.message;
@@ -199,7 +198,7 @@ const Diary: React.FC = () => {
       console.log(fetchedBuddies);
       if (fetchedBuddies.length === 0 || isAllProfilesDeleted) {
         setBuddiesData({
-          userName: fetchedBuddies.userName, // 로그인 미구현 시 제대로 로직 짤 수 없음
+          userName: fetchedBuddies.userName,
           buddies: sortedByCreatedAt(fetchedBuddies.buddies),
         });
 
@@ -211,7 +210,6 @@ const Diary: React.FC = () => {
         buddies: sortedByCreatedAt(fetchedBuddies.buddies),
       });
 
-      console.log(typeof fetchedBuddies);
       if (buddiesData.buddies.length > 0 && !selectedId) {
         const firstValidBuddy = buddiesData.buddies.find(
           (buddy) => !buddy.deletedAt
@@ -371,22 +369,8 @@ const Diary: React.FC = () => {
     }
   };
 
-  // mock.onPut(`/hospitals/1r/d`).reply((config) => {
-  //   const deletedRecord = JSON.parse(config.data);
-  //   return [200, deletedRecord];
-  // });
-  // mock.onPut(`/hospitals/2r/d`).reply((config) => {
-  //   const deletedRecord = JSON.parse(config.data);
-
-  //   return [200, deletedRecord];
-  // });
   const handleDeleteRecord = async (recordId: string) => {
     // 삭제 PUT 요청 설정
-    // mock.onPut(`/hospitals/${recordId}/d`).reply((config) => {
-    //   const deletedRecord = JSON.parse(config.data);
-
-    //   return [200, deletedRecord];
-    // });
     if (window.confirm('삭제하시겠습니까?')) {
       try {
         // id로 삭제 요청한 record를 찾음

@@ -33,7 +33,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({
     // 없을 때 값은 임시
     name: petData?.name ?? '',
     kind: petData?.kind ?? '',
-    age: petData?.age ?? '',
+    birth: petData?.birth ?? '',
     weight: petData?.weight ?? '',
     // 없을 시 null로 수정해야함
     buddyImage: petData?.buddyImage,
@@ -42,12 +42,50 @@ const PetRegister: React.FC<PetRegisterProps> = ({
   // formData - input 핸들러
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement>,
-    type: 'name' | 'age' | 'weight' | 'kind'
+    type: 'name' | 'weight' | 'kind'
   ) => {
     setPetInfo({
       ...petInfo,
       [type]: e.target.value,
     });
+  };
+
+  const handleDateChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'year' | 'month' | 'day'
+  ) => {
+    const currentBirth = petInfo?.birth || '';
+
+    // 현재 날짜 값을 yyyy-mm-dd 형식으로 변환
+    const [currentYear, currentMonth, currentDay] = currentBirth.split('-');
+
+    // 입력값을 추출
+    const { value } = e.target;
+
+    // 업데이트된 날짜 문자열을 생성
+    let newBirth = currentBirth;
+
+    switch (type) {
+      case 'year':
+        newBirth = `${value}-${currentMonth || '01'}-${currentDay || '01'}`;
+        break;
+      case 'month':
+        newBirth = `${currentYear || '0000'}-${value.padStart(2, '0')}-${currentDay || '01'}`;
+        break;
+      case 'day':
+        newBirth = `${currentYear || '0000'}-${currentMonth || '01'}-${value.padStart(2, '0')}`;
+        break;
+      default:
+        // 예상치 못한 field 값이 들어왔을 때의 처리
+        console.warn(`Unhandled field type: ${type}`);
+        break;
+    }
+
+    // petData를 업데이트합니다.
+    setPetInfo((prevData) => ({
+      ...prevData,
+      birth: newBirth,
+    }));
   };
 
   // formData - button 핸들러: 성별, 종, 중성화 여부가 버튼으로 관리
@@ -70,7 +108,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({
         isNeutered: petData.isNeutered,
         name: petData?.name,
         kind: petData?.kind,
-        age: petData?.age,
+        birth: petData?.birth,
         weight: petData?.weight,
         buddyImage: petData?.buddyImage,
       });
@@ -87,7 +125,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({
     formData.append('species', String(petInfo.species));
     formData.append('isNeutered', String(petInfo.isNeutered));
     formData.append('name', petInfo.name);
-    formData.append('age', String(petInfo.age));
+    formData.append('birth', String(petInfo.birth));
     formData.append('weight', String(petInfo.weight));
     formData.append('kind', petInfo.kind);
     // 선택 파일이 있을 때에는 그 파일을 append 해준다
@@ -183,13 +221,34 @@ const PetRegister: React.FC<PetRegisterProps> = ({
           />
         </Section>
         <Section>
-          <Heading>나이</Heading>
+          <Heading>생일</Heading>
           <Input
             type="number"
-            onChange={(e) => handleInputChange(e, 'age')}
-            placeholder="나이를 입력해주세요"
+            onChange={(e) => handleDateChange(e, 'year')}
+            placeholder="년(4자)"
             inputPadding="sm"
-            defaultValue={petData?.age || ''}
+            inputSize="mini"
+            defaultValue={petData?.birth.split('-')[0] || ''}
+            focusColor="green"
+          />
+          <Input
+            type="number"
+            min={1}
+            max={12}
+            onChange={(e) => handleDateChange(e, 'month')}
+            placeholder="월"
+            inputPadding="sm"
+            inputSize="mini"
+            defaultValue={petData?.birth.split('-')[1] || ''}
+            focusColor="green"
+          />
+          <Input
+            type="number"
+            onChange={(e) => handleDateChange(e, 'day')}
+            placeholder="일"
+            inputPadding="sm"
+            inputSize="mini"
+            defaultValue={petData?.birth.split('-')[2] || ''}
             focusColor="green"
           />
         </Section>
