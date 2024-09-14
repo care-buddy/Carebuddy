@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilStoreID, useRecoilValue } from 'recoil';
 
 import logo from '@assets/carebuddyLogo.png';
 import { LuBell, LuUser2, LuSearch, LuX } from 'react-icons/lu';
@@ -22,6 +22,8 @@ import userState from '@/recoil/atoms/userState';
 import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 import loginModalState from '@/recoil/atoms/loginModalState';
+
+import Community from '@/interfaces/index';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -119,20 +121,19 @@ const Header: React.FC = () => {
     window.location.href = '/';
   };
 
-  // useEffect(() => {
-  //   console.log('isAuthenticated', isAuthenticated);
-  //   console.log('auth.accessToken', auth.accessToken);
-  // }, [isAuthenticated]);
-
   // 임시
   const InfoMenuItems = [
     { to: '/hosInfo', label: '병원 검색' },
     { to: '/pharInfo', label: '약국 검색' },
   ];
 
+  // 로그인 상태일때만! 이렇게 되도록 추가해야함 - 임시(나중에 수정할 것)
   const CommunityMenuItems = [
-    { to: '/community', label: '커뮤니티' },
-    { to: '/post/66b9a2f06928b8fede303284', label: '포스트' }, // 임시
+    { to: '/community', label: '전체 커뮤니티' },
+    ...(user?.communityId?.map((community: Community) => ({
+      to: `/community-feed/${community._id}`,
+      label: community.community,
+    })) || []),
   ];
 
   return (
@@ -144,7 +145,6 @@ const Header: React.FC = () => {
         <Menu>
           {!isSearching && (
             <>
-              {' '}
               <MenuItem
                 onClick={handleLinkClick}
                 onMouseEnter={() => setDropdownVisible(true)}
@@ -264,7 +264,6 @@ const Wrapper = styled.header`
 const Content = styled.div`
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
-  /* align-items: center; */
   height: 100%;
 `;
 

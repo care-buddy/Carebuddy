@@ -16,3 +16,8 @@ export interface User {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface Community {
+  _id: string;
+  community: string;
+}

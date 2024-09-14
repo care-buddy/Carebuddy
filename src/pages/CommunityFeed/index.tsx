@@ -3,6 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 import styled from 'styled-components';
 
 import TopBar from '@/components/common/TopBar';
@@ -23,6 +24,8 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import type { PostData } from '@constants/tempInterface';
 
+import userState from '@/recoil/atoms/userState';
+
 // 임시 데이터
 import { tempGroupArray1, tempGroupMember } from '@constants/tempData';
 
@@ -36,6 +39,8 @@ const CommunityFeed: React.FC = () => {
   const params = new URLSearchParams(searchParams); // 현재 쿼리 파라미터
   const [error, setError] = useState<Error | null>(null); // 에러
   const [loading, setLoading] = useState<boolean>(false); // 로딩중
+
+  const user = useRecoilValue(userState);
 
   const { communityId } = useParams();
   const navigate = useNavigate();
