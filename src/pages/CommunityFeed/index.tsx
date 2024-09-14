@@ -1,4 +1,4 @@
-// 임시 - 남은 작업: 커뮤니티별 게시글 불러오기 API, 그룹 멤버 조회 API(백엔드 완료 이후 작업) / 첫 화면 페이지네이션(커뮤니티별 게시글 조회 API 붙이고 작업), 가입하게 하기, 비로그인 상태에서는 탈퇴하기 말고 가입하기 보이게 하기
+// 임시 - 남은 작업: 커뮤니티별 게시글 불러오기 API, 그룹 멤버 조회 API(백엔드 완료 이후 작업) / 첫 화면 페이지네이션(커뮤니티별 게시글 조회 API 붙이고 작업)
 // 리팩토링할 수도 있는 부분: filteredPosts를 제거하고 필터링된 데이터를 바로 렌더링하는 방식 고려 가능. useMemo 사용해서 메모이제이션, posts 부분과 filterefPosts 함수로 만들어서 동적렌더링, 검색로직 커스텀 훅으로 분리
 
 import React, { useState, useEffect } from 'react';
@@ -23,14 +23,13 @@ import formatDate from '@/utils/formatDate';
 import axiosInstance from '@/utils/axiosInstance';
 
 import loginModalState from '@/recoil/atoms/loginModalState';
-import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
-import { PostData } from '@/interfaces/index';
+import { PostData, User } from '@/interfaces/index';
 
 import userState from '@/recoil/atoms/userState';
 
-// 임시 데이터
-import { tempGroupArray1, tempGroupMember } from '@constants/tempData';
+// 임시 데이터 - 백엔드 로직 이후 변경
+import { tempGroupMember } from '@constants/tempData';
 
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
@@ -45,8 +44,7 @@ const CommunityFeed: React.FC = () => {
 
   const [, setLoginModalOpen] = useRecoilState(loginModalState);
 
-  const isAuthenticated = useRecoilValue(isAuthenticatedState);
-  const user = useRecoilValue(userState);
+  const user: User | null = useRecoilValue(userState);
 
   const { communityId } = useParams();
   const navigate = useNavigate();
@@ -86,7 +84,7 @@ const CommunityFeed: React.FC = () => {
     setLoginModalOpen(true);
   };
 
-  // // 커뮤니티별 게시글 불러오기(백엔드 로직 완료 이후)
+  // 커뮤니티별 게시글 불러오기(백엔드 로직 완료 이후) - 임시
   // useEffect(() => {
   //   const fetchData = async () => {
   //     try {
@@ -143,11 +141,11 @@ const CommunityFeed: React.FC = () => {
   }
 
   // 리팩토링하고싶은 부분
-  // const renderPosts = (postArray: PostData[] | null) => {
-  //   if (!postArray || postArray.length === 0) {
+  // const renderPosts = (posts: PostData[] | null) => {
+  //   if (!posts || posts.length === 0) {
   //     return <NoPostsFound>검색어에 해당하는 게시글이 없습니다.</NoPostsFound>;
   //   }
-  //   return postArray.map((post) => (
+  //   return posts.map((post) => (
   //     <FeedBox
   //       key={post._id}
   //       postId={post._id}
@@ -200,8 +198,8 @@ const CommunityFeed: React.FC = () => {
     <>
       <TopBar
         category="커뮤니티"
-        title={tempGroupArray1.groupName}
-        communityCategory={tempGroupArray1.category}
+        title='백엔드 완성 이후 수정 - 임시'
+        communityCategory='백엔드 완성 이후 수정 - 임시'
       />
       <SearchContainer>
         <Search
@@ -234,7 +232,7 @@ const CommunityFeed: React.FC = () => {
         </FeedBoxContainer>
         <div>
           <LinkButtonContainer>
-            {isAuthenticated ? (
+            {user?.communityId.some((c) => c._id === communityId) ? (
               <LinkButton linkSize="sm" onClick={handleWithdrawalCommunity}>
                 탈퇴하기
               </LinkButton>

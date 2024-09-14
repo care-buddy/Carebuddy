@@ -4,6 +4,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
+import { useRecoilValue } from 'recoil';
 
 import TopBar from '@/components/common/TopBar';
 import Comment from '@/components/Post/Comment';
@@ -20,7 +21,9 @@ import formatDateIncludeTime from '@/utils/formatDateIncludeTime';
 
 import axiosInstance from '@/utils/axiosInstance';
 
-import type { PostData, CommentData } from '@constants/tempInterface';
+import userState from '@/recoil/atoms/userState';
+
+import type { PostData, CommentData } from '@/interfaces';
 
 interface FormData {
   title: string;
@@ -46,19 +49,26 @@ const Post: React.FC = () => {
 
   const { postId } = useParams();
 
+  const user = useRecoilValue(userState); // 임시 -> 나중에 쓰이는 것만 구조분해할당으로 받아오게 변경
+
+  const [likedUsers, setLikedUsers] = useState([]);
+  const [isLiked, setIsLiked] = useState(false); // 좋아요 여부 상태
+
   // 게시글 & 댓글 조회 API
   useEffect(() => {
     const fetchData = async () => {
       // 게시글
       try {
         setLoading(true);
-        const response = await axiosInstance.get(`post/${postId}`);
+        const response = await axiosInstance.get(`posts/${postId}`);
         const post = response.data.message;
 
         // 등록일 formatting
         post.createdAt = formatDateIncludeTime(post.createdAt);
 
         setPost(post[0]);
+        setLikedUsers(post[0].likedUsers);
+        console.log('포스트 불러올 때 좋아요 개수', post[0].likedUsers);
       } catch (error) {
         setError(error as Error);
       } finally {
@@ -143,8 +153,7 @@ const Post: React.FC = () => {
         alert('댓글 내용을 입력해주세요.');
       }
     } catch (error) {
-      // setError(error as Error);
-      console.error(error);
+      setError(error as Error);
     } finally {
       setLoading(false);
     }
@@ -226,6 +235,26 @@ const Post: React.FC = () => {
     setIsEditModalOpen(value);
   };
 
+  // 추천해요 누르기
+  const handleLikesClick = async () => {
+    try {
+      setLoading(true);
+      const response = await axiosInstance.put(`/posts/${post?._id}/like`, {
+        userId: user?._id,
+      });
+
+      setLikedUsers(response.data.message);
+    } catch (error) {
+      setError(error as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    setIsLiked(likedUsers.includes(user?._id));
+  }, [likedUsers]);
+
   if (isLoading) return <Loading />;
 
   if (error) {
@@ -236,10 +265,11 @@ const Post: React.FC = () => {
     <>
       <TopBar
         category="커뮤니티"
-        title="눈 / 피부 / 귀"
-        communityCategory="고양이"
+        title={post?.communityId.community}
+        communityCategory={
+          post?.communityId.category === 0 ? '강아지' : '고양이'
+        }
       />
-
       <Container>
         <PostListButtonContainer>
           <LuChevronLeft />
@@ -285,9 +315,9 @@ const Post: React.FC = () => {
           {post?.postImage && post.postImage.length > 0 && (
             <img src={post.postImage[0]} alt="이미지" />
           )}
-          <Likes>
+          <Likes isLiked={isLiked} onClick={() => handleLikesClick()}>
             <LuThumbsUp />
-            <p>추천해요 {post?.likedUsers.length}</p>
+            <p>추천해요 {likedUsers.length}</p>
           </Likes>
         </ContentContainer>
         <CommentContainer>
@@ -382,9 +412,10 @@ const ContentContainer = styled.div`
   }
 `;
 
-const Likes = styled.div`
+const Likes = styled.div<{ isLiked: boolean }>`
   display: flex;
-  color: var(--color-grey-1);
+  color: ${({ isLiked }) =>
+    isLiked ? 'var( --color-green-main)' : 'var(--color-grey-1)'};
   font-size: var(--font-size-ft-1);
   align-items: center;
   cursor: pointer;
