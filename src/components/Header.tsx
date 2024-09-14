@@ -111,6 +111,8 @@ const Header: React.FC = () => {
       setAuth({
         accessToken: null,
       });
+
+      setUser(null);
     } catch (error) {
       console.error(error); // 임시. 나중에 변경
     }
