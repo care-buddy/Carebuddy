@@ -101,11 +101,7 @@ const Header: React.FC = () => {
 
     try {
       const email = 'goldengooooose2024@gmail.com'; // 임시 이메일
-      await axiosInstance.post(
-        'auth/logout',
-        { email },
-        { withCredentials: true }
-      );
+      await axiosInstance.delete('auth/logout', { data: { email } });
 
       deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
 
@@ -117,11 +113,6 @@ const Header: React.FC = () => {
     }
     window.location.href = '/';
   };
-
-  // useEffect(() => {
-  //   console.log('isAuthenticated', isAuthenticated);
-  //   console.log('auth.accessToken', auth.accessToken);
-  // }, [isAuthenticated]);
 
   // 임시
   const InfoMenuItems = [

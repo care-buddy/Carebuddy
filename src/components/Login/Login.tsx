@@ -226,7 +226,6 @@ const PasswordContainer = styled.div`
   position: relative;
 
   input {
-    // margin-top: 4px;
     width: 100%;
   }
 `;
