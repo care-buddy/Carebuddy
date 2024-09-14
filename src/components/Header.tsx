@@ -1,4 +1,4 @@
-import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
@@ -100,11 +100,9 @@ const Header: React.FC = () => {
     };
 
     try {
-      const email = 'goldengooooose2024@gmail.com'; // 임시 이메일
-      await axiosInstance.post(
+      await axiosInstance.delete(
         'auth/logout',
-        { email },
-        { withCredentials: true }
+        { email }
       );
 
       deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경

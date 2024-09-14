@@ -32,10 +32,7 @@ const useLogin = () => {
     try {
       const response = await axiosInstance.post(
         'auth/silent-refresh',
-        {},
-        {
-          withCredentials: true, // 쿠키와 함께 요청
-        }
+        {}
       );
 
       // 새로운 accessToken과 refreshToken을 설정

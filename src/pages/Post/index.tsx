@@ -10,7 +10,7 @@ import Comment from '@/components/Post/Comment';
 import Loading from '@/components/common/Loading';
 import PostCreate from '@/pages/PostCreate/index';
 import Modal from '@/components/common/Modal/index';
-import ActionButton from '@/components/common/ActtionButton';
+import ActionButton from '@/components/common/ActionButton';
 import CommentWritingBox from '@/components/Post/CommentWritingBox';
 import LikeAndCommentCount from '@/components/Post/LikesAndCommentCount';
 
