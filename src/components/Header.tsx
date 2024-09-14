@@ -17,6 +17,7 @@ import SmallModal from '@/components/common/SmallModal';
 import axiosInstance from '@/utils/axiosInstance';
 
 import authState from '@/recoil/atoms/authState';
+import userState from '@/recoil/atoms/userState';
 
 import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
@@ -31,6 +32,7 @@ const Header: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
   const [auth, setAuth] = useRecoilState(authState);
+  const [user, setUser] = useRecoilState(userState);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   const navigate = useNavigate();
@@ -100,10 +102,9 @@ const Header: React.FC = () => {
     };
 
     try {
-      await axiosInstance.delete(
-        'auth/logout',
-        { email }
-      );
+      await axiosInstance.delete('auth/logout', {
+        data: { email: user?.email },
+      });
 
       deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
 

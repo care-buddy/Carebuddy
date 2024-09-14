@@ -1,12 +1,11 @@
 export interface User {
-  // 타입 아직 정확하지는 않음!
+  adminNumber: number;
   _id: string;
   nickName: string;
   email: string;
   password: string;
   profileImage: string[];
   introduce: string;
-  adminNumber: number;
   isTempPassword: number;
   postId: string[];
   commentId: string[];

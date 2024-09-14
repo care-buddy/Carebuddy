@@ -67,7 +67,8 @@ const Login: React.FC<LoginProps> = ({
       try {
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
 
-        const { accessToken } = loginResponse.data;
+        const { accessToken, userId } = loginResponse.data;
+        console.log('유저 아이디', userId);
 
         // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
@@ -78,7 +79,10 @@ const Login: React.FC<LoginProps> = ({
         });
 
         // 유저 정보 업데이트
-        const userResponse = await axiosInstance.get('auth/')
+        const userResponse = await axiosInstance.get(`users/${userId}`);
+
+        setUser(userResponse.data.message);
+        console.log('유저 정보', userResponse.data.message) // 임시
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
