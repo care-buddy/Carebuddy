@@ -2,7 +2,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
-import { useRecoilState, useRecoilStoreID, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import logo from '@assets/carebuddyLogo.png';
 import { LuBell, LuUser2, LuSearch, LuX } from 'react-icons/lu';
@@ -23,7 +23,7 @@ import { notifications } from '@/constants/tempData'; // 로그인때문에 내�
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 import loginModalState from '@/recoil/atoms/loginModalState';
 
-import Community from '@/interfaces/index';
+import { CommunityData } from '@/interfaces/index';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -33,7 +33,7 @@ const Header: React.FC = () => {
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
-  const [auth, setAuth] = useRecoilState(authState);
+  const [, setAuth] = useRecoilState(authState);
   const [user, setUser] = useRecoilState(userState);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
@@ -130,7 +130,7 @@ const Header: React.FC = () => {
   // 로그인 상태일때만! 이렇게 되도록 추가해야함 - 임시(나중에 수정할 것)
   const CommunityMenuItems = [
     { to: '/community', label: '전체 커뮤니티' },
-    ...(user?.communityId?.map((community: Community) => ({
+    ...(user?.communityId?.map((community: CommunityData) => ({
       to: `/community-feed/${community._id}`,
       label: community.community,
     })) || []),
@@ -148,7 +148,7 @@ const Header: React.FC = () => {
               <MenuItem
                 onClick={handleLinkClick}
                 onMouseEnter={() => setDropdownVisible(true)}
-                to="/community-feed/66b5ba8c19ffced581357307" // 임시
+                to="/community" 
               >
                 커뮤니티
                 {dropdownVisible && (

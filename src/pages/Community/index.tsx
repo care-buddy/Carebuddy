@@ -1,8 +1,7 @@
-// 임시 - 남은 작업: 유저 정보 연결해서 가입 상태 확인(recoil 적용 이후)
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 import CommunityCard from '@/components/Community/CommunityCard';
 import Button from '@/components/common/Button';
@@ -11,7 +10,10 @@ import TopBar from '@/components/common/TopBar';
 import axiosInstance from '@/utils/axiosInstance';
 
 import CATEGORY from '@/constants/communityConstants';
-import type { CommunityData } from '@/constants/tempInterface';
+
+import { CommunityData } from '@/interfaces/index';
+
+import userState from '@/recoil/atoms/userState';
 
 const Community: React.FC = () => {
   const navigate = useNavigate();
@@ -19,12 +21,7 @@ const Community: React.FC = () => {
   const [communities, setCommunities] = useState<CommunityData[] | []>([]); // 커뮤니티 목록
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-
-  const user = {
-    // 임시 유저. 나중에 전역 상태 관리로 바꾸어야함.
-    _id: '66a6f8e1640d6ec46070509d',
-    communityId: ['66b5ba8c19ffced581357307', '66c687429ac226b8a246a791'],
-  };
+  const user = useRecoilValue(userState);
 
   // 종 버튼 클릭 핸들러
   const isDogCategory = category === CATEGORY.dog;
@@ -62,7 +59,7 @@ const Community: React.FC = () => {
   const handleJoinButtonClick = async (communityId: string) => {
     if (confirm('그룹에 가입하시겠습니까?')) {
       try {
-        await axiosInstance.put(`user/${user._id}/joinCommunity`, {
+        await axiosInstance.put(`users/${user?._id}/joinCommunity`, {
           communityId,
         });
         navigate(`/community-feed/${communityId}`);
@@ -109,7 +106,8 @@ const Community: React.FC = () => {
               name={community.community}
               introduction={community.introduction}
               onButtonClick={() => handleJoinButtonClick(community._id)}
-              joined={!!user.communityId.includes(community._id)}
+              joined={!!user?.communityId.some((c) => c._id === community._id)}
+              communityId={community._id}
             />
           ))}
       </CardContainer>

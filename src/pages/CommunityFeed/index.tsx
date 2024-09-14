@@ -1,9 +1,9 @@
-// 임시 - 남은 작업: 커뮤니티별 게시글 불러오기 API, 그룹 멤버 조회 API(백엔드 완료 이후 작업) / 첫 화면 페이지네이션(커뮤니티별 게시글 조회 API 붙이고 작업)
+// 임시 - 남은 작업: 커뮤니티별 게시글 불러오기 API, 그룹 멤버 조회 API(백엔드 완료 이후 작업) / 첫 화면 페이지네이션(커뮤니티별 게시글 조회 API 붙이고 작업), 가입하게 하기, 비로그인 상태에서는 탈퇴하기 말고 가입하기 보이게 하기
 // 리팩토링할 수도 있는 부분: filteredPosts를 제거하고 필터링된 데이터를 바로 렌더링하는 방식 고려 가능. useMemo 사용해서 메모이제이션, posts 부분과 filterefPosts 함수로 만들어서 동적렌더링, 검색로직 커스텀 훅으로 분리
 
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
 import TopBar from '@/components/common/TopBar';
@@ -22,7 +22,10 @@ import usePostCreate from '@/hooks/usePostCreate';
 import formatDate from '@/utils/formatDate';
 import axiosInstance from '@/utils/axiosInstance';
 
-import type { PostData } from '@constants/tempInterface';
+import loginModalState from '@/recoil/atoms/loginModalState';
+import isAuthenticatedState from '@/recoil/selectors/authSelector';
+
+import { PostData } from '@/interfaces/index';
 
 import userState from '@/recoil/atoms/userState';
 
@@ -40,16 +43,13 @@ const CommunityFeed: React.FC = () => {
   const [error, setError] = useState<Error | null>(null); // 에러
   const [loading, setLoading] = useState<boolean>(false); // 로딩중
 
+  const [, setLoginModalOpen] = useRecoilState(loginModalState);
+
+  const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const user = useRecoilValue(userState);
 
   const { communityId } = useParams();
   const navigate = useNavigate();
-
-  const user = {
-    // 임시 유저. 나중에 전역 상태 관리로 바꾸어야함.
-    _id: '66a6f8e1640d6ec46070509d',
-    communityId: ['66b5ba8c19ffced581357307', '66c687429ac226b8a246a791'],
-  };
 
   const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
     () => {
@@ -66,7 +66,7 @@ const CommunityFeed: React.FC = () => {
   const handleWithdrawalCommunity = async () => {
     if (confirm('커뮤니티를 탈퇴하시겠습니까?')) {
       try {
-        await axiosInstance.put(`/user/${user._id}/withdrawalCommunity`, {
+        await axiosInstance.put(`/user/${user?._id}/withdrawalCommunity`, {
           communityId,
         });
 
@@ -79,21 +79,27 @@ const CommunityFeed: React.FC = () => {
     }
   };
 
-  // 커뮤니티별 게시글 불러오기(백엔드 완료 이후 작업)
-  useEffect(() => {
-    const fetchData = async () => {
-      // 게시글 목록
-      // try {
-      //   const response = await axiosInstance.get(`/posts`);
-      //   setPosts(response.data);
-      // } catch (error) {
-      //   setError(error as Error);
-      // } finally {
-      //   setLoading(false);
-      // }
-    };
-    fetchData();
-  }, []);
+  // 로그인 모달 열기
+  const handleOpenLoginModal = async () => {
+    alert('로그인한 사용자만 이용할 수 있는 메뉴입니다.'); // 임시. 멘트 변경
+
+    setLoginModalOpen(true);
+  };
+
+  // // 커뮤니티별 게시글 불러오기(백엔드 로직 완료 이후)
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const response = await axiosInstance.get(`/posts/${communityId}`);
+  //       setPosts(response.data);
+  //     } catch (error) {
+  //       setError(error as Error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
 
   // 검색 로직
   // 검색 상태 핸들러
@@ -228,9 +234,16 @@ const CommunityFeed: React.FC = () => {
         </FeedBoxContainer>
         <div>
           <LinkButtonContainer>
-            <LinkButton linkSize="sm" onClick={handleWithdrawalCommunity}>
-              탈퇴하기
-            </LinkButton>
+            {isAuthenticated ? (
+              <LinkButton linkSize="sm" onClick={handleWithdrawalCommunity}>
+                탈퇴하기
+              </LinkButton>
+            ) : (
+              <LinkButton linkSize="sm" onClick={handleOpenLoginModal}>
+                가입하기
+              </LinkButton>
+            )}
+
             <LinkButton href="/community" linkSize="sm">
               다른 커뮤니티 둘러보기
             </LinkButton>

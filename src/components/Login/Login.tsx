@@ -36,7 +36,7 @@ const Login: React.FC<LoginProps> = ({
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [auth, setAuth] = useRecoilState(authState);
-  const [user, setUser] = useRecoilState(userState);
+  const [, setUser] = useRecoilState(userState);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
@@ -231,7 +231,6 @@ const PasswordContainer = styled.div`
   position: relative;
 
   input {
-    // margin-top: 4px;
     width: 100%;
   }
 `;

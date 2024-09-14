@@ -13,6 +13,7 @@ type CommunityCardProps = {
   introduction: string;
   onButtonClick?: () => void; // 임시
   joined: boolean;
+  communityId: string;
 };
 
 const CommunityCard: React.FC<CommunityCardProps> = ({
@@ -20,9 +21,10 @@ const CommunityCard: React.FC<CommunityCardProps> = ({
   introduction,
   onButtonClick,
   joined,
+  communityId
 }) => (
   <CardContainer>
-    <CardContent to="/">
+    <CardContent to={`/community-feed/${communityId}`}>
       <IconContainer>
         <LuMessagesSquare />
       </IconContainer>
