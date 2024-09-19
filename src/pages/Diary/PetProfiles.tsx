@@ -238,14 +238,14 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
       // 로딩 처리 확인
       setLoading(true);
       // 아직 로그인 로직이 구현되어 있지 않기 때문에, 폼데이터에 id 지정해줘야함
-      formData?.append('userId', '66b9b34ae9a13c88c643e361');
+      // formData?.append('userId', '66b9b34ae9a13c88c643e361');
       try {
         setLoading(true);
 
         // 이미지 로직 적용 시 완전 바뀌어야 하므로 임시 구현(formData만 전송하도록 바꿔야한다) / formDataToJson 함수 삭제해야함
         const res = await axiosInstance.put(
           `buddies/${buddyId}`,
-          `buddies/${buddyId}`,
+          // `buddies/${buddyId}`,
           formDataToJson(formData)
         );
 

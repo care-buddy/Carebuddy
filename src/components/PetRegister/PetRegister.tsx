@@ -29,7 +29,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({
   const [petInfo, setPetInfo] = useState({
     sex: petData?.sex ?? (null as 1 | 2 | null), // 남: 1, 여: 2
     species: petData?.species ?? (null as 0 | 1 | null), // 강아지 0, 고양이 1
-    isNeutered: petData?.isNeutered ?? (null as 'before' | 1 | null),
+    isNeutered: petData?.isNeutered ?? null,
     // 없을 때 값은 임시
     name: petData?.name ?? '',
     kind: petData?.kind ?? '',
@@ -91,7 +91,7 @@ const PetRegister: React.FC<PetRegisterProps> = ({
   // formData - button 핸들러: 성별, 종, 중성화 여부가 버튼으로 관리
   const handleClick = (
     type: 'sex' | 'species' | 'isNeutered',
-    value: 0 | 1 | 2 | null
+    value: 0 | 1 | 2 | null | true | false
   ) => {
     setPetInfo({
       ...petInfo,
@@ -248,27 +248,32 @@ const PetRegister: React.FC<PetRegisterProps> = ({
             placeholder="일"
             inputPadding="sm"
             inputSize="mini"
-            defaultValue={petData?.birth.split('-')[2] || ''}
+            defaultValue={
+              petData?.birth && petData.birth.split('-')[2] !== '00'
+                ? petData.birth.split('-')[2]
+                : ''
+            }
             focusColor="green"
           />
+          <p>정확한 나이를 모르시면 월까지 입력해주세요.</p>
         </Section>
         <Section>
           <Heading>중성화</Heading>
           <Button
             buttonStyle={
-              petInfo.isNeutered === 0 ? 'square-green' : 'square-white'
+              petInfo.isNeutered === false ? 'square-green' : 'square-white'
             }
             buttonSize="sm"
-            onClick={() => handleClick('isNeutered', 0)}
+            onClick={() => handleClick('isNeutered', false)}
           >
             중성화 전
           </Button>
           <Button
             buttonStyle={
-              petInfo.isNeutered === 1 ? 'square-green' : 'square-white'
+              petInfo.isNeutered === true ? 'square-green' : 'square-white'
             }
             buttonSize="sm"
-            onClick={() => handleClick('isNeutered', 1)}
+            onClick={() => handleClick('isNeutered', true)}
           >
             중성화 완료
           </Button>
