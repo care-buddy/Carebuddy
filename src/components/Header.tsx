@@ -1,4 +1,4 @@
-import { Link, Navigate, NavLink, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 import React, { useEffect, useState } from 'react';
 import styled, { keyframes } from 'styled-components';
@@ -17,10 +17,13 @@ import SmallModal from '@/components/common/SmallModal';
 import axiosInstance from '@/utils/axiosInstance';
 
 import authState from '@/recoil/atoms/authState';
+import userState from '@/recoil/atoms/userState';
 
 import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 import loginModalState from '@/recoil/atoms/loginModalState';
+
+import { CommunityData } from '@/interfaces/index';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -30,7 +33,8 @@ const Header: React.FC = () => {
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
-  const [auth, setAuth] = useRecoilState(authState);
+  const [, setAuth] = useRecoilState(authState);
+  const [user, setUser] = useRecoilState(userState);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
   const navigate = useNavigate();
@@ -100,14 +104,17 @@ const Header: React.FC = () => {
     };
 
     try {
-      const email = 'goldengooooose2024@gmail.com'; // 임시 이메일
-      await axiosInstance.delete('auth/logout', { data: { email } });
+      await axiosInstance.delete('auth/logout', {
+        data: { email: user?.email },
+      });
 
       deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
 
       setAuth({
         accessToken: null,
       });
+
+      setUser(null);
     } catch (error) {
       console.error(error); // 임시. 나중에 변경
     }
@@ -120,9 +127,13 @@ const Header: React.FC = () => {
     { to: '/pharInfo', label: '약국 검색' },
   ];
 
+  // 로그인 상태일때만! 이렇게 되도록 추가해야함 - 임시(나중에 수정할 것)
   const CommunityMenuItems = [
-    { to: '/community', label: '커뮤니티' },
-    { to: '/post/66b9a2f06928b8fede303284', label: '포스트' }, // 임시
+    { to: '/community', label: '전체 커뮤니티' },
+    ...(user?.communityId?.map((community: CommunityData) => ({
+      to: `/community-feed/${community._id}`,
+      label: community.community,
+    })) || []),
   ];
 
   return (
@@ -134,11 +145,10 @@ const Header: React.FC = () => {
         <Menu>
           {!isSearching && (
             <>
-              {' '}
               <MenuItem
                 onClick={handleLinkClick}
                 onMouseEnter={() => setDropdownVisible(true)}
-                to="/community-feed/66b5ba8c19ffced581357307" // 임시
+                to="/community" 
               >
                 커뮤니티
                 {dropdownVisible && (
@@ -254,7 +264,6 @@ const Wrapper = styled.header`
 const Content = styled.div`
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
-  /* align-items: center; */
   height: 100%;
 `;
 
