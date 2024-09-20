@@ -255,7 +255,9 @@ const PetRegister: React.FC<PetRegisterProps> = ({
             }
             focusColor="green"
           />
-          <p>정확한 나이를 모르시면 월까지 입력해주세요.</p>
+          <BirthMessage>
+            정확한 나이를 모르시면 월까지 입력해주세요.
+          </BirthMessage>
         </Section>
         <Section>
           <Heading>중성화</Heading>
@@ -325,4 +327,8 @@ const ImageContainer = styled.div`
   display: flex;
   width: 170px;
   height: 160px;
+`;
+
+const BirthMessage = styled.p`
+  margin-top: 8px;
 `;
