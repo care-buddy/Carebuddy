@@ -91,11 +91,10 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
   const [isLoading, setLoading] =
     useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
   // const [, setError] = useState<Error | null>(null);
+  // 에러를 recoil로 사용하니 에러 띄운 화면에서 다른 화면 이동 시 에러가 유지되는 듯 함, 에러를 다른 api 호출 시 null로 만들어줘야함.. 에러는 리코일 활용을 안하는게 맞는지?
   const [, setError] = useRecoilState(errorState);
 
   // 유효성 검사 알림 상태
-  // const [showAlert, setShowAlert] = useState(false);
-  // const [alertMessage, setAlertMessage] = useState('');
   const [alertState, setAlertState] = useRecoilState(validationAlertState);
 
   const handleOpenPetModal = () => {
@@ -189,9 +188,12 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
       setLoading(true);
       try {
         // 아직 로그인 로직이 구현되어 있지 않기 때문에, 폼데이터에 id 지정해줘야함
-        formData?.append('userId', '66b9b34ae9a13c88c643e361');
 
-        const response = await axiosInstance.post('buddies', formData);
+        console.log(formDataToJson(formData));
+        const response = await axiosInstance.post(
+          'buddies',
+          formDataToJson(formData)
+        );
 
         handleClosePetModal();
         await fetchBuddiesData();
@@ -239,14 +241,14 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
       // 로딩 처리 확인
       setLoading(true);
       // 아직 로그인 로직이 구현되어 있지 않기 때문에, 폼데이터에 id 지정해줘야함
-      formData?.append('userId', '66b9b34ae9a13c88c643e361');
+      // formData?.append('userId', '66b9b34ae9a13c88c643e361');
       try {
         setLoading(true);
 
         // 이미지 로직 적용 시 완전 바뀌어야 하므로 임시 구현(formData만 전송하도록 바꿔야한다) / formDataToJson 함수 삭제해야함
         const res = await axiosInstance.put(
           `buddies/${buddyId}`,
-          `buddies/${buddyId}`,
+          // `buddies/${buddyId}`,
           formDataToJson(formData)
         );
 
@@ -287,21 +289,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
     // ?? optional chaining 사용해도 문제 없는지 확인 필요
     // onBuddySelect?.(buddyId);
   };
-
-  // buddies 값이 변경될 때마다 변경된 buddies를 profiles로 업데이트
-  // useEffect(() => {
-  //   if (buddies) {
-  //     setProfiles(buddies);
-  //     if (buddies.length > 1 && selectedId === null) {
-  //       setSelectedId(buddies[0]._id);
-  //     }
-  //   }
-  //   // 반려동물 프로필이 있거나 변경된 경우 상위 컴포넌트에 전달
-  //   // if (selectedId) onBuddySelect?.(selectedId);
-  // }, [buddies]);
-  // useEffect(() => {
-
-  // }, [buddies, selectedId]);
 
   const validateForm = () => {
     // 체중을 제외한 유효성 검사
@@ -355,6 +342,15 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         });
         return false;
       }
+
+      const birth = formData.get('birth') as string;
+      if (birth.split('-')[0].length !== 4) {
+        setAlertState({
+          showAlert: true,
+          alertMessage: '생년월일을 올바르게 입력해주세요.',
+        });
+        return false;
+      }
     }
 
     return true;
@@ -364,7 +360,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
 
   return (
     <div>
-      {/* <ProfilesTitle>{name} 님의 반려동물</ProfilesTitle> */}
       <StyledSwiper
         virtual
         slidesPerView={4}

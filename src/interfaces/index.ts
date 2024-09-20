@@ -3,7 +3,7 @@ export interface IBuddy {
   name: string;
   species: number;
   kind: string;
-  age: number;
+  birth: string;
   sex: number;
   weight: number;
   isNeutered: number | null;
@@ -34,7 +34,7 @@ export interface IBuddyProfile {
   _id: string;
   name: string;
   kind: string;
-  age: number;
+  birth: string;
   buddyImage: string;
   createdAt: Date;
   deletedAt: Date | null;
