@@ -113,7 +113,7 @@ const PetCard: React.FC<ProfileCardProps> = ({
 
   return (
     <CardsWrapper className={className} onClick={onClick}>
-      {isMe && (
+      {isMe && className === 'selected-card' && (
         <ActionButton
           buttonBorder="border-none"
           direction="vertical"
