@@ -2,7 +2,6 @@
 // 임시
 
 import React, { useState, useEffect } from 'react';
-// import { useEffect,  } from 'react'; // 임시 - 가끔 필요해서 냅둠
 import styled from 'styled-components';
 import axios from 'axios';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -17,6 +16,7 @@ import { LuEye, LuEyeOff } from 'react-icons/lu';
 
 import useLogin from '@/hooks/useLogin';
 import authState from '@/recoil/atoms/authState';
+import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
@@ -36,6 +36,7 @@ const Login: React.FC<LoginProps> = ({
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [auth, setAuth] = useRecoilState(authState);
+  const [, setUser] = useRecoilState(userState);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
 
@@ -64,21 +65,24 @@ const Login: React.FC<LoginProps> = ({
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
       try {
+        const loginResponse = await axiosInstance.post('auth/login', loginInfo);
 
-        const response = await axiosInstance.post('auth/login', loginInfo, {
-          withCredentials: true,
-        });
-
-        const { accessToken } = response.data;
+        const { accessToken, userId } = loginResponse.data;
+        console.log('유저 아이디', userId);
 
         // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
-
 
         // Recoil 상태(로그인 상태) 업데이트
         setAuth({
           accessToken,
         });
+
+        // 유저 정보 업데이트
+        const userResponse = await axiosInstance.get(`users/${userId}`);
+
+        setUser(userResponse.data.message);
+        console.log('유저 정보', userResponse.data.message) // 임시
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
@@ -101,6 +105,7 @@ const Login: React.FC<LoginProps> = ({
     handleSilentRefresh(isAuthenticated); // 상태가 업데이트된 후 자동 로그인 연장
   }, [isAuthenticated]); // auth 상태가 변경될 때마다 실행
 
+  // 임시
   useEffect(() => {
     console.log('Current authState:', auth); // 현재 authState 확인
   }, [auth]); // auth 상태가 변경될 때마다 실행
@@ -226,7 +231,6 @@ const PasswordContainer = styled.div`
   position: relative;
 
   input {
-    // margin-top: 4px;
     width: 100%;
   }
 `;

@@ -12,7 +12,7 @@ import {
   LuStethoscope,
   LuMessageSquarePlus,
 } from 'react-icons/lu';
-import ActionButton from '@/components/common/ActtionButton';
+import ActionButton from '@/components/common/ActionButton';
 import { IRecord } from '@/interfaces';
 import axiosInstance from '@/utils/axiosInstance';
 import Loading from '@/components/common/Loading';

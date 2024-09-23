@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
-import ActionButton from '@/components/common/ActtionButton';
+import ActionButton from '@/components/common/ActionButton';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import { CardsWrapper, Cards } from './card-components';
 
