@@ -1,4 +1,4 @@
-import { User } from '@/types/index';
+import { User } from '@/interfaces/index';
 import { atom } from 'recoil';
 
 export type UserState = User | null;

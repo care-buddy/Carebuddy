@@ -49,8 +49,8 @@ const CommunityCategory = styled.div`
 `;
 
 interface TopBarProps {
-  category: string;
-  title: string;
+  category?: string;
+  title?: string;
   communityCategory?: string;
 }
 

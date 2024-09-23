@@ -32,10 +32,7 @@ const useLogin = () => {
     try {
       const response = await axiosInstance.post(
         'auth/silent-refresh',
-        {},
-        {
-          withCredentials: true, // 쿠키와 함께 요청
-        }
+        {}
       );
 
       // 새로운 accessToken과 refreshToken을 설정
@@ -44,7 +41,7 @@ const useLogin = () => {
       // 새 accessToken을 Axios 헤더에 설정
       axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-      // 리프레시 토큰을 쿠키에 저장하
+      // 리프레시 토큰을 쿠키에 저장
       document.cookie = `refreshToken=${refreshToken}; path=/`;
 
       // 상태 업데이트

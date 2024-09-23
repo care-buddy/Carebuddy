@@ -3,7 +3,7 @@ import styled, { css } from 'styled-components';
 
 // 동적 스타일 props
 interface StyledInputProps {
-  inputSize?: 'sm' | 'md' | 'lg' | 'bg';
+  inputSize?: 'mini' | 'sm' | 'md' | 'lg' | 'bg';
   activeOption?: 'active' | 'readOnly';
   borderStyle?: 'round' | 'square';
   inputPadding?: 'default' | 'sm';
@@ -12,6 +12,9 @@ interface StyledInputProps {
 }
 
 const inputSizes = {
+  mini: css`
+    width: 80px;
+  `,
   sm: css`
     width: 150px;
   `,

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import LinkButton from '@/components/common/LinkButton';
-import ActionButton from '@/components/common/ActtionButton';
+import ActionButton from '@/components/common/ActionButton';
 
 import useDebounce from '@hooks/useDebounce';
 
