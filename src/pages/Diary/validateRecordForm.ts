@@ -12,7 +12,7 @@ const validateRecordForm = (
   isCheckTreat: boolean
 ) => {
   if (
-    formData.isConsultation &&
+    formData.consultationStatus &&
     (formData.address === null || formData.address?.trim() === '')
   ) {
     // setAlertMessage('병원 정보를 입력해주세요.');
