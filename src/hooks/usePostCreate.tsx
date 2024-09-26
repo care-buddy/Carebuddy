@@ -30,13 +30,7 @@ const usePostCreate = (onSuccess: () => void) => {
 
   const handlePostSubmit = async () => {
     try {
-      // mock.onPost('/api/posts').reply((config) => {
-      //   const { title, content, groupId, postImage } = JSON.parse(config.data);
-      //   console.log('게시물 생성:', { title, content, groupId, postImage });
-      //   return [200, { title, content, groupId, postImage }];
-      // });
-
-      const response = await axiosInstance.post('post', formData); // 임시. 추후 백엔드에서 엔드포인트 변경 시 수정
+      const response = await axiosInstance.post('posts', formData); // 
       console.log('게시물 생성됨:', response.data);
       alert('게시글 작성 완료');
       onSuccess(); // 임시 - 추가 실행할 로직(변수로 받을 것)

@@ -61,14 +61,28 @@ const Post: React.FC = () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get(`posts/${postId}`);
-        const post = response.data.message;
+        // const post = response.data.message;
+        const post = response.data.data[0];
 
         // 등록일 formatting
         post.createdAt = formatDateIncludeTime(post.createdAt);
 
-        setPost(post[0]);
-        setLikedUsers(post[0].likedUsers);
-        console.log('포스트 불러올 때 좋아요 개수', post[0].likedUsers);
+        setPost(post);
+        setLikedUsers(post.likedUsers);
+
+        // 댓글
+        if (Array.isArray(post.commentId)) {
+          const validComments = post.commentId.filter(
+            (comment: CommentData) => comment.deletedAt === null
+          );
+          console.log('냥')
+          setComments(validComments);
+        } else {
+          console.log('없음')
+          setComments([]); // commentId가 배열이 아닌 경우 빈 배열로 설정
+        }
+
+        console.log('포스트 불러올 때 좋아요 개수', post.likedUsers);
       } catch (error) {
         setError(error as Error);
       } finally {
@@ -78,16 +92,8 @@ const Post: React.FC = () => {
     fetchData();
   }, []);
 
-  // 게시글 조회 완료 시 글 수정 모달용 formData 채우고 댓글 상태 업데이트
+  // 게시글 조회 완료 시 글 수정 모달용 formData 채우기
   useEffect(() => {
-    // 댓글
-    if (post !== null) {
-      const comment = post.commentId.filter(
-        (commentId) => commentId.deletedAt === null
-      );
-      setComments(comment);
-    }
-
     // 글 수정용 formData
     setFormData({
       title: post?.title || '',

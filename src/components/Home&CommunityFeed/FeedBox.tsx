@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useImperativeHandle, useRef } from 'react';
+import React, { useState, useImperativeHandle, useRef } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
 import LikeAndCommentCount from '@components/Post/LikesAndCommentCount';
 import CommunityCategory from '@components/GlobalSearch/CommunityCategory';
-
 import formatDate from '@/utils/formatDate';
 import processedContentForFeedBox from '@/utils/processedContentForFeedBox';
 
@@ -21,7 +20,6 @@ type FeedBoxProps = {
   commentCount?: number;
 };
 
-// React.FC대신 React.forwardRef 사용(ref 사용을 위해 두 개의 인자를 넘기기 위함)
 const FeedBox = React.forwardRef<HTMLDivElement, FeedBoxProps>(
   (
     {
@@ -38,18 +36,10 @@ const FeedBox = React.forwardRef<HTMLDivElement, FeedBoxProps>(
     },
     ref
   ) => {
-    const [isSearchResult, setIsSearchResult] = useState(false); // global-search 결과
+    const [isContentVisible, setContentVisible] = useState(false); // 내용 표시 여부
     const boxRef = useRef<HTMLDivElement>(null);
 
-    useImperativeHandle(ref, () => boxRef.current!); // !을 통해 명시적으로 null이 아닐 것이라고 알림
-
-    useEffect(() => {
-      if (communityName) {
-        setIsSearchResult(true);
-      } else {
-        setIsSearchResult(false);
-      }
-    }, [communityName]);
+    useImperativeHandle(ref, () => boxRef.current!);
 
     const processedContent = processedContentForFeedBox(content);
     const formattedDate = formatDate(uploadedDate);
@@ -60,7 +50,7 @@ const FeedBox = React.forwardRef<HTMLDivElement, FeedBoxProps>(
           <TitleContainer>
             <LeftContainer>
               <Title>{title}</Title>
-              {isSearchResult && (
+              {communityName && (
                 <>
                   <CommunityCategory>{communityName}</CommunityCategory>
                   <CommunityCategory>{communityCategory}</CommunityCategory>
@@ -73,8 +63,10 @@ const FeedBox = React.forwardRef<HTMLDivElement, FeedBoxProps>(
             />
           </TitleContainer>
           <Content>
-            {processedContent}
-            <MoreSpan>... 더보기</MoreSpan>
+            {isContentVisible ? processedContent : `${processedContent.slice(0, 100)}...`}
+            <MoreSpan onClick={() => setContentVisible(!isContentVisible)}>
+              {isContentVisible ? '접기' : '더보기'}
+            </MoreSpan>
           </Content>
           <ProfileContainer>
             <ProfileImg src={profileSrc} alt="프로필 이미지" />
@@ -159,4 +151,5 @@ const Content = styled.pre`
 const MoreSpan = styled.span`
   color: var(--color-blue);
   font-size: var(--font-size-sm-1);
+  cursor: pointer;
 `;
