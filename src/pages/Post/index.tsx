@@ -49,7 +49,7 @@ const Post: React.FC = () => {
 
   const { postId } = useParams();
 
-  const user = useRecoilValue(userState); // 임시 -> 나중에 쓰이는 것만 구조분해할당으로 받아오게 변경
+  const user = useRecoilValue(userState);
 
   const [likedUsers, setLikedUsers] = useState([]);
   const [isLiked, setIsLiked] = useState(false); // 좋아요 여부 상태
@@ -61,7 +61,6 @@ const Post: React.FC = () => {
       try {
         setLoading(true);
         const response = await axiosInstance.get(`posts/${postId}`);
-        // const post = response.data.message;
         const post = response.data.data[0];
 
         // 등록일 formatting
@@ -75,14 +74,10 @@ const Post: React.FC = () => {
           const validComments = post.commentId.filter(
             (comment: CommentData) => comment.deletedAt === null
           );
-          console.log('냥')
           setComments(validComments);
         } else {
-          console.log('없음')
-          setComments([]); // commentId가 배열이 아닌 경우 빈 배열로 설정
+          setComments([]);
         }
-
-        console.log('포스트 불러올 때 좋아요 개수', post.likedUsers);
       } catch (error) {
         setError(error as Error);
       } finally {
@@ -137,14 +132,14 @@ const Post: React.FC = () => {
     }
   };
 
-  // 댓글 등록 API 미완성, 임시 - 백엔드 코드 수정 필요
+  // 댓글 등록 API
   const handleWrittenComment = async (comment: string) => {
     try {
       setLoading(true);
       if (comment !== '' && comment !== null) {
         const response = await axiosInstance.post(`comments`, {
-          postId: '1',
-          userId: '2',
+          postId,
+          userId: user?._id,
           text: comment,
         });
 
@@ -328,7 +323,7 @@ const Post: React.FC = () => {
         </ContentContainer>
         <CommentContainer>
           <CommentWritingBox
-            nickname="임시닉네임"
+            nickname={user?.nickName || ''}
             onClick={handleWrittenComment}
           />
           {comments?.map((comment) => (
