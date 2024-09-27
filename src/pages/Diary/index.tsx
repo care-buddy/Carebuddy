@@ -227,14 +227,11 @@ const Diary: React.FC = () => {
     }
   };
 
-  // mock.onGet('/hospitals/1a').reply(200, dummyRecord);
-  // mock.onGet('/hospitals/2b').reply(200, dummyRecord2);
   const fetchRecordsData = async (buddyId: string) => {
     // /api/hospitals로 GET 요청 모킹
     setRecordLoading(true);
     setError(null);
     try {
-      // 66cd86651d15e7a5a4228d32
       const response = await axiosInstance.get(`hospitals/${buddyId}`);
       // 수정 전 임시
 
@@ -315,6 +312,22 @@ const Diary: React.FC = () => {
     setFormData(nullData);
   };
 
+  const formDataToJson = (formData: FormData) => {
+    const obj: { [key: string]: any } = {};
+
+    for (const [key, value] of formData.entries()) {
+      // FormData.entries()에서 value가 Blob일 경우, 직접 변환하기 어려우므로
+      // 텍스트로 변환할 수 있는 경우를 제외하고는 문자열로 저장합니다.
+      if (value instanceof Blob) {
+        obj[key] = value instanceof File ? value.name : value.toString();
+      } else {
+        obj[key] = value;
+      }
+    }
+
+    return obj;
+  };
+
   const handleFormSubmit = async () => {
     console.log(formData);
     if (
@@ -333,9 +346,7 @@ const Diary: React.FC = () => {
         // 로그인 미구현되어 임시
         const formData2 = {
           ...formData,
-          hospitalizationStatus: new Date(),
-          userId: '66b9b34ae9a13c88c643e361',
-          buddyId: '66cc3b431d15e7a5a4228bc8',
+          buddyId: selectedId,
         };
         await axiosInstance.post('hospitals', formData2);
         handleCloseModal();
