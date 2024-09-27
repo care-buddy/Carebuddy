@@ -142,7 +142,6 @@ const Post: React.FC = () => {
           userId: user?._id,
           text: comment,
         });
-
         const newComment = response.data;
 
         if (comments) {
