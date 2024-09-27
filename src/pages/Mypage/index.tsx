@@ -11,9 +11,8 @@ import SmallModal from '@/components/common/SmallModal';
 import UserAsk from '@/pages/Mypage/UserAsk';
 import TopBar from '@/components/common/TopBar';
 
-import { useRecoilState } from 'recoil';
-import buddyState from '@/recoil/atoms/buddyState';
 import axiosInstance from '@/utils/axiosInstance';
+import { IBuddyProfile } from '@/interfaces';
 
 const Container = styled.div`
   margin: 30px 0;
@@ -50,6 +49,7 @@ interface UserData {
   profileImage: string[];
   communityId: CommunityPost[];
   postId: PostId[];
+  buddyId: [];
 }
 
 interface CommunityPost {
@@ -79,6 +79,7 @@ interface ApiResponse {
   profileImage: string[];
   communityId: CommunityPost[];
   postId: ApiPostId[];
+  buddyId: [];
 }
 
 interface ApiPostId {
@@ -95,9 +96,10 @@ const Mypage: React.FC = () => {
     profileImage: [],
     communityId: [],
     postId: [],
+    buddyId: [],
   });
 
-  const [buddiesData, setBuddiesData] = useState<BuddiesData[]>([]);
+  const [buddiesData, setBuddiesData] = useState<IBuddyProfile[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -110,7 +112,9 @@ const Mypage: React.FC = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.get<{ message: ApiResponse }>(`users/${userId}`);
+        const response = await axiosInstance.get<{ message: ApiResponse }>(
+          `users/${userId}`
+        );
         const data = response.data.message;
 
         const mappedData: UserData = {
@@ -121,15 +125,16 @@ const Mypage: React.FC = () => {
           communityId: data.communityId || [],
           postId: data.postId
             ? data.postId.map((post) => ({
-              title: post.title,
-              content: post.content,
-              createdAt: new Date(post.createdAt),
-            }))
+                title: post.title,
+                content: post.content,
+                createdAt: new Date(post.createdAt),
+              }))
             : [],
+          buddyId: data.buddyId || [],
         };
-        console.log('user 데이터: ', data)
+        console.log('user 데이터: ', data);
         setUserData(mappedData);
-
+        setBuddiesData(mappedData.buddyId);
       } catch (error) {
         console.error('사용자 데이터 가져오기 오류:', error);
       } finally {
@@ -137,19 +142,6 @@ const Mypage: React.FC = () => {
       }
     };
 
-    const buddiesId = '66cc2f2d1d15e7a5a42285be';
-    const fetchBuddiesData = async () => {
-      try {
-        const response = await axiosInstance.get(`buddies/${buddiesId}`);
-        const buddyResponse = response.data.message;
-        console.log('buddy 데이터:', buddyResponse)
-        setBuddiesData(buddyResponse.buddies);
-      } catch (error) {
-        console.error('반려동물 데이터 가져오기 오류:', error);
-      }
-    };
-
-    fetchBuddiesData();
     fetchData();
   }, [userId]);
 
@@ -209,13 +201,15 @@ const Mypage: React.FC = () => {
     },
     {
       id: '3',
-      content: '반려동물 관리',
+      content: '반려동물 프로필',
       component: <PetCardContainer buddyData={buddiesData} isMe={false} />,
     },
     {
       id: '4',
       content: '작성 글 목록',
-      component: <ListContainer postIds={userData.postId} isLoading={isLoading} />,
+      component: (
+        <ListContainer postIds={userData.postId} isLoading={isLoading} />
+      ),
     },
   ];
 
@@ -239,7 +233,12 @@ const Mypage: React.FC = () => {
       </WithdrawContainer>
       {isModalOpen && (
         <SmallModal
-          component={<UserAsk onConfirm={handleConfirmWithdraw} onCancel={handleCloseModal} />}
+          component={
+            <UserAsk
+              onConfirm={handleConfirmWithdraw}
+              onCancel={handleCloseModal}
+            />
+          }
           onClose={handleCloseModal}
         />
       )}

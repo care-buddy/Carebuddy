@@ -2,14 +2,14 @@ import styled from 'styled-components';
 import React from 'react';
 import PetProfiles from '@/pages/Diary/PetProfiles';
 
-import { BuddyProfile } from '@/interfaces';
+import { IBuddyProfile } from '@/interfaces';
 
 const Container = styled.div`
   margin: 30px 0 30px 0;
 `;
 
 interface Props {
-  buddyData: BuddyProfile[];
+  buddyData: IBuddyProfile[];
   isMe: boolean;
 }
 
