@@ -65,13 +65,6 @@ interface PostId {
   createdAt: Date;
 }
 
-// interface FormData {
-//   title: string;
-//   content: string;
-//   groupId: string;
-//   postImage: string[];
-// }
-
 interface ApiResponse {
   email: string;
   nickName: string;
@@ -104,18 +97,15 @@ const Mypage: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // const [buddiesData] = useRecoilState(buddyState);
-
-  const userId = '66b9b34ae9a13c88c643e361'; // userId 지정 -> 추후 변환 예정
-
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+
       try {
-        const response = await axiosInstance.get<{ message: ApiResponse }>(
-          `users/${userId}`
-        );
+        // api/users 엔드포인트 호출
+        const response = await axiosInstance.get<{ message: ApiResponse }>(`me`);
         const data = response.data.message;
+        console.log('me 데이터: ', data)
 
         const mappedData: UserData = {
           email: data.email || '',
@@ -125,14 +115,13 @@ const Mypage: React.FC = () => {
           communityId: data.communityId || [],
           postId: data.postId
             ? data.postId.map((post) => ({
-                title: post.title,
-                content: post.content,
-                createdAt: new Date(post.createdAt),
-              }))
+              title: post.title,
+              content: post.content,
+              createdAt: new Date(post.createdAt),
+            }))
             : [],
           buddyId: data.buddyId || [],
         };
-        console.log('user 데이터: ', data);
         setUserData(mappedData);
         setBuddiesData(mappedData.buddyId);
       } catch (error) {
@@ -143,7 +132,7 @@ const Mypage: React.FC = () => {
     };
 
     fetchData();
-  }, [userId]);
+  }, []);
 
   const handleIntroduceChange = (newIntroduction: string) => {
     setUserData((prevData) => ({ ...prevData, introduce: newIntroduction }));
