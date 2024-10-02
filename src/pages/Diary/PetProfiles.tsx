@@ -192,9 +192,9 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         console.log(formDataToJson(formData));
         const response = await axiosInstance.post(
           'buddies',
-          formDataToJson(formData)
+          // formDataToJson(formData)
+          formData
         );
-
         handleClosePetModal();
         await fetchBuddiesData();
         setSelectedId(response.data.data);
@@ -249,7 +249,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         const res = await axiosInstance.put(
           `buddies/${buddyId}`,
           // `buddies/${buddyId}`,
-          formDataToJson(formData)
+          formData
         );
 
         // 응답으로 수정된 정보가 올 것
