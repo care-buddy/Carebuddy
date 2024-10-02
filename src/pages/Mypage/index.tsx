@@ -101,12 +101,11 @@ const Mypage: React.FC = () => {
     const fetchData = async () => {
       setIsLoading(true);
 
-      const userId = '66b9b34ae9a13c88c643e361'; // userId 지정 -> 추후 변환 예정
-
       try {
         // api/users 엔드포인트 호출
-        const response = await axiosInstance.get<{ message: ApiResponse }>(`users/${userId}`);
+        const response = await axiosInstance.get<{ message: ApiResponse }>(`me`);
         const data = response.data.message;
+        console.log('me 데이터: ', data)
 
         const mappedData: UserData = {
           email: data.email || '',
@@ -123,7 +122,6 @@ const Mypage: React.FC = () => {
             : [],
           buddyId: data.buddyId || [],
         };
-        console.log('user 데이터: ', data);
         setUserData(mappedData);
         setBuddiesData(mappedData.buddyId);
       } catch (error) {
