@@ -39,7 +39,6 @@ const Login: React.FC<LoginProps> = ({
   const [, setUser] = useRecoilState(userState);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
-
   const { handleSilentRefresh } = useLogin();
 
   // 로그인을 위한 아이디, 비밀번호 업데이트 핸들러
@@ -65,24 +64,25 @@ const Login: React.FC<LoginProps> = ({
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
       try {
+        // 로그인 API 호출
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
 
-        const { accessToken, userId } = loginResponse.data;
-        console.log('유저 아이디', userId);
+        const { accessToken } = loginResponse.data; // accessToken 추출
+        console.log('Access Token:', accessToken);
 
         // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
         // Recoil 상태(로그인 상태) 업데이트
-        setAuth({
-          accessToken,
+        setAuth({ accessToken });
+
+        // 유저 정보 업데이트를 위해 me API 호출
+        const userResponse = await axiosInstance.get('me', {
+          headers: { Authorization: `Bearer ${accessToken}` },
         });
 
-        // 유저 정보 업데이트
-        const userResponse = await axiosInstance.get(`users/${userId}`);
-
-        setUser(userResponse.data.message);
-        console.log('유저 정보', userResponse.data.message) // 임시
+        setUser(userResponse.data); // 유저 정보 설정
+        console.log('유저 정보:', userResponse.data); // 임시
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
@@ -209,7 +209,7 @@ const Hr = styled.hr`
 const LargeText = styled.p`
   font-size: var(--font-size-hd-1);
   padding-bottom: 16px;
-  font-color: var(--color-black;);
+  color: var(--color-black); /* 수정: font-color를 color로 변경 */
 `;
 
 const LoginContainer = styled.div`

@@ -5,6 +5,9 @@ const axiosInstance = axios.create({
   baseURL: API_URL,
   timeout: 5000,
   withCredentials: true, // refreshToken cookie를 주고받기 위해 설정
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 axiosInstance.interceptors.response.use(
