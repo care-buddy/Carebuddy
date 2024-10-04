@@ -1,17 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import Button from '@/components/common/Button';
+
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
-import SmallModal from '@/components/common/SmallModal';
-import UserAsk from '@/pages/Mypage/UserAsk';
-import TopBar from '@/components/common/TopBar';
 import Loading from '@/components/common/Loading';
 import UserInfoContainer from '@components/Mypage&Userpage/UserInfoContainer';
 import ProfileContainer from '@components/Mypage&Userpage/ProfileContainer';
-import { useRecoilState } from 'recoil';
-import buddyState from '@/recoil/atoms/buddyState';
+
+import SmallModal from '@/components/common/SmallModal';
+import UserAsk from '@/pages/Mypage/UserAsk';
+import TopBar from '@/components/common/TopBar';
+
 import axiosInstance from '@/utils/axiosInstance';
+import { IBuddyProfile } from '@/interfaces';
 
 const Container = styled.div`
   margin: 30px 0;
@@ -48,6 +49,7 @@ interface UserData {
   profileImage: string[];
   communityId: CommunityPost[];
   postId: PostId[];
+  buddyId: [];
 }
 
 interface CommunityPost {
@@ -63,13 +65,6 @@ interface PostId {
   createdAt: Date;
 }
 
-interface FormData {
-  title: string;
-  content: string;
-  groupId: string;
-  postImage: string[];
-}
-
 interface ApiResponse {
   email: string;
   nickName: string;
@@ -77,6 +72,7 @@ interface ApiResponse {
   profileImage: string[];
   communityId: CommunityPost[];
   postId: ApiPostId[];
+  buddyId: [];
 }
 
 interface ApiPostId {
@@ -93,23 +89,23 @@ const Mypage: React.FC = () => {
     profileImage: [],
     communityId: [],
     postId: [],
+    buddyId: [],
   });
 
-  const [buddiesData, setBuddiesData] = useState<BuddiesData[]>([]);
+  const [buddiesData, setBuddiesData] = useState<IBuddyProfile[]>([]);
 
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  // const [buddiesData] = useRecoilState(buddyState);
-
-  const userId = '668ce6fa73b15595e620fd41'; // userId 지정 -> 추후 변환 예정
-
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
+
       try {
-        const response = await axiosInstance.get<{ message: ApiResponse }>(`user/mypage/${userId}`);
+        // api/users 엔드포인트 호출
+        const response = await axiosInstance.get<{ message: ApiResponse }>(`me`);
         const data = response.data.message;
+        console.log('me 데이터: ', data)
 
         const mappedData: UserData = {
           email: data.email || '',
@@ -124,10 +120,10 @@ const Mypage: React.FC = () => {
               createdAt: new Date(post.createdAt),
             }))
             : [],
+          buddyId: data.buddyId || [],
         };
-        console.log('user 데이터: ', data)
         setUserData(mappedData);
-
+        setBuddiesData(mappedData.buddyId);
       } catch (error) {
         console.error('사용자 데이터 가져오기 오류:', error);
       } finally {
@@ -135,28 +131,15 @@ const Mypage: React.FC = () => {
       }
     };
 
-    const buddiesId = '66cc2f2d1d15e7a5a42285be';
-    const fetchBuddiesData = async () => {
-      try {
-        const response = await axiosInstance.get(`buddies/${buddiesId}`);
-        const buddyResponse = response.data.message;
-        console.log('buddy 데이터:', buddyResponse)
-        setBuddiesData(buddyResponse.buddies);
-      } catch (error) {
-        console.error('반려동물 데이터 가져오기 오류:', error);
-      }
-    };
-
-    fetchBuddiesData();
     fetchData();
-  }, [userId]);
+  }, []);
 
-  const handleIntroductionChange = (newIntroduction: string) => {
+  const handleIntroduceChange = (newIntroduction: string) => {
     setUserData((prevData) => ({ ...prevData, introduce: newIntroduction }));
     handleUserDataUpdate({ ...userData, introduce: newIntroduction });
   };
 
-  const handleNicknameChange = (newNickname: string) => {
+  const handleNickNameChange = (newNickname: string) => {
     setUserData((prevData) => ({ ...prevData, nickName: newNickname }));
     handleUserDataUpdate({ ...userData, nickName: newNickname });
   };
@@ -168,7 +151,7 @@ const Mypage: React.FC = () => {
 
   const handleUserDataUpdate = async (updatedUserData: UserData) => {
     try {
-      const response = await axiosInstance.put('user', updatedUserData);
+      const response = await axiosInstance.put('users', updatedUserData);
       console.log('사용자 데이터 업데이트:', response.data);
     } catch (error) {
       console.error('사용자 데이터 업데이트 오류:', error);
@@ -199,21 +182,23 @@ const Mypage: React.FC = () => {
       component: (
         <ProfileContainer
           userData={userData}
-          onIntroductionChange={handleIntroductionChange}
-          onNicknameChange={handleNicknameChange}
+          onIntroduceChange={handleIntroduceChange}
+          onNickNameChange={handleNickNameChange}
           onProfileImageChange={handleProfileImageChange}
         />
       ),
     },
     {
       id: '3',
-      content: '반려동물 관리',
+      content: '반려동물 프로필',
       component: <PetCardContainer buddyData={buddiesData} isMe={false} />,
     },
     {
       id: '4',
       content: '작성 글 목록',
-      component: <ListContainer postIds={userData.postId} isLoading={isLoading} />,
+      component: (
+        <ListContainer postIds={userData.postId} isLoading={isLoading} />
+      ),
     },
   ];
 
@@ -237,7 +222,12 @@ const Mypage: React.FC = () => {
       </WithdrawContainer>
       {isModalOpen && (
         <SmallModal
-          component={<UserAsk onConfirm={handleConfirmWithdraw} onCancel={handleCloseModal} />}
+          component={
+            <UserAsk
+              onConfirm={handleConfirmWithdraw}
+              onCancel={handleCloseModal}
+            />
+          }
           onClose={handleCloseModal}
         />
       )}
