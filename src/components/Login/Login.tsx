@@ -39,7 +39,6 @@ const Login: React.FC<LoginProps> = ({
   const [, setUser] = useRecoilState(userState);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
-
   const { handleSilentRefresh } = useLogin();
 
   // 로그인을 위한 아이디, 비밀번호 업데이트 핸들러
@@ -65,39 +64,52 @@ const Login: React.FC<LoginProps> = ({
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
       try {
+        // 로그인 API 호출
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
 
-        const { accessToken, userId } = loginResponse.data;
-        console.log('유저 아이디', userId);
+        const { accessToken } = loginResponse.data; // accessToken 추출
+        console.log('Access Token:', accessToken);
 
         // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
         // Recoil 상태(로그인 상태) 업데이트
-        setAuth({
-          accessToken,
+        setAuth({ accessToken });
+
+        // 유저 정보 업데이트를 위해 me API 호출
+        const userResponse = await axiosInstance.get('me', {
+          headers: { Authorization: `Bearer ${accessToken}` },
         });
 
-        // 유저 정보 업데이트
-        const userResponse = await axiosInstance.get(`users/${userId}`);
-
-        setUser(userResponse.data.message);
-        console.log('유저 정보', userResponse.data.message) // 임시
+        setUser(userResponse.data); // 유저 정보 설정
+        console.log('유저 정보:', userResponse.data); // 임시
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
       } catch (error) {
         // 에러 처리
-        console.error('Error during login:', error);
+        console.error('로그인 중 에러:', error);
       }
     } else {
       alert('아이디와 비밀번호를 입력해주세요');
     }
   };
 
+  // 로그아웃 핸들러
+  const handleLogout = () => {
+    // Recoil 상태 초기화
+    setAuth({ accessToken: null }); // authState 초기화
+    setUser(null); // 유저 상태 초기화
+
+    // Axios 헤더에서 Authorization 제거
+    delete axios.defaults.headers.common.Authorization;
+
+    // 추가적으로 필요한 로그아웃 후 처리 로직을 여기에 추가 가능
+  };
+
   // 상태가 업데이트되면 자동 로그인 연장 처리
   useEffect(() => {
-    console.log('isAuthenticated changed:', isAuthenticated); // 상태 변경 확인
+    console.log('isAuthenticated 변경됨:', isAuthenticated); // 상태 변경 확인
 
     if (!isAuthenticated) {
       return;
@@ -107,8 +119,22 @@ const Login: React.FC<LoginProps> = ({
 
   // 임시
   useEffect(() => {
-    console.log('Current authState:', auth); // 현재 authState 확인
+    console.log('현재 authState:', auth); // 현재 authState 확인
   }, [auth]); // auth 상태가 변경될 때마다 실행
+
+  // 페이지가 종료될 때 로그아웃 처리
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      handleLogout(); // 로그아웃 처리
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // 컴포넌트 언마운트 시 리스너 제거
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, []);
 
   return (
     <Container>
@@ -160,6 +186,9 @@ const Login: React.FC<LoginProps> = ({
           로그인
         </Button>
       </LoginContainer>
+      <Button buttonStyle="black" buttonSize="sm" onClick={handleLogout}>
+        로그아웃
+      </Button>
       <Button buttonStyle="black" buttonSize="sm">
         아이디/비밀번호 찾기
       </Button>
@@ -172,6 +201,7 @@ const Login: React.FC<LoginProps> = ({
 
 export default Login;
 
+// 스타일 컴포넌트 정의
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -209,7 +239,7 @@ const Hr = styled.hr`
 const LargeText = styled.p`
   font-size: var(--font-size-hd-1);
   padding-bottom: 16px;
-  font-color: var(--color-black;);
+  color: var(--color-black); /* 수정: font-color를 color로 변경 */
 `;
 
 const LoginContainer = styled.div`
