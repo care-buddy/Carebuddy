@@ -1,4 +1,4 @@
-// 게시글 작성 말고, 게시글 수정의 경우에는 카테고리 변경 불가능하도록 수정 ! 
+// 게시글 작성 말고, 게시글 수정의 경우에는 카테고리 변경 불가능하도록 수정 !
 // + 이미 카테고리가 있을 경우 받아오도록 수정
 // groupId -> CommunityId(필드명 수정 필요!)
 
@@ -25,8 +25,7 @@ const TextAreaWrapper = styled.div`
   margin-bottom: 15px;
 `;
 
-const ImageUploadWrapper = styled.div`
-`;
+const ImageUploadWrapper = styled.div``;
 
 const ImageUploadLabel = styled.label`
   cursor: pointer;
@@ -55,10 +54,15 @@ interface PostCreateProps {
   formData: {
     title?: string;
     content?: string;
-    groupId?: string;
+    communityId?: string;
     postImage: string[];
   };
-  onFormDataChange: (data: { title?: string; content?: string; groupId?: string; postImage?: string[] }) => void;
+  onFormDataChange: (data: {
+    title?: string;
+    content?: string;
+    communityId?: string;
+    postImage?: string[];
+  }) => void;
 }
 
 const SpeciesOptions = [
@@ -69,19 +73,23 @@ const SpeciesOptions = [
 
 const SelectOptions = [
   { value: '', label: '그룹을 선택해주세요' },
-  { value: '6617c6acb39abf604bbe8dc8', label: '눈 / 피부 / 귀' },
-  { value: '6617c6acb39abf604bbe8dc9', label: '눈 / 코 / 귀' },
-  { value: '6617c6acb39abf604bbe8dc7', label: '위식도' },
+  { value: '66b5ba8c19ffced581357307', label: '생식기·중성화·유선' },
+  { value: '66c687429ac226b8a246a791', label: '생식기·중성화·유선' },
 ];
 
-const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) => {
+const PostCreate: React.FC<PostCreateProps> = ({
+  formData,
+  onFormDataChange,
+}) => {
   const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onFormDataChange({ ...formData, groupId: event.target.value });
+    onFormDataChange({ ...formData, communityId: event.target.value });
   };
 
-  const handleContentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleContentChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     onFormDataChange({ ...formData, content: event.target.value });
   };
 
@@ -95,7 +103,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) =
       const fileArray = Array.from(files);
       setImageFiles(fileArray);
 
-      const fileReaders = fileArray.map(file => {
+      const fileReaders = fileArray.map((file) => {
         const reader = new FileReader();
         return new Promise<string>((resolve, reject) => {
           reader.onload = () => resolve(reader.result as string);
@@ -104,33 +112,31 @@ const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) =
         });
       });
 
-      Promise.all(fileReaders).then(base64Strings => {
-        onFormDataChange({ ...formData, postImage: base64Strings });
-      }).catch(error => console.error('파일 변환 오류:', error));
+      Promise.all(fileReaders)
+        .then((base64Strings) => {
+          onFormDataChange({ ...formData, postImage: base64Strings });
+        })
+        .catch((error) => console.error('파일 변환 오류:', error));
     }
   };
 
   return (
     <Container>
       <SelectWrapper>
-        <Select
-          selectStyle="square"
-          selectSize="sm"
-          options={SpeciesOptions}
-        />
+        <Select selectStyle="square" selectSize="sm" options={SpeciesOptions} />
         <Select
           selectStyle="square"
           selectSize="bg"
           options={SelectOptions}
-          value={formData.groupId}
+          value={formData.communityId}
           onChange={handleSelectChange}
         />
       </SelectWrapper>
       <InputWrapper>
         <Input
-          inputSize='bg'
+          inputSize="bg"
           placeholder="제목을 입력해주세요."
-          inputPadding='sm'
+          inputPadding="sm"
           value={formData.title}
           onChange={handleTitleChange}
         />
@@ -149,7 +155,7 @@ const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) =
           type="file"
           multiple
           accept="image/*"
-          id='postImage'
+          id="postImage"
           style={{ display: 'none' }}
           onChange={handleImageUpload}
         />
