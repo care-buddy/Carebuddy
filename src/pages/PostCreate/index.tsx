@@ -1,8 +1,7 @@
-// 게시글 작성 말고, 게시글 수정의 경우에는 카테고리 변경 불가능하도록 수정 ! 
+// 게시글 작성 말고, 게시글 수정의 경우에는 카테고리 변경 불가능하도록 수정 !
 // + 이미 카테고리가 있을 경우 받아오도록 수정
-// groupId -> CommunityId(필드명 수정 필요!)
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Input from '@/components/common/Input';
@@ -25,8 +24,7 @@ const TextAreaWrapper = styled.div`
   margin-bottom: 15px;
 `;
 
-const ImageUploadWrapper = styled.div`
-`;
+const ImageUploadWrapper = styled.div``;
 
 const ImageUploadLabel = styled.label`
   cursor: pointer;
@@ -52,13 +50,13 @@ const FileName = styled.span`
 `;
 
 interface PostCreateProps {
-  formData: {
+  postData: {
     title?: string;
     content?: string;
-    groupId?: string;
-    postImage: string[];
-  };
-  onFormDataChange: (data: { title?: string; content?: string; groupId?: string; postImage?: string[] }) => void;
+    communityId?: string;
+    postImage: File | null;
+  } | null;
+  onFormDataChange: (FormData: FormData) => void;
 }
 
 const SpeciesOptions = [
@@ -69,96 +67,136 @@ const SpeciesOptions = [
 
 const SelectOptions = [
   { value: '', label: '그룹을 선택해주세요' },
-  { value: '6617c6acb39abf604bbe8dc8', label: '눈 / 피부 / 귀' },
-  { value: '6617c6acb39abf604bbe8dc9', label: '눈 / 코 / 귀' },
-  { value: '6617c6acb39abf604bbe8dc7', label: '위식도' },
+  { value: '66b5ba8c19ffced581357307', label: '생식기·중성화·유선' },
+  { value: '66c687429ac226b8a246a791', label: '생식기·중성화·유선' },
 ];
 
-const PostCreate: React.FC<PostCreateProps> = ({ formData, onFormDataChange }) => {
-  const [imageFiles, setImageFiles] = useState<File[]>([]);
+const PostCreate: React.FC<PostCreateProps> = ({
+  postData,
+  onFormDataChange,
+}) => {
+  const [imageFiles, setImageFiles] = useState<File | null>(null);
+  const [postInfo, setPostInfo] = useState({
+    title: postData?.title ?? '',
+    content: postData?.content ?? '',
+    communityId: postData?.communityId ?? '',
+    postImage: postData?.postImage,
+  });
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    onFormDataChange({ ...formData, groupId: event.target.value });
+    // onFormDataChange({ ...formData, communityId: event.target.value });
+    setPostInfo({ ...postInfo, communityId: event.target.value });
   };
 
-  const handleContentChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-    onFormDataChange({ ...formData, content: event.target.value });
+  const handleContentChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setPostInfo({ ...postInfo, content: event.target.value });
   };
 
   const handleTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    onFormDataChange({ ...formData, title: event.target.value });
+    setPostInfo({ ...postInfo, title: event.target.value });
   };
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { files } = event.target;
-    if (files) {
-      const fileArray = Array.from(files);
-      setImageFiles(fileArray);
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e?.target.files?.[0];
 
-      const fileReaders = fileArray.map(file => {
-        const reader = new FileReader();
-        return new Promise<string>((resolve, reject) => {
-          reader.onload = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      });
-
-      Promise.all(fileReaders).then(base64Strings => {
-        onFormDataChange({ ...formData, postImage: base64Strings });
-      }).catch(error => console.error('파일 변환 오류:', error));
+    if (file) {
+      // const imageUrl = URL.createObjectURL(file);
+      setImageFiles(file);
     }
   };
+
+  // 폼데이터 생성 함수
+  const createFormData = () => {
+    const newFormData = new FormData();
+    // string으로 append 해줘야한다?
+    newFormData.append('title', String(postInfo.title));
+    newFormData.append('content', String(postInfo.content));
+    newFormData.append('communityId', String(postInfo.communityId));
+    // 선택 파일이 있을 때에는 그 파일을 append 해준다
+    // 폼데이터에는 null 값을 보낼 수 없으니, 선택된 파일이나 버디이미지가 없는 경우에는 append하지 않습니다: 서버 default 값이 null
+    if (imageFiles) {
+      newFormData.append('postImage', imageFiles);
+      // formData.append('postImage', imageFiles);
+    }
+    console.log(imageFiles);
+    // else formData.append('postImage', null);
+
+    return newFormData;
+  };
+
+  // 모달 내용이 변경될 때마다 폼데이터를 객체를 만들어 업데이트해준다
+  useEffect(() => {
+    onFormDataChange(createFormData());
+  }, [postInfo, imageFiles]);
+
+  // const imageSrc = selectFile ? URL.createObjectURL(selectFile) : imgView;
+  // 선택된 파일이 있으면 해당 파일의 URL을 생성하여 사용
+  // 그렇지 않으면, imgView가 URL인지 확인하고 해당 URL을 사용
+  // imgView가 File일 경우 URL.createObjectURL로 변환
+  let imageSrc: string | null;
+
+  if (imageFiles) {
+    imageSrc = URL.createObjectURL(imageFiles);
+  } else if (typeof imageFiles === 'string') {
+    imageSrc = imageFiles;
+    // } else if (imageFiles) {
+    //   imageSrc = URL.createObjectURL(imageFiles);
+  } else {
+    imageSrc = null; // 기본 이미지 URL
+  }
 
   return (
     <Container>
       <SelectWrapper>
-        <Select
-          selectStyle="square"
-          selectSize="sm"
-          options={SpeciesOptions}
-        />
+        <Select selectStyle="square" selectSize="sm" options={SpeciesOptions} />
         <Select
           selectStyle="square"
           selectSize="bg"
           options={SelectOptions}
-          value={formData.groupId}
+          value={postInfo?.communityId || ''}
           onChange={handleSelectChange}
         />
       </SelectWrapper>
       <InputWrapper>
         <Input
-          inputSize='bg'
+          inputSize="bg"
           placeholder="제목을 입력해주세요."
-          inputPadding='sm'
-          value={formData.title}
+          inputPadding="sm"
+          value={postInfo?.title || ''}
           onChange={handleTitleChange}
         />
       </InputWrapper>
       <TextAreaWrapper>
         <TextArea
           placeholder="내용을 입력해주세요."
-          value={formData.content}
+          value={postInfo?.content || ''}
           onChange={handleContentChange}
           style={{ width: '100%', padding: '8px', height: '200px' }}
         />
       </TextAreaWrapper>
       <ImageUploadWrapper>
         <ImageUploadLabel htmlFor="postImage">사진 첨부</ImageUploadLabel>
+
         <input
           type="file"
-          multiple
-          accept="image/*"
-          id='postImage'
+          accept="image/png, image/jpeg"
+          id="postImage"
+          name="postImage"
           style={{ display: 'none' }}
           onChange={handleImageUpload}
         />
-        {imageFiles.map((file) => (
+        <ImagePreview>
+          {imageSrc ? <PreviewImage src={imageSrc} alt="이미지" /> : <div />}
+        </ImagePreview>
+
+        {/* {imageFiles.map((file) => (
           <ImagePreview key={file.name}>
             <PreviewImage src={URL.createObjectURL(file)} alt="미리보기" />
             <FileName>{file.name}</FileName>
           </ImagePreview>
-        ))}
+        ))} */}
       </ImageUploadWrapper>
     </Container>
   );
