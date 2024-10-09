@@ -77,12 +77,7 @@ const Login: React.FC<LoginProps> = ({
         const userResponse = await axiosInstance.get('me', {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-
-        // // 유저 정보 업데이트
-        // const userResponse = await axiosInstance.get(`users/${userId}`);
-
-        // setUser(userResponse.data.message);
-        // console.log('유저 정보', userResponse.data.message); // 임시
+        
         setUser(userResponse.data); // 유저 정보 설정
         console.log('유저 정보:', userResponse.data); // 임시
 
