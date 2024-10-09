@@ -84,20 +84,24 @@ const CommunityFeed: React.FC = () => {
     setLoginModalOpen(true);
   };
 
-  // 커뮤니티별 게시글 불러오기(백엔드 로직 완료 이후) - 임시
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axiosInstance.get(`/posts/${communityId}`);
-  //       setPosts(response.data);
-  //     } catch (error) {
-  //       setError(error as Error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+  // 커뮤니티별 게시글 불러오기
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/posts/${communityId}/community`
+        );
+        console.log('커뮤니티별 게시글 테스트!');
+        console.log(response.data.data);
+        setPosts(response.data.data);
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // 검색 로직
   // 검색 상태 핸들러
@@ -161,45 +165,87 @@ const CommunityFeed: React.FC = () => {
 
   // {isSearching ? renderPosts(filteredPosts) : renderPosts(posts)}
 
-  // 복잡한 JSX코드 변수에 넣어 정리
-  const renderAllPosts = () =>
-    posts?.map((post) => (
+  // // 복잡한 JSX코드 변수에 넣어 정리 - 원본
+  // const renderAllPosts = () =>
+  //   posts?.map((post) => (
+  //     <FeedBox
+  //       key={post._id}
+  //       postId={post._id}
+  //       title={post.title}
+  //       content={post.content}
+  //       uploadedDate={formatDate(post.createdAt)}
+  //       // nickname={post.userId.nickName} //임시
+  //       nickname={post.userId?.nickName || 'Unknown User'}
+  //       profileSrc={post.userId.profileImage[0]}
+  //       likeCount={post.likedUsers.length}
+  //     />
+  //   ));
+
+  // const renderFilteredPosts = () => {
+  //   if (filteredPosts && filteredPosts.length > 0) {
+  //     return filteredPosts.map((post) => (
+  //       <FeedBox
+  //         key={post._id}
+  //         postId={post._id}
+  //         title={post.title}
+  //         content={post.content}
+  //         uploadedDate={formatDate(post.createdAt)}
+  //         // nickname={post.userId.nickName} //임시
+  //         nickname={post.userId?.nickName || 'Unknown User'}
+
+  //         profileSrc={post.userId.profileImage[0]}
+  //         likeCount={post.likedUsers.length}
+  //       />
+  //     ));
+  //   }
+  //   return <NoPostsFound>검색어에 해당하는 게시글이 없습니다.</NoPostsFound>;
+  // };
+
+  // 복잡한 JSX 코드를 변수에 넣어 정리 null 대비
+const renderAllPosts = () =>
+  posts?.map((post) => (
+    <FeedBox
+      key={post._id}
+      postId={post._id}
+      title={post.title}
+      content={post.content}
+      uploadedDate={formatDate(post.createdAt)}
+      // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시
+      nickname={post.userId?.nickName || 'Unknown User'}
+      // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
+      profileSrc={post.userId?.profileImage?.[0] || '/default-profile.png'}
+      // likedUsers 배열의 길이를 안전하게 체크
+      likeCount={post.likedUsers?.length || 0}
+    />
+  ));
+
+const renderFilteredPosts = () => {
+  if (filteredPosts && filteredPosts.length > 0) {
+    return filteredPosts.map((post) => (
       <FeedBox
         key={post._id}
         postId={post._id}
         title={post.title}
         content={post.content}
         uploadedDate={formatDate(post.createdAt)}
-        nickname={post.userId.nickName}
-        profileSrc={post.userId.profileImage[0]}
-        likeCount={post.likedUsers.length}
+        // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시
+        nickname={post.userId?.nickName || 'Unknown User'}
+        // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
+        profileSrc={post.userId?.profileImage?.[0] || '/default-profile.png'}
+        // likedUsers 배열의 길이를 안전하게 체크
+        likeCount={post.likedUsers?.length || 0}
       />
     ));
-
-  const renderFilteredPosts = () => {
-    if (filteredPosts && filteredPosts.length > 0) {
-      return filteredPosts.map((post) => (
-        <FeedBox
-          key={post._id}
-          postId={post._id}
-          title={post.title}
-          content={post.content}
-          uploadedDate={formatDate(post.createdAt)}
-          nickname={post.userId.nickName}
-          profileSrc={post.userId.profileImage[0]}
-          likeCount={post.likedUsers.length}
-        />
-      ));
-    }
-    return <NoPostsFound>검색어에 해당하는 게시글이 없습니다.</NoPostsFound>;
-  };
+  }
+  return <NoPostsFound>검색어에 해당하는 게시글이 없습니다.</NoPostsFound>;
+};
 
   return (
     <>
       <TopBar
         category="커뮤니티"
-        title='백엔드 완성 이후 수정 - 임시'
-        communityCategory='백엔드 완성 이후 수정 - 임시'
+        title="백엔드 완성 이후 수정 - 임시"
+        communityCategory="백엔드 완성 이후 수정 - 임시"
       />
       <SearchContainer>
         <Search
