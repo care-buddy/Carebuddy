@@ -19,9 +19,9 @@
     "import/no-extraneous-dependencies": [
       "error",
       {
-        "devDependencies": true
+        "devDependencies": ["**/*.test.js", "**/*.spec.js", "src/setupTests.js"]
       }
-    ],
+    ],    
     // 자동으로 만들어지는 _id를 key로 사용할 수 있도록 설정하기 위해
     "no-underscore-dangle": "off",
     // 다른 스코프의 변수도명 사용 가능하도록

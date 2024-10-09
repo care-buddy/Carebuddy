@@ -78,8 +78,8 @@ const Login: React.FC<LoginProps> = ({
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         
-        setUser(userResponse.data); // 유저 정보 설정
-        console.log('유저 정보:', userResponse.data); // 임시
+        setUser(userResponse.data.message); // 유저 정보 설정
+        console.log('유저 정보:', userResponse.data.message); // 임시
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
@@ -195,7 +195,6 @@ const Login: React.FC<LoginProps> = ({
 
 export default Login;
 
-// 스타일 컴포넌트 정의
 const Container = styled.div`
   display: flex;
   flex-direction: column;
