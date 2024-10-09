@@ -77,9 +77,7 @@ const Login: React.FC<LoginProps> = ({
         const userResponse = await axiosInstance.get('me', {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-        
-        setUser(userResponse.data.message); // 유저 정보 설정
-        console.log('유저 정보:', userResponse.data.message); // 임시
+        setUser(userResponse.data.message); 
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
