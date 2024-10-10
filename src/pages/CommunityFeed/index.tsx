@@ -6,6 +6,8 @@ import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import styled from 'styled-components';
 
+import type { CommunityData } from '@/types/index';
+
 import TopBar from '@/components/common/TopBar';
 import Loading from '@/components/common/Loading';
 import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
@@ -16,6 +18,9 @@ import Modal from '@/components/common/Modal';
 import PostCreate from '@/pages/PostCreate/index';
 import LinkButton from '@/components/common/LinkButton';
 import NoPostsFound from '@/components/common/NoPostsFound';
+import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
+
+import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
 import default_profile from '@/assets/person.png';
 
@@ -44,6 +49,10 @@ const CommunityFeed: React.FC = () => {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [recommendedCommunities, setRecommendedCommunities] = useState<
+    CommunityData[] | null
+  >(null);
+
   const [, setLoginModalOpen] = useRecoilState(loginModalState);
 
   const user: User | null = useRecoilValue(userState);
@@ -56,6 +65,25 @@ const CommunityFeed: React.FC = () => {
       // console.log('이후 실행 로직 자리');
     }
   );
+
+  // 추천 그룹 사이드바용 API(전체 그룹 조회)
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get<{ data: CommunityData[] }>(
+          'communities'
+        );
+        const communityArray = pickRandomItemFromArray(response.data.data, 3);
+        setRecommendedCommunities(communityArray);
+      } catch (error) {
+        // 에러 처리 로직
+      } finally {
+        // 마지막에 실행할 로직
+      }
+    };
+
+    fetchData();
+  }, []);
 
   // 글 작성 모달 닫기
   const handleCloseWriteModal = () => {
@@ -267,7 +295,17 @@ const CommunityFeed: React.FC = () => {
               다른 커뮤니티 둘러보기
             </LinkButton>
           </LinkButtonContainer>
-          <SidePanel name="추천 멤버" elementArray={tempGroupMember} />
+          <SidePanel
+            name="추천 커뮤니티"
+            elementArray={recommendedCommunities?.map((community) => (
+              <CommunityElement
+                key={community._id}
+                communityId={community._id}
+                name={community.community}
+                introduction={community.introduction}
+              />
+            ))}
+          />
         </div>
       </Container>
     </>

@@ -23,7 +23,6 @@ import axiosInstance from '@/utils/axiosInstance';
 import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
 import CATEGORY from '@/constants/communityConstants';
-import { Community } from '@/constants/tempInterface';
 
 const Home: React.FC = () => {
   // 상태 정의
@@ -229,6 +228,7 @@ const Home: React.FC = () => {
                 likeCount={post.likedUsers ? post.likedUsers.length : 0} // 좋아요 수 체크
                 // likeCount={post.likedUsers.length}
                 // ref={index === selectedPosts.length - 1 ? observerTarget : null}
+                commentCount={post.commentId ? post.commentId.length : 0}
               />
             ))
           )}
