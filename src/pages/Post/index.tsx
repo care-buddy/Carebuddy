@@ -25,6 +25,8 @@ import userState from '@/recoil/atoms/userState';
 
 import type { PostData, CommentData } from '@/interfaces';
 
+import DEFAULT_PROFILE from '@/assets/person.png';
+
 interface FormData {
   title: string;
   content: string;
@@ -305,8 +307,11 @@ const Post: React.FC = () => {
           </PostOption>
         </TitleContainer>
         <InformationContainer>
-          <ProfileImg src={post?.userId.profileImage[0]} alt="프로필 이미지" />
-          <p>{post?.userId.nickName}</p>
+          <ProfileImg
+            src={post?.userId?.profileImage?.[0] || DEFAULT_PROFILE}
+            alt="프로필 이미지"
+          />
+          <p>{post?.userId?.nickName || '알수없는 닉네임(임시'}</p>
           <p>|</p>
           {post && <p>{formatDateIncludeTime(post.createdAt)}</p>}
         </InformationContainer>

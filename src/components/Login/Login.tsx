@@ -78,6 +78,7 @@ const Login: React.FC<LoginProps> = ({
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         setUser(userResponse.data.message); 
+        console.log('me 컨트롤러가 보낸 정보', userResponse.data.message)
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();

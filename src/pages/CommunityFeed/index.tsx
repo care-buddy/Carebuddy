@@ -17,6 +17,8 @@ import PostCreate from '@/pages/PostCreate/index';
 import LinkButton from '@/components/common/LinkButton';
 import NoPostsFound from '@/components/common/NoPostsFound';
 
+import default_profile from '@/assets/person.png';
+
 import usePostCreate from '@/hooks/usePostCreate';
 
 import formatDate from '@/utils/formatDate';
@@ -175,7 +177,7 @@ const CommunityFeed: React.FC = () => {
         // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시
         nickname={post.userId?.nickName || 'Unknown User'}
         // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
-        profileSrc={post.userId?.profileImage?.[0] || '/default-profile.png'}
+        profileSrc={post.userId?.profileImage?.[0] || 'default_profile'}
         // likedUsers 배열의 길이를 안전하게 체크
         likeCount={post.likedUsers?.length || 0}
         commentCount={post.commentId?.length || 0}
