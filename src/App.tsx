@@ -24,34 +24,6 @@ import isAuthenticatedState from './recoil/selectors/authSelector'; // 인증 �
 import authState from './recoil/atoms/authState'; // 인증 상태 관리 atom
 import userState from './recoil/atoms/userState';
 
-// const router = createBrowserRouter([
-//   {
-//     path: '/',
-//     // 로그인 유저만 접근
-//     element: (
-//       <ProtectedRoute>
-//         <Layout />
-//       </ProtectedRoute>
-//     ),
-//     children: [
-//       { path: '', element: <Home /> },
-//       { path: 'community-feed/:communityId', element: <CommunityFeed /> },
-//       { path: 'post/:postId', element: <Post /> },
-//       { path: 'community/', element: <Community /> },
-//       { path: 'diary', element: <Diary /> },
-//       { path: 'mypage', element: <Mypage /> },
-//       { path: 'userpage', element: <Userpage /> },
-//       { path: 'hosInfo', element: <HosInfo /> },
-//       { path: 'pharInfo', element: <PharInfo /> },
-//       { path: 'global-search', element: <GlobalSearch /> },
-//     ],
-//   },
-//   {
-//     path: '*',
-//     element: <LostPage />,
-//   },
-// ]);
-
 const router = createBrowserRouter([
   {
     path: '/',
@@ -108,15 +80,14 @@ export default App;
 const AppContent: React.FC = () => {
   const { handleSilentRefresh } = useLogin();
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
-  const userStateValue = useRecoilValue(userState)
+  const userStateValue = useRecoilValue(userState);
 
   // 페이지 리로드(새로고침)시 로그인 연장
   useEffect(() => {
     handleSilentRefresh(isAuthenticated);
-    console.log('userState', userState)
-    console.log('userStateValue', userStateValue)
+    console.log('userState', userState);
+    console.log('userStateValue', userStateValue);
     console.log('로그인상태', authState);
-
   }, []);
 
   return (

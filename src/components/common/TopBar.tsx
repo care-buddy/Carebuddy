@@ -51,7 +51,7 @@ const CommunityCategory = styled.div`
 interface TopBarProps {
   category?: string;
   title?: string;
-  communityCategory?: string;
+  communityCategory?: string | number;
 }
 
 const TopBar: React.FC<TopBarProps> = ({

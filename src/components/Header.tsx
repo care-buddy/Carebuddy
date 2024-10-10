@@ -148,7 +148,7 @@ const Header: React.FC = () => {
               <MenuItem
                 onClick={handleLinkClick}
                 onMouseEnter={() => setDropdownVisible(true)}
-                to="/community" 
+                to="/community"
               >
                 커뮤니티
                 {dropdownVisible && (
@@ -194,14 +194,14 @@ const Header: React.FC = () => {
         </Menu>
         <NotificationWrapper>
           <NotificationIcon>
-            <LuBell onClick={toggleNotification} />
+            {/* <LuBell onClick={toggleNotification} />
             {showNotification && (
               <Notification
                 show={showNotification}
                 notifications={notifications}
                 onClose={closeNotification}
               />
-            )}
+            )} */}
 
             <Link to="/mypage">
               <LuUser2 />

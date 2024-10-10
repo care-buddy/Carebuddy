@@ -1,4 +1,4 @@
-// 임시 - 남은 작업: 커뮤니티별 게시글 불러오기 API, 그룹 멤버 조회 API(백엔드 완료 이후 작업) / 첫 화면 페이지네이션(커뮤니티별 게시글 조회 API 붙이고 작업)
+// 임시 - 남은 작업: , 그룹 멤버 조회 API(백엔드 완료 이후 작업) / 첫 화면 페이지네이션(커뮤니티별 게시글 조회 API 붙이고 작업)
 // 리팩토링할 수도 있는 부분: filteredPosts를 제거하고 필터링된 데이터를 바로 렌더링하는 방식 고려 가능. useMemo 사용해서 메모이제이션, posts 부분과 filterefPosts 함수로 만들어서 동적렌더링, 검색로직 커스텀 훅으로 분리
 
 import React, { useState, useEffect } from 'react';
@@ -39,8 +39,8 @@ const CommunityFeed: React.FC = () => {
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
   const [searchParams, setSearchParams] = useSearchParams(''); // 쿼리스트링 값(검색 값)
   const params = new URLSearchParams(searchParams); // 현재 쿼리 파라미터
-  const [error, setError] = useState<Error | null>(null); // 에러
-  const [loading, setLoading] = useState<boolean>(false); // 로딩중
+  const [error, setError] = useState<Error | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const [, setLoginModalOpen] = useRecoilState(loginModalState);
 
@@ -80,24 +80,26 @@ const CommunityFeed: React.FC = () => {
   // 로그인 모달 열기
   const handleOpenLoginModal = async () => {
     alert('로그인한 사용자만 이용할 수 있는 메뉴입니다.'); // 임시. 멘트 변경
-
     setLoginModalOpen(true);
   };
 
-  // 커뮤니티별 게시글 불러오기(백엔드 로직 완료 이후) - 임시
-  // useEffect(() => {
-  //   const fetchData = async () => {
-  //     try {
-  //       const response = await axiosInstance.get(`/posts/${communityId}`);
-  //       setPosts(response.data);
-  //     } catch (error) {
-  //       setError(error as Error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, []);
+  // 커뮤니티별 게시글 불러오기
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axiosInstance.get(
+          `/posts/${communityId}/community`
+        );
+
+        setPosts(response.data.data);
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
 
   // 검색 로직
   // 검색 상태 핸들러
@@ -161,7 +163,7 @@ const CommunityFeed: React.FC = () => {
 
   // {isSearching ? renderPosts(filteredPosts) : renderPosts(posts)}
 
-  // 복잡한 JSX코드 변수에 넣어 정리
+  // 복잡한 JSX 코드를 변수에 넣어 정리 - 임시. 개발용 null 대비
   const renderAllPosts = () =>
     posts?.map((post) => (
       <FeedBox
@@ -170,9 +172,13 @@ const CommunityFeed: React.FC = () => {
         title={post.title}
         content={post.content}
         uploadedDate={formatDate(post.createdAt)}
-        nickname={post.userId.nickName}
-        profileSrc={post.userId.profileImage[0]}
-        likeCount={post.likedUsers.length}
+        // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시
+        nickname={post.userId?.nickName || 'Unknown User'}
+        // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
+        profileSrc={post.userId?.profileImage?.[0] || '/default-profile.png'}
+        // likedUsers 배열의 길이를 안전하게 체크
+        likeCount={post.likedUsers?.length || 0}
+        commentCount={post.commentId?.length || 0}
       />
     ));
 
@@ -185,9 +191,12 @@ const CommunityFeed: React.FC = () => {
           title={post.title}
           content={post.content}
           uploadedDate={formatDate(post.createdAt)}
-          nickname={post.userId.nickName}
-          profileSrc={post.userId.profileImage[0]}
-          likeCount={post.likedUsers.length}
+          // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시 - 임시(개발용)
+          nickname={post.userId?.nickName || 'Unknown User'}
+          // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
+          profileSrc={post.userId?.profileImage?.[0] || '/default-profile.png'}
+          // likedUsers 배열의 길이를 안전하게 체크
+          likeCount={post.likedUsers?.length || 0}
         />
       ));
     }
@@ -198,8 +207,16 @@ const CommunityFeed: React.FC = () => {
     <>
       <TopBar
         category="커뮤니티"
-        title='백엔드 완성 이후 수정 - 임시'
-        communityCategory='백엔드 완성 이후 수정 - 임시'
+        title={
+          posts && posts.length > 0
+            ? posts[0].communityId.community
+            : '커뮤니티 제목을 불러오는 중...'
+        }
+        communityCategory={
+          posts && posts.length > 0
+            ? posts[0].communityId.category
+            : '카테고리를 불러오는 중...'
+        }
       />
       <SearchContainer>
         <Search
@@ -232,7 +249,9 @@ const CommunityFeed: React.FC = () => {
         </FeedBoxContainer>
         <div>
           <LinkButtonContainer>
-            {user?.communityId.some((c) => c._id === communityId) ? (
+            {user &&
+            Array.isArray(user.communityId) &&
+            user.communityId.some((c) => c._id === communityId) ? (
               <LinkButton linkSize="sm" onClick={handleWithdrawalCommunity}>
                 탈퇴하기
               </LinkButton>
