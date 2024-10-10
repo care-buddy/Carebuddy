@@ -23,6 +23,7 @@ import axiosInstance from '@/utils/axiosInstance';
 import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
 import CATEGORY from '@/constants/communityConstants';
+import { Community } from '@/constants/tempInterface';
 
 const Home: React.FC = () => {
   // 상태 정의
@@ -59,6 +60,7 @@ const Home: React.FC = () => {
   const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
     () => {
       console.log('이후 실행 로직 자리');
+      handleCloseWriteModal();
     }
   );
 
@@ -181,7 +183,7 @@ const Home: React.FC = () => {
                 value="등록"
                 component={
                   <PostCreate
-                    formData={formData}
+                    postData={null}
                     onFormDataChange={handleFormDataChange}
                   />
                 }
