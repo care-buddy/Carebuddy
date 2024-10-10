@@ -80,11 +80,12 @@ export default App;
 const AppContent: React.FC = () => {
   const { handleSilentRefresh } = useLogin();
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
-  const userStateValue = useRecoilValue(userState);
+  const userStateValue = useRecoilValue(userState); 
 
   // 페이지 리로드(새로고침)시 로그인 연장
   useEffect(() => {
     handleSilentRefresh(isAuthenticated);
+    console.log('페이지 리로드 시 로그인 연장')
     console.log('userState', userState);
     console.log('userStateValue', userStateValue);
     console.log('로그인상태', authState);
