@@ -254,7 +254,7 @@ const Home: React.FC = () => {
 export default Home;
 
 const Div = styled.div`
-  position: absolute; /* 레이아웃에 포함된 배너 밑 마진(상단바 자리)를 채우기 위함 - 임시*/
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;

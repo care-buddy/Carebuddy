@@ -89,6 +89,7 @@ const StyledFeedBox = styled.div`
   height: auto;
   padding: 20px;
   margin: 10px 0 20px 0;
+  width: 100%;
 `;
 
 const Container = styled(Link)`
@@ -96,6 +97,7 @@ const Container = styled(Link)`
   flex-direction: column;
   text-decoration: none;
   cursor: pointer;
+  width: 100%;
 `;
 
 const TitleContainer = styled.div`
