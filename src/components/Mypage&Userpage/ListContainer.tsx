@@ -25,9 +25,16 @@ const DataContainer = styled.div`
   padding: 10px 0;
 `;
 
+const NoDataContainer = styled.div`
+  text-align: center;
+  border-bottom: 1px solid #cecece;
+  padding: 10px 0;
+`;
+
 const GroupContent = styled(ContentList)`
   color: #6d987a;
 `;
+
 interface PostId {
   title: string;
   createdAt: Date;
@@ -50,13 +57,17 @@ const ListContainer: React.FC<ListContainerProps> = ({ postIds, isLoading }) => 
         <Title>글제목</Title>
         <Title>작성일</Title>
       </DataContainer>
-      {postIds.map((post, index) => (
-        <DataContainer>
-          <GroupContent>[강아지] 말티즈</GroupContent>
-          <ContentList>{postIds[index]?.title }</ContentList>
-          <ContentList>{new Date(post.createdAt).toLocaleDateString()}</ContentList>
-        </DataContainer>
-      ))}
+      {postIds.length > 0 ? (
+        postIds.map((post, index) => (
+          <DataContainer key={index}>
+            <GroupContent>[강아지] 말티즈</GroupContent>
+            <ContentList>{postIds[index]?.title}</ContentList>
+            <ContentList>{new Date(post.createdAt).toLocaleDateString()}</ContentList>
+          </DataContainer>
+        ))
+      ) : (
+        <NoDataContainer>작성하신 게시글이 없습니다.</NoDataContainer>
+      )}
     </Container>
   );
 };

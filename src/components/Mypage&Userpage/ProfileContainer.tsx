@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { FaCamera } from 'react-icons/fa'; // 카메라 아이콘 import
 import axios from 'axios';
 import defaultImg from '@/assets/person.png';
 import Button from '@/components/common/Button';
 import TextArea from '@/components/common/TextArea';
 import Input from '@/components/common/Input';
+import axiosInstance from '@/utils/axiosInstance';
 
 const Container = styled.div`
   margin: 30px 0;
@@ -18,16 +20,23 @@ const UserContainer = styled.div`
 `;
 
 const ImgContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
 `;
 
-const LinkButton = styled.div`
-  margin: 10px 0;
-  text-decoration: underline;
+const IconButton = styled.span`
   cursor: pointer;
+  font-size: 20px;
+  background-color: white;
+  border: 1px solid #cecece;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  color: #6d987a;
+  position: relative;
+  bottom: 50px;
+  left: 110px;
+  height: 40px;
+  width: 40px;
 `;
 
 const ButtonContainer = styled.div`
@@ -67,44 +76,38 @@ interface ProfileContainerProps {
     introduce: string;
     profileImage: string[];
   };
-  onIntroductionChange: (newIntroduction: string) => void;
-  onNicknameChange: (newNickname: string) => void;
-  onProfileImageChange: (newImage: string[]) => void;
 }
 
-const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData, onIntroductionChange, onNicknameChange, onProfileImageChange }) => {
-  const [introduction, setIntroduction] = useState(userData.introduce);
-  const [nickname, setNickname] = useState(userData.nickName);
+const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData }) => {
+  const [introduce, setIntroduce] = useState(userData.introduce);
+  const [nickName, setNickName] = useState(userData.nickName);
   const [profileImage, setProfileImage] = useState<string[]>(userData.profileImage || []);
 
   useEffect(() => {
-    setIntroduction(userData.introduction);
-    setNickname(userData.nickname);
+    setIntroduce(userData.introduce);
+    setNickName(userData.nickName);
     setProfileImage(userData.profileImage || []);
   }, [userData]);
 
   const handleSaveClick = async () => {
     try {
-      const updates: { introduction?: string; nickname?: string; profileImage?: string[] } = {};
-      if (introduction !== userData.introduction) {
-        updates.introduction = introduction;
+      const updates: { introduce?: string; nickName?: string; profileImage?: string[] } = {};
+      if (introduce !== userData.introduce) {
+        updates.introduce = introduce;
       }
-      if (nickname !== userData.nickname) {
-        updates.nickname = nickname;
+      if (nickName !== userData.nickName) {
+        updates.nickName = nickName;
       }
       if (profileImage !== userData.profileImage) {
         updates.profileImage = profileImage;
       }
 
-      console.log('업데이트 데이터:', updates);
+      const userId = '66b9b34ae9a13c88c643e361'; // 임시로 설정
 
       if (Object.keys(updates).length > 0) {
-        const response = await axios.put('/api/user', updates);
-        console.log('업데이트 응답:', response.data);
-        onIntroductionChange(updates.introduction || userData.introduction);
-        onNicknameChange(updates.nickname || userData.nickname);
-        onProfileImageChange(updates.profileImage || userData.profileImage);
+        const response = await axiosInstance.put(`users/${userId}`, updates);
         alert('변경 사항이 저장되었습니다');
+        window.location.reload(); // 페이지 새로고침 추가
       } else {
         alert('변경된 사항이 없습니다');
       }
@@ -135,6 +138,9 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData, onIntrodu
           <ImageBox>
             <img src={profileImage && profileImage.length > 0 ? profileImage[0] : defaultImg} alt="프로필 사진" />
           </ImageBox>
+          <IconButton onClick={() => document.getElementById('fileInput')?.click()}>
+            <FaCamera />
+          </IconButton>
           <input
             type="file"
             id="fileInput"
@@ -142,16 +148,15 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData, onIntrodu
             accept="image/*"
             onChange={handleProfileImageChange}
           />
-          <LinkButton onClick={() => document.getElementById('fileInput')?.click()}>프로필 사진 업로드 하기</LinkButton>
         </ImgContainer>
         <Info>
           <List>
             <Item>닉네임</Item>
             <Input
-              inputSize='bg'
+              inputSize="bg"
               placeholder="닉네임을 입력하세요."
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
+              value={nickName}
+              onChange={(e) => setNickName(e.target.value)}
             />
           </List>
           <List>
@@ -160,8 +165,8 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData, onIntrodu
               <TextArea
                 size="md"
                 placeholder="소개글을 입력하세요"
-                value={introduction}
-                onChange={(e) => setIntroduction(e.target.value)}
+                value={introduce}
+                onChange={(e) => setIntroduce(e.target.value)}
               />
             </Data>
           </List>

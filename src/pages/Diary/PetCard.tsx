@@ -109,11 +109,10 @@ const PetCard: React.FC<ProfileCardProps> = ({
   isMe,
 }) => {
   const age = buddy.birth;
-  console.log(calculateAge(age));
 
   return (
     <CardsWrapper className={className} onClick={onClick}>
-      {isMe && (
+      {isMe && className === 'selected-card' && (
         <ActionButton
           buttonBorder="border-none"
           direction="vertical"
