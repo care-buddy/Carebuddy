@@ -35,7 +35,25 @@ const Home: React.FC = () => {
     CommunityData[] | null
   >(null);
 
-  const { categoryOptions, communityOptions } = useGenerateOptions(); // 옵션 생성 함수 사용
+  const { categoryOptions, communityOptions } = useGenerateOptions();
+
+  // select 로직 - category 선택에 따른 community 옵션 필터링 로직 추가
+  const [filteredCommunityOptions, setFilteredCommunityOptions] =
+    useState(communityOptions);
+
+  useEffect(() => {
+    if (category !== 'category' && community !== null) {
+      const filteredCommunityOptions = communityOptions.filter(
+        (community) =>
+          community !== null &&
+          community.value &&
+          community.category === category
+      );
+      setFilteredCommunityOptions(filteredCommunityOptions);
+    } else {
+      setFilteredCommunityOptions(communityOptions);
+    }
+  }, [category, communityOptions]);
 
   // 추천 그룹 사이드바용 API(전체 그룹 조회)
   useEffect(() => {
@@ -89,7 +107,7 @@ const Home: React.FC = () => {
   const handleCategoryOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setCategory(Number(event.target.value)); 
+    setCategory(Number(event.target.value));
   };
 
   // 커뮤니티 옵션 핸들러
@@ -98,40 +116,6 @@ const Home: React.FC = () => {
   ) => {
     setCommunity(event.target.value);
   };
-
-  // select 로직
-  useEffect(() => {
-    if (posts !== null) {
-      let filteredPosts = posts;
-
-      // 둘 다 선택한 경우
-      if (category !== 'category' && community !== 'community') {
-        filteredPosts = filteredPosts.filter(
-          (post) =>
-            post.communityId.category === category &&
-            post.communityId.community === community
-        );
-        setSelectedPosts(filteredPosts);
-      } else if (category !== 'category' && community === 'community') {
-        // 카테고리만 선택
-        filteredPosts = filteredPosts.filter(
-          (post) => post.communityId.category === category
-        );
-        setSelectedPosts(filteredPosts);
-      } else if (category === 'category' && community !== 'community') {
-        // 커뮤니티만 선택
-        filteredPosts = filteredPosts.filter(
-          (post) => post.communityId.community === community
-        );
-        setSelectedPosts(filteredPosts);
-      } else {
-        // 둘 다 선택하지 않은 경우
-        setSelectedPosts(filteredPosts);
-      }
-    } else {
-      setSelectedPosts([]);
-    }
-  }, [posts, category, community]);
 
   // 에러 처리
   if (error) {
@@ -156,7 +140,7 @@ const Home: React.FC = () => {
               />
               <Select
                 selectStyle="round"
-                options={communityOptions}
+                options={filteredCommunityOptions} // 필터링된 옵션 사용
                 onChange={handleCommunityOptions}
               />
             </SelectContainer>
