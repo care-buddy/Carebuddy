@@ -27,7 +27,7 @@ const Home: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
   const [posts, setPosts] = useState<PostData[]>([]); // 게시글 배열
   const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글 배열
-  const [category, setCategory] = useState<number | string>('category'); // 선택된 카테고리
+  const [category, setCategory] = useState<number | string>(-1); // 선택된 카테고리
   const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
   const [isLoading, setIsLoading] = useState(false); // 데이터 로딩 상태
   const [error, setError] = useState<Error | null>(null);
@@ -37,23 +37,89 @@ const Home: React.FC = () => {
 
   const { categoryOptions, communityOptions } = useGenerateOptions();
 
+  useEffect(() => {
+    console.log(selectedPosts);
+  }, [selectedPosts]);
+
+  // 초기 게시글 데이터 가져오기 함수
+  // const fetchData = useCallback(async () => {
+  //   try {
+  //     const response = await axiosInstance.get(`/posts`);
+  //     // setPosts(response.data.data);
+  //     setSelectedPosts(response.data.data);
+  //   } catch (error) {
+  //     setError(error as Error);
+  //   }
+  // }, []);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get(`/posts`);
+      const posts = response.data.data;
+
+      if (Array.isArray(posts)) {
+        setPosts(posts);
+        setSelectedPosts(posts);
+      } else {
+        console.error('Expected posts to be an array, but got:', posts);
+        setSelectedPosts([]); // 기본값 설정
+      }
+    } catch (error) {
+      setError(error as Error);
+    }
+  }, []);
+
+  // 컴포넌트가 마운트 된 후 초기 데이터 가져오기
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
   // select 로직 - category 선택에 따른 community 옵션 필터링 로직 추가
   const [filteredCommunityOptions, setFilteredCommunityOptions] =
     useState(communityOptions);
 
   useEffect(() => {
-    if (category !== 'category' && community !== null) {
+    if (category !== 'category') {
       const filteredCommunityOptions = communityOptions.filter(
-        (community) =>
-          community !== null &&
-          community.value &&
-          community.category === category
+        (community) => community.category === category
       );
       setFilteredCommunityOptions(filteredCommunityOptions);
     } else {
       setFilteredCommunityOptions(communityOptions);
     }
-  }, [category, communityOptions]);
+  }, [category]);
+
+  // select 변경 시 커뮤니티별 게시글 조회 API
+  useEffect(() => {
+    const fetchCommunityPosts = async () => {
+      console.log('조회까지 못감!');
+
+      setIsLoading(true);
+
+      // category가 -1일 경우 전체 게시글 조회
+      if (category === -1) {
+        await fetchData(); // 전체 게시글을 조회하는 함수 호출
+        console.log('전체 게시글 조회');
+        setIsLoading(false); // 로딩 상태 종료
+      } else if (community !== 'community') {
+        try {
+          const response = await axiosInstance.get(
+            `/posts/${community}/community` // 선택된 커뮤니티의 _id 사용
+          );
+          console.log(community, '조회!');
+          setSelectedPosts(response.data.data);
+        } catch (error) {
+          setError(error as Error);
+        } finally {
+          setIsLoading(false); // 데이터 호출이 끝난 후 로딩 상태를 false로 설정
+        }
+      } else {
+        setIsLoading(false); // 'community'인 경우에도 로딩 상태를 false로 설정
+      }
+    };
+
+    fetchCommunityPosts();
+  }, [community, category]); // community와 category 상태에 의존
 
   // 추천 그룹 사이드바용 API(전체 그룹 조회)
   useEffect(() => {
@@ -86,23 +152,6 @@ const Home: React.FC = () => {
     setIsWriteModalOpen(false);
   };
 
-  // 초기 게시글 데이터 가져오기 함수
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get(`/posts`);
-      setPosts(response.data.data);
-      // setHasMore(response.data.hasMore);
-      // setPage(2);
-    } catch (error) {
-      setError(error as Error);
-    }
-  }, []);
-
-  // 컴포넌트가 마운트 된 후 초기 데이터 가져오기
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
   // 카테고리 옵션 핸들러
   const handleCategoryOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -111,10 +160,28 @@ const Home: React.FC = () => {
   };
 
   // 커뮤니티 옵션 핸들러
-  const handleCommunityOptions = (
+  const handleCommunityOptions = async (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setCommunity(event.target.value);
+    const selectedCommunity = event.target.value;
+    setCommunity(selectedCommunity);
+
+    // 커뮤니티를 선택할 때마다 게시글을 다시 가져오도록 상태를 업데이트
+    if (selectedCommunity !== 'community') {
+      setSelectedPosts([]); // 이전 선택된 게시글 초기화
+      setIsLoading(true); // 로딩 상태 시작
+
+      try {
+        const response = await axiosInstance.get(
+          `/posts/${selectedCommunity}/community`
+        );
+        setPosts(response.data.data);
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setIsLoading(false); // 데이터 호출이 끝난 후 로딩 상태 종료
+      }
+    }
   };
 
   // 에러 처리
@@ -160,7 +227,7 @@ const Home: React.FC = () => {
               />
             )}
           </FeedOptionContainer>
-          {selectedPosts.length === 0 ? (
+          {Array.isArray(selectedPosts) && selectedPosts.length === 0 ? (
             <NoPostsFound>해당하는 게시글이 없습니다.</NoPostsFound>
           ) : (
             selectedPosts.map((post) => (
@@ -201,6 +268,11 @@ const Home: React.FC = () => {
               />
             ))
           )}
+          {/* {selectedPosts.length === 0 ? (
+            <NoPostsFound>해당하는 게시글이 없습니다.</NoPostsFound>
+          ) : (
+
+          )} */}
         </FeedBoxContainer>
         <div>
           <SidePanel

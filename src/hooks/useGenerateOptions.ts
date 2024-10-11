@@ -6,33 +6,40 @@ import { CommunityData } from '@/types';
 // 카테고리(종) 옵션 생성 함수
 const getCategoryOptions = (communityIds: CommunityData[]) => {
   const categoriesSet = new Set();
+  const options = [];
 
-  const options = communityIds
-    .map((community) => {
-      let categoryLabel;
+  communityIds.forEach((community) => {
+    let categoryLabel;
 
-      switch (community.category) {
-        case CATEGORY.dog:
-          categoryLabel = '강아지';
-          break;
-        case CATEGORY.cat:
-          categoryLabel = '고양이';
-          break;
-        default:
-          categoryLabel = '알 수 없음';
-          break;
-      }
+    switch (community.category) {
+      case CATEGORY.dog:
+        categoryLabel = '강아지';
+        break;
+      case CATEGORY.cat:
+        categoryLabel = '고양이';
+        break;
+      default:
+        categoryLabel = '알 수 없음';
+        break;
+    }
 
-      // 카테고리가 없으면 -1을 설정
-      const categoryValue = categoriesSet.has(community.category) ? -1 : community.category;
-      if (!categoriesSet.has(community.category)) {
-        categoriesSet.add(community.category);
-        return { value: categoryValue, label: categoryLabel };
-      }
+    // 카테고리가 없으면 -1을 설정
+    const categoryValue = categoriesSet.has(community.category)
+      ? -1
+      : community.category;
+    if (!categoriesSet.has(community.category)) {
+      categoriesSet.add(community.category);
+      options.push({ value: categoryValue, label: categoryLabel });
+    }
+  });
 
-      return undefined; // 반환하는 값을 명시적으로 undefined로 설정
-    })
-    .filter((option) => option !== undefined); // undefined가 포함되지 않도록 필터링
+  // 기본값으로 강아지와 고양이에 대한 옵션 추가
+  if (!categoriesSet.has(CATEGORY.dog)) {
+    options.unshift({ value: CATEGORY.dog, label: '강아지' }); // 강아지 기본값 추가
+  }
+  if (!categoriesSet.has(CATEGORY.cat)) {
+    options.unshift({ value: CATEGORY.cat, label: '고양이' }); // 고양이 기본값 추가
+  }
 
   return [{ value: -1, label: '종' }, ...options]; // 기본 카테고리 값으로 -1 사용
 };
@@ -40,23 +47,25 @@ const getCategoryOptions = (communityIds: CommunityData[]) => {
 // 커뮤니티 옵션 생성 함수
 const getCommunityOptions = (communityIds: CommunityData[]) => {
   const communitiesSet = new Set(); // 중복을 방지하기 위한 Set 사용
+  const options = [];
 
-  const options = communityIds
-    .map((community) => {
-      if (!communitiesSet.has(community._id)) {
-        communitiesSet.add(community._id);
-        return {
-          value: community._id,
-          label: community.community,
-          category: community.category ?? -1, // 카테고리가 없으면 -1로 설정
-        };
-      }
+  communityIds.forEach((community) => {
+    if (!communitiesSet.has(community._id)) {
+      communitiesSet.add(community._id);
+      options.push({
+        value: community._id,
+        label: community.community,
+        category: community.category ?? -1, // 카테고리가 없으면 -1로 설정
+      });
+    }
+  });
 
-      return undefined; // 반환하는 값을 명시적으로 undefined로 설정
-    })
-    .filter((option) => option !== undefined); // undefined가 포함되지 않도록 필터링
+  // 기본값으로 커뮤니티 추가
+  options.unshift({ value: 'community', label: '커뮤니티', category: -1 }); // 커뮤니티 기본값 추가
+  options.unshift({ value: 'community', label: '커뮤니티', category: 0 }); // 커뮤니티 기본값 추가
+  options.unshift({ value: 'community', label: '커뮤니티', category: 1 }); // 커뮤니티 기본값 추가
 
-  return [{ value: 'community', label: '커뮤니티', category: -1 }, ...options]; // 기본 카테고리 값으로 -1 사용
+  return options; // 기본 카테고리 값으로 -1 사용
 };
 
 // 사용자 상태에 따른 옵션 생성하는 커스텀 훅
