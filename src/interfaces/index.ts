@@ -93,7 +93,7 @@ export interface PostData {
   likedUsers: string[];
   content: string;
   deletedAt: string;
-  postImage: string[];
+  postImage: string;
   createdAt: string;
   commentId: CommentData[];
 }

@@ -31,7 +31,7 @@ interface FormData {
   title: string;
   content: string;
   communityId: string;
-  postImage: string[];
+  postImage: string | null;
 }
 
 const Post: React.FC = () => {
@@ -46,7 +46,7 @@ const Post: React.FC = () => {
     title: '',
     content: '',
     communityId: '',
-    postImage: [],
+    postImage: null,
   });
 
   const { postId } = useParams();
@@ -64,6 +64,7 @@ const Post: React.FC = () => {
         setLoading(true);
         const response = await axiosInstance.get(`posts/${postId}`);
         const post = response.data.data[0];
+        console.log(response.data.data[0]);
 
         // 등록일 formatting
         post.createdAt = formatDateIncludeTime(post.createdAt);
@@ -96,7 +97,7 @@ const Post: React.FC = () => {
       title: post?.title || '',
       content: post?.content || '',
       communityId: post?.communityId._id || '',
-      postImage: post?.postImage || [],
+      postImage: post?.postImage || null,
     });
   }, [post]);
 
@@ -104,7 +105,7 @@ const Post: React.FC = () => {
   const handleFormDataChange = (data: {
     title?: string;
     content?: string;
-    postImage?: string[];
+    postImage?: string;
   }) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -124,7 +125,7 @@ const Post: React.FC = () => {
           ...post,
           title: formData.title,
           content: formData.content,
-          postImage: formData.postImage,
+          postImage: formData.postImage || null,
         });
       }
     } catch (error) {
@@ -315,10 +316,13 @@ const Post: React.FC = () => {
           <p>|</p>
           {post && <p>{formatDateIncludeTime(post.createdAt)}</p>}
         </InformationContainer>
+        {/* 이미지 */}
         <ContentContainer>
           <Pre>{post?.content}</Pre>
-          {post?.postImage && post.postImage.length > 0 && (
-            <img src={post.postImage[0]} alt="이미지" />
+          {post?.postImage ? (
+            <img src={post?.postImage} alt="이미지" />
+          ) : (
+            <div />
           )}
           <Likes isLiked={isLiked} onClick={() => handleLikesClick()}>
             <LuThumbsUp />
