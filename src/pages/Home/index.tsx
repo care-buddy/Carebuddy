@@ -1,7 +1,6 @@
 /* eslint-disable no-nested-ternary */
 
 import React, { useState, useEffect, useCallback } from 'react';
-// import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 
 import type { PostData, CommunityData } from '@/types/index';
@@ -17,12 +16,11 @@ import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
 import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 
+import useGenerateOptions from '@/hooks/useGenerateOptions';
 import usePostCreate from '@/hooks/usePostCreate';
 
 import axiosInstance from '@/utils/axiosInstance';
 import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
-
-import CATEGORY from '@/constants/communityConstants';
 
 const Home: React.FC = () => {
   // 상태 정의
@@ -36,6 +34,8 @@ const Home: React.FC = () => {
   const [recommendedCommunities, setRecommendedCommunities] = useState<
     CommunityData[] | null
   >(null);
+
+  const { categoryOptions, communityOptions } = useGenerateOptions(); // 옵션 생성 함수 사용
 
   // 추천 그룹 사이드바용 API(전체 그룹 조회)
   useEffect(() => {
@@ -85,26 +85,11 @@ const Home: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  // 카테고리(종) 옵션
-  const SelectCategoryOptions = [
-    { value: 'category', label: '종' },
-    { value: CATEGORY.dog, label: '강아지' },
-    { value: CATEGORY.cat, label: '고양이' },
-  ];
-
-  // 커뮤니티 옵션 ->
-  const SelectCommunityOptions = [
-    { value: 'community', label: '커뮤니티' },
-    { value: '눈 / 피부 / 귀', label: '눈 / 피부 / 귀' },
-    { value: '코', label: '코' },
-    { value: '뇌·신경', label: '뇌·신경' },
-  ];
-
   // 카테고리 옵션 핸들러
   const handleCategoryOptions = (
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
-    setCategory(Number(event.target.value)); // number 타입으로 변환
+    setCategory(Number(event.target.value)); 
   };
 
   // 커뮤니티 옵션 핸들러
@@ -166,12 +151,12 @@ const Home: React.FC = () => {
               <Select
                 selectStyle="round"
                 selectSize="sm"
-                options={SelectCategoryOptions}
+                options={categoryOptions}
                 onChange={handleCategoryOptions}
               />
               <Select
                 selectStyle="round"
-                options={SelectCommunityOptions}
+                options={communityOptions}
                 onChange={handleCommunityOptions}
               />
             </SelectContainer>
