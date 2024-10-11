@@ -351,6 +351,23 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         });
         return false;
       }
+      const month = birth.split('-')[1]; // 생년월일의 월 부분
+
+      if (Number(month) < 1 || Number(month) > 12) {
+        setAlertState({
+          showAlert: true,
+          alertMessage: '생년월일을 올바르게 입력해주세요.',
+        });
+        return false;
+      }
+
+      if (month === '00') {
+        setAlertState({
+          showAlert: true,
+          alertMessage: '생년월일을 올바르게 입력해주세요.',
+        });
+        return false;
+      }
     }
 
     return true;
