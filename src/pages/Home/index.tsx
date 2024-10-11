@@ -25,9 +25,8 @@ import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 const Home: React.FC = () => {
   // 상태 정의
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
-  const [posts, setPosts] = useState<PostData[]>([]); // 게시글 배열
-  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글 배열
-  const [category, setCategory] = useState<number | string>('category'); // 선택된 카테고리
+  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 게시글 배열
+  const [category, setCategory] = useState<number | string>(-1); // 선택된 카테고리
   const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
   const [isLoading, setIsLoading] = useState(false); // 데이터 로딩 상태
   const [error, setError] = useState<Error | null>(null);
@@ -35,7 +34,89 @@ const Home: React.FC = () => {
     CommunityData[] | null
   >(null);
 
-  const { categoryOptions, communityOptions } = useGenerateOptions(); // 옵션 생성 함수 사용
+  const { categoryOptions, communityOptions } = useGenerateOptions();
+
+  // 초기 게시글 데이터 가져오기 함수
+  const fetchData = useCallback(async () => {
+    try {
+      const response = await axiosInstance.get(`/posts`);
+      setSelectedPosts(response.data.data);
+    } catch (error) {
+      setError(error as Error);
+    }
+  }, []);
+
+  // 컴포넌트가 마운트 된 후 초기 데이터 가져오기
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // select 로직 - category 선택에 따른 community 옵션 필터링 로직 추가
+  const [filteredCommunityOptions, setFilteredCommunityOptions] =
+    useState(communityOptions);
+
+  useEffect(() => {
+    if (category !== 'category') {
+      const filteredCommunityOptions = communityOptions.filter(
+        (community) => community.category === category
+      );
+      setFilteredCommunityOptions(filteredCommunityOptions);
+    } else {
+      setFilteredCommunityOptions(communityOptions);
+    }
+  }, [category]);
+
+  // 카테고리 옵션 핸들러
+  const handleCategoryOptions = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setCategory(Number(event.target.value));
+  };
+
+  // 커뮤니티 옵션 핸들러
+  const handleCommunityOptions = async (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedCommunity = event.target.value;
+    setCommunity(selectedCommunity);
+  };
+
+  // select 변경 시 커뮤니티별 게시글 조회 API
+  useEffect(() => {
+    const fetchCommunityPosts = async () => {
+      setIsLoading(true);
+
+      // category가 -1일 경우 전체 게시글 조회
+      if (
+        category === -1 ||
+        (category === 0 && community === 'community') ||
+        (category === 1 && community === 'community')
+      ) {
+        await fetchData(); // 전체 게시글을 조회하는 함수 호출
+        setIsLoading(false); // 로딩 상태 종료
+      } else if (community !== 'community') {
+        try {
+          const response = await axiosInstance.get(
+            `/posts/${community}/community` // 선택된 커뮤니티의 _id 사용
+          );
+
+          if (Array.isArray(response.data.data)) {
+            setSelectedPosts(response.data.data);
+          } else {
+            setSelectedPosts([]);
+          }
+        } catch (error) {
+          setError(error as Error);
+        } finally {
+          setIsLoading(false); // 데이터 호출이 끝난 후 로딩 상태를 false로 설정
+        }
+      } else {
+        setIsLoading(false); // 'community'인 경우에도 로딩 상태를 false로 설정
+      }
+    };
+
+    fetchCommunityPosts();
+  }, [category, community]); // community와 category 상태에 의존
 
   // 추천 그룹 사이드바용 API(전체 그룹 조회)
   useEffect(() => {
@@ -48,8 +129,6 @@ const Home: React.FC = () => {
         setRecommendedCommunities(communityArray);
       } catch (error) {
         // 에러 처리 로직
-      } finally {
-        // 마지막에 실행할 로직
       }
     };
 
@@ -67,71 +146,6 @@ const Home: React.FC = () => {
   const handleCloseWriteModal = () => {
     setIsWriteModalOpen(false);
   };
-
-  // 초기 게시글 데이터 가져오기 함수
-  const fetchData = useCallback(async () => {
-    try {
-      const response = await axiosInstance.get(`/posts`);
-      setPosts(response.data.data);
-      // setHasMore(response.data.hasMore);
-      // setPage(2);
-    } catch (error) {
-      setError(error as Error);
-    }
-  }, []);
-
-  // 컴포넌트가 마운트 된 후 초기 데이터 가져오기
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  // 카테고리 옵션 핸들러
-  const handleCategoryOptions = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setCategory(Number(event.target.value)); 
-  };
-
-  // 커뮤니티 옵션 핸들러
-  const handleCommunityOptions = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setCommunity(event.target.value);
-  };
-
-  // select 로직
-  useEffect(() => {
-    if (posts !== null) {
-      let filteredPosts = posts;
-
-      // 둘 다 선택한 경우
-      if (category !== 'category' && community !== 'community') {
-        filteredPosts = filteredPosts.filter(
-          (post) =>
-            post.communityId.category === category &&
-            post.communityId.community === community
-        );
-        setSelectedPosts(filteredPosts);
-      } else if (category !== 'category' && community === 'community') {
-        // 카테고리만 선택
-        filteredPosts = filteredPosts.filter(
-          (post) => post.communityId.category === category
-        );
-        setSelectedPosts(filteredPosts);
-      } else if (category === 'category' && community !== 'community') {
-        // 커뮤니티만 선택
-        filteredPosts = filteredPosts.filter(
-          (post) => post.communityId.community === community
-        );
-        setSelectedPosts(filteredPosts);
-      } else {
-        // 둘 다 선택하지 않은 경우
-        setSelectedPosts(filteredPosts);
-      }
-    } else {
-      setSelectedPosts([]);
-    }
-  }, [posts, category, community]);
 
   // 에러 처리
   if (error) {
@@ -156,7 +170,7 @@ const Home: React.FC = () => {
               />
               <Select
                 selectStyle="round"
-                options={communityOptions}
+                options={filteredCommunityOptions} // 필터링된 옵션 사용
                 onChange={handleCommunityOptions}
               />
             </SelectContainer>
@@ -187,7 +201,6 @@ const Home: React.FC = () => {
                 content={post.content}
                 uploadedDate={formatDate(post.createdAt)}
                 nickname={post.userId ? post.userId.nickName : '알 수 없음'} // null 체크 추가
-                // nickname={post.userId.nickName}
                 profileSrc={
                   post.userId &&
                   post.userId.profileImage &&
@@ -195,11 +208,9 @@ const Home: React.FC = () => {
                     ? post.userId.profileImage[0]
                     : 'defaultProfileImg.jpg' // 기본 이미지 경로
                 }
-                // profileSrc={post.userId.profileImage[0]}
                 communityName={
                   post.communityId ? post.communityId.community : '알 수 없음' // 커뮤니티 이름 체크
                 }
-                // communityName={post.communityId.community}
                 communityCategory={
                   post.communityId && post.communityId.category !== undefined
                     ? post.communityId.category === 0
@@ -207,12 +218,7 @@ const Home: React.FC = () => {
                       : '고양이'
                     : '알 수 없음' // 카테고리 체크
                 }
-                // communityCategory={
-                //   post.communityId.category === 0 ? '강아지' : '고양이'
-                // }
                 likeCount={post.likedUsers ? post.likedUsers.length : 0} // 좋아요 수 체크
-                // likeCount={post.likedUsers.length}
-                // ref={index === selectedPosts.length - 1 ? observerTarget : null}
                 commentCount={post.commentId ? post.commentId.length : 0}
               />
             ))

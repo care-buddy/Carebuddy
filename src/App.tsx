@@ -56,7 +56,6 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      // { path: 'mypage', element: <Mypage /> },
       { path: 'userpage', element: <Userpage /> },
       { path: 'hosInfo', element: <HosInfo /> },
       { path: 'pharInfo', element: <PharInfo /> },
