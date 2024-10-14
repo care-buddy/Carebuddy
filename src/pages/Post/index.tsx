@@ -23,7 +23,7 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import userState from '@/recoil/atoms/userState';
 
-import type { PostData, CommentData } from '@/interfaces';
+import type { CommentData } from '@/interfaces';
 
 import DEFAULT_PROFILE from '@/assets/person.png';
 import usePostCreate from '@/hooks/usePostCreate';
@@ -36,14 +36,14 @@ interface FormData {
 }
 
 const Post: React.FC = () => {
-  const [post, setPost] = useState<PostData | null>(null); // 게시글
+  const [post, setPost] = useState<FormData | null>(null); // 게시글
   const [comments, setComments] = useState<CommentData[] | null>(null); // 댓글
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const [formData, setFormData] = useState<FormData>({
+  const [, setFormData] = useState<FormData>({
     title: '',
     content: '',
     communityId: '',
@@ -103,7 +103,6 @@ const Post: React.FC = () => {
   }, [post]);
 
   const { handleFormDataChange, handleEditPostSubmit } = usePostCreate(() => {
-    // handleCloseWriteModal();
     handleEditClick(false);
     fetchData();
   });
@@ -270,7 +269,7 @@ const Post: React.FC = () => {
                 value="수정"
                 component={
                   <PostCreate
-                    postData={null}
+                    postData={post}
                     onFormDataChange={handleFormDataChange}
                   />
                 }

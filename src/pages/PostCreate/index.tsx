@@ -45,16 +45,17 @@ const PreviewImage = styled.img`
   margin-right: 10px;
 `;
 
-const FileName = styled.span`
-  font-size: 14px;
-`;
+// 사용하지 않는 컴포넌트?
+// const FileName = styled.span`
+//   font-size: 14px;
+// `;
 
 interface PostCreateProps {
   postData: {
     title?: string;
     content?: string;
     communityId?: string;
-    postImage: File | null;
+    postImage: File | string | null;
   } | null;
   onFormDataChange: (FormData: FormData) => void;
 }
@@ -75,7 +76,10 @@ const PostCreate: React.FC<PostCreateProps> = ({
   postData,
   onFormDataChange,
 }) => {
-  const [imageFiles, setImageFiles] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File | string | null>(null);
+
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+
   const [postInfo, setPostInfo] = useState({
     title: postData?.title ?? '',
     content: postData?.content ?? '',
@@ -84,7 +88,6 @@ const PostCreate: React.FC<PostCreateProps> = ({
   });
 
   const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    // onFormDataChange({ ...formData, communityId: event.target.value });
     setPostInfo({ ...postInfo, communityId: event.target.value });
   };
 
@@ -102,10 +105,23 @@ const PostCreate: React.FC<PostCreateProps> = ({
     const file = e?.target.files?.[0];
 
     if (file) {
-      // const imageUrl = URL.createObjectURL(file);
-      setImageFiles(file);
+      setSelectedImage(file);
     }
   };
+
+  useEffect(() => {
+    // 수정 모달의 경우, 펫데이터가 있으므로 초기값 세팅
+    if (postData) {
+      setPostInfo({
+        title: postData.title ?? '',
+        content: postData.content ?? '',
+        communityId: postData.communityId ?? '',
+        postImage: postData.postImage ?? '',
+      });
+
+      setImageFiles(postData.postImage);
+    }
+  }, []);
 
   // 폼데이터 생성 함수
   const createFormData = () => {
@@ -116,12 +132,13 @@ const PostCreate: React.FC<PostCreateProps> = ({
     newFormData.append('communityId', String(postInfo.communityId));
     // 선택 파일이 있을 때에는 그 파일을 append 해준다
     // 폼데이터에는 null 값을 보낼 수 없으니, 선택된 파일이나 버디이미지가 없는 경우에는 append하지 않습니다: 서버 default 값이 null
-    if (imageFiles) {
+    if (selectedImage) {
+      newFormData.append('postImage', selectedImage);
+
+      // } else formData.append('buddyImage', buddyImage);
+    } else if (imageFiles) {
       newFormData.append('postImage', imageFiles);
-      // formData.append('postImage', imageFiles);
     }
-    console.log(imageFiles);
-    // else formData.append('postImage', null);
 
     return newFormData;
   };
@@ -129,20 +146,19 @@ const PostCreate: React.FC<PostCreateProps> = ({
   // 모달 내용이 변경될 때마다 폼데이터를 객체를 만들어 업데이트해준다
   useEffect(() => {
     onFormDataChange(createFormData());
-  }, [postInfo, imageFiles]);
+  }, [postInfo, selectedImage]);
 
   // const imageSrc = selectFile ? URL.createObjectURL(selectFile) : imgView;
   // 선택된 파일이 있으면 해당 파일의 URL을 생성하여 사용
   // 그렇지 않으면, imgView가 URL인지 확인하고 해당 URL을 사용
   // imgView가 File일 경우 URL.createObjectURL로 변환
   let imageSrc: string | null;
-
-  if (imageFiles) {
-    imageSrc = URL.createObjectURL(imageFiles);
+  if (selectedImage) {
+    imageSrc = URL.createObjectURL(selectedImage);
   } else if (typeof imageFiles === 'string') {
     imageSrc = imageFiles;
-    // } else if (imageFiles) {
-    //   imageSrc = URL.createObjectURL(imageFiles);
+  } else if (imageFiles) {
+    imageSrc = URL.createObjectURL(imageFiles);
   } else {
     imageSrc = null; // 기본 이미지 URL
   }
