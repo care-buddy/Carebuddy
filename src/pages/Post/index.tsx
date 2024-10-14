@@ -23,9 +23,10 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import userState from '@/recoil/atoms/userState';
 
-import type { PostData, CommentData } from '@/interfaces';
+import type { CommentData } from '@/interfaces';
 
 import DEFAULT_PROFILE from '@/assets/person.png';
+import usePostCreate from '@/hooks/usePostCreate';
 
 interface FormData {
   title: string;
@@ -35,14 +36,14 @@ interface FormData {
 }
 
 const Post: React.FC = () => {
-  const [post, setPost] = useState<PostData | null>(null); // 게시글
+  const [post, setPost] = useState<FormData | null>(null); // 게시글
   const [comments, setComments] = useState<CommentData[] | null>(null); // 댓글
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const [formData, setFormData] = useState<FormData>({
+  const [, setFormData] = useState<FormData>({
     title: '',
     content: '',
     communityId: '',
@@ -56,37 +57,37 @@ const Post: React.FC = () => {
   const [likedUsers, setLikedUsers] = useState([]);
   const [isLiked, setIsLiked] = useState(false); // 좋아요 여부 상태
 
+  const fetchData = async () => {
+    // 게시글
+    try {
+      setLoading(true);
+      const response = await axiosInstance.get(`posts/${postId}`);
+      const post = response.data.data[0];
+
+      // 등록일 formatting
+      post.createdAt = formatDateIncludeTime(post.createdAt);
+
+      setPost(post);
+      setLikedUsers(post.likedUsers);
+
+      // 댓글
+      if (Array.isArray(post.commentId)) {
+        const validComments = post.commentId.filter(
+          (comment: CommentData) => comment.deletedAt === null
+        );
+        setComments(validComments);
+      } else {
+        setComments([]);
+      }
+    } catch (error) {
+      setError(error as Error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 게시글 & 댓글 조회 API
   useEffect(() => {
-    const fetchData = async () => {
-      // 게시글
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get(`posts/${postId}`);
-        const post = response.data.data[0];
-        console.log(response.data.data[0]);
-
-        // 등록일 formatting
-        post.createdAt = formatDateIncludeTime(post.createdAt);
-
-        setPost(post);
-        setLikedUsers(post.likedUsers);
-
-        // 댓글
-        if (Array.isArray(post.commentId)) {
-          const validComments = post.commentId.filter(
-            (comment: CommentData) => comment.deletedAt === null
-          );
-          setComments(validComments);
-        } else {
-          setComments([]);
-        }
-      } catch (error) {
-        setError(error as Error);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchData();
   }, []);
 
@@ -101,39 +102,10 @@ const Post: React.FC = () => {
     });
   }, [post]);
 
-  // 글 수정 모달 내용 수정 핸들러
-  const handleFormDataChange = (data: {
-    title?: string;
-    content?: string;
-    postImage?: string;
-  }) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      ...data,
-    }));
-  };
-
-  // 글 수정 API
-  const handleEditPostSubmit = async () => {
-    try {
-      setLoading(true);
-      await axiosInstance.put(`post/${postId}`, formData);
-      alert('게시글 수정 완료');
-      setIsEditModalOpen((prevState) => !prevState);
-      if (post) {
-        setPost({
-          ...post,
-          title: formData.title,
-          content: formData.content,
-          postImage: formData.postImage || null,
-        });
-      }
-    } catch (error) {
-      setError(error as Error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { handleFormDataChange, handleEditPostSubmit } = usePostCreate(() => {
+    handleEditClick(false);
+    fetchData();
+  });
 
   // 댓글 등록 API
   const handleWrittenComment = async (comment: string) => {
@@ -297,12 +269,12 @@ const Post: React.FC = () => {
                 value="수정"
                 component={
                   <PostCreate
-                    formData={formData}
+                    postData={post}
                     onFormDataChange={handleFormDataChange}
                   />
                 }
                 onClose={() => handleEditClick(false)}
-                onHandleClick={handleEditPostSubmit}
+                onHandleClick={() => handleEditPostSubmit(postId)}
               />
             )}
           </PostOption>

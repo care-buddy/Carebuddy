@@ -135,12 +135,9 @@ const Home: React.FC = () => {
     fetchData();
   }, []);
 
-  const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
-    () => {
-      console.log('이후 실행 로직 자리');
-      handleCloseWriteModal();
-    }
-  );
+  const { handleFormDataChange, handlePostSubmit } = usePostCreate(() => {
+    handleCloseWriteModal();
+  });
 
   // 글 작성 모달 닫기 핸들러
   const handleCloseWriteModal = () => {
