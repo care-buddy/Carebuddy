@@ -1,6 +1,3 @@
-/* eslint-disable no-console */
-// 임시
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
@@ -80,9 +77,8 @@ const Login: React.FC<LoginProps> = ({
         const userResponse = await axiosInstance.get('me', {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-
-        setUser(userResponse.data); // 유저 정보 설정
-        console.log('유저 정보:', userResponse.data); // 임시
+        setUser(userResponse.data.message); 
+        console.log('me 컨트롤러가 보낸 정보', userResponse.data.message)
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
@@ -192,16 +188,12 @@ const Login: React.FC<LoginProps> = ({
       <Button buttonStyle="black" buttonSize="sm">
         아이디/비밀번호 찾기
       </Button>
-      <Hr />
-      {/* <LargeText>간편 로그인/회원가입</LargeText> */}
-      <KakaoLoginButton>카카오로 계속하기</KakaoLoginButton>
     </Container>
   );
 };
 
 export default Login;
 
-// 스타일 컴포넌트 정의
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -230,11 +222,11 @@ const CheckBoxSection = styled.div`
   flex-direction: flex-start;
 `;
 
-const Hr = styled.hr`
-  margin: 12px 0 18px 0;
-  border: 0;
-  border-top: 1px solid var(--color-grey-2);
-`;
+// const Hr = styled.hr`
+//   margin: 12px 0 18px 0;
+//   border: 0;
+//   border-top: 1px solid var(--color-grey-2);
+// `;
 
 const LargeText = styled.p`
   font-size: var(--font-size-hd-1);
@@ -252,10 +244,10 @@ const LoginContainer = styled.div`
   }
 `;
 
-const KakaoLoginButton = styled.div`
-  background-color: yellow;
-  height: 30px;
-`;
+// const KakaoLoginButton = styled.div`
+//   background-color: yellow;
+//   height: 30px;
+// `;
 
 const PasswordContainer = styled.div`
   position: relative;

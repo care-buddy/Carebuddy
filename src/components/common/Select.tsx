@@ -40,7 +40,9 @@ const StyledSelect = styled.select.withConfig({
 `;
 
 interface SelectProps extends StyledSelectProps {
-  options: { value: string | number; label: string }[];
+  options:
+    | { value: string | number; label: string }[] // 카테고리용
+    | { value: string | number; label: string; category: number }[]; // 커뮤니티용
   value?: string;
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
 }

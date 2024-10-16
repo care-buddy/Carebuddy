@@ -43,7 +43,7 @@ export interface IBuddyProfile {
 export interface IProfilesWrapperProps {
   buddies?: IBuddyProfile[];
   isMe: boolean;
-  fetchBuddiesData?: () => void;
+  fetchBuddiesData: () => void;
 }
 
 // 유저
@@ -93,7 +93,7 @@ export interface PostData {
   likedUsers: string[];
   content: string;
   deletedAt: string;
-  postImage: string;
+  postImage: string[];
   createdAt: string;
   commentId: CommentData[];
 }

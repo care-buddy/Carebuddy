@@ -263,19 +263,19 @@ const PetRegister: React.FC<PetRegisterProps> = ({
           <Heading>중성화</Heading>
           <Button
             buttonStyle={
-              petInfo.isNeutered === false ? 'square-green' : 'square-white'
+              petInfo.isNeutered === 0 ? 'square-green' : 'square-white'
             }
             buttonSize="sm"
-            onClick={() => handleClick('isNeutered', false)}
+            onClick={() => handleClick('isNeutered', 0)}
           >
             중성화 전
           </Button>
           <Button
             buttonStyle={
-              petInfo.isNeutered === true ? 'square-green' : 'square-white'
+              petInfo.isNeutered === 1 ? 'square-green' : 'square-white'
             }
             buttonSize="sm"
-            onClick={() => handleClick('isNeutered', true)}
+            onClick={() => handleClick('isNeutered', 1)}
           >
             중성화 완료
           </Button>

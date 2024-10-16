@@ -15,13 +15,15 @@ import { CommunityData } from '@/interfaces/index';
 
 import userState from '@/recoil/atoms/userState';
 
+import { User } from '@/types/index';
+
 const Community: React.FC = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState<number>(0); // 종 버튼
   const [communities, setCommunities] = useState<CommunityData[] | []>([]); // 커뮤니티 목록
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
-  const user = useRecoilValue(userState);
+  const user = useRecoilValue(userState) || ({} as User);
 
   // 종 버튼 클릭 핸들러
   const isDogCategory = category === CATEGORY.dog;
@@ -57,6 +59,13 @@ const Community: React.FC = () => {
   }, []);
 
   const handleJoinButtonClick = async (communityId: string) => {
+    // 사용자 로그인 여부 확인
+    if (!user?._id) {
+      alert('로그인 후 그룹에 가입할 수 있습니다.'); // 로그인하지 않은 경우 알림
+      return;
+    }
+
+    // 가입 확인
     if (confirm('그룹에 가입하시겠습니까?')) {
       try {
         await axiosInstance.put(`users/${user?._id}/joinCommunity`, {
@@ -106,7 +115,10 @@ const Community: React.FC = () => {
               name={community.community}
               introduction={community.introduction}
               onButtonClick={() => handleJoinButtonClick(community._id)}
-              joined={!!user?.communityId.some((c) => c._id === community._id)}
+              joined={
+                Array.isArray(user?.communityId) &&
+                user.communityId?.some((c) => c._id === community._id) // communityId가 배열인지 확인
+              }
               communityId={community._id}
             />
           ))}

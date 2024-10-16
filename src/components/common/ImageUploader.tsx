@@ -51,8 +51,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         <LuCamera />
         <input
           type="file"
-          id="profile"
-          name="profile"
+          id="postImage"
+          name="postImage"
           accept="image/png, image/jpeg"
           onChange={handleFileChange}
           style={{ display: 'none' }}

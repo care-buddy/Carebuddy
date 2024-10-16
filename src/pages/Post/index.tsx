@@ -23,106 +23,61 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import userState from '@/recoil/atoms/userState';
 
-import type { PostData, CommentData } from '@/interfaces';
+import type { CommentData } from '@/interfaces';
+
+import DEFAULT_PROFILE from '@/assets/person.png';
+import usePostCreate from '@/hooks/usePostCreate';
 
 interface FormData {
   title: string;
   content: string;
   communityId: string;
-  postImage: string[];
+  postImage: string | null;
 }
 
 const Post: React.FC = () => {
-  const [post, setPost] = useState<PostData | null>(null); // 게시글
+  const [post, setPost] = useState<FormData | null>(null); // 게시글
   const [comments, setComments] = useState<CommentData[] | null>(null); // 댓글
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const [formData, setFormData] = useState<FormData>({
+  const [, setFormData] = useState<FormData>({
     title: '',
     content: '',
     communityId: '',
-    postImage: [],
+    postImage: null,
   });
 
   const { postId } = useParams();
 
-  const user = useRecoilValue(userState); // 임시 -> 나중에 쓰이는 것만 구조분해할당으로 받아오게 변경
+  const user = useRecoilValue(userState);
 
   const [likedUsers, setLikedUsers] = useState([]);
   const [isLiked, setIsLiked] = useState(false); // 좋아요 여부 상태
 
-  // 게시글 & 댓글 조회 API
-  useEffect(() => {
-    const fetchData = async () => {
-      // 게시글
-      try {
-        setLoading(true);
-        const response = await axiosInstance.get(`posts/${postId}`);
-        const post = response.data.message;
-
-        // 등록일 formatting
-        post.createdAt = formatDateIncludeTime(post.createdAt);
-
-        setPost(post[0]);
-        setLikedUsers(post[0].likedUsers);
-        console.log('포스트 불러올 때 좋아요 개수', post[0].likedUsers);
-      } catch (error) {
-        setError(error as Error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-
-  // 게시글 조회 완료 시 글 수정 모달용 formData 채우고 댓글 상태 업데이트
-  useEffect(() => {
-    // 댓글
-    if (post !== null) {
-      const comment = post.commentId.filter(
-        (commentId) => commentId.deletedAt === null
-      );
-      setComments(comment);
-    }
-
-    // 글 수정용 formData
-    setFormData({
-      title: post?.title || '',
-      content: post?.content || '',
-      communityId: post?.communityId._id || '',
-      postImage: post?.postImage || [],
-    });
-  }, [post]);
-
-  // 글 수정 모달 내용 수정 핸들러
-  const handleFormDataChange = (data: {
-    title?: string;
-    content?: string;
-    postImage?: string[];
-  }) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      ...data,
-    }));
-  };
-
-  // 글 수정 API
-  const handleEditPostSubmit = async () => {
+  const fetchData = async () => {
+    // 게시글
     try {
       setLoading(true);
-      await axiosInstance.put(`post/${postId}`, formData);
-      alert('게시글 수정 완료');
-      setIsEditModalOpen((prevState) => !prevState);
-      if (post) {
-        setPost({
-          ...post,
-          title: formData.title,
-          content: formData.content,
-          postImage: formData.postImage,
-        });
+      const response = await axiosInstance.get(`posts/${postId}`);
+      const post = response.data.data[0];
+
+      // 등록일 formatting
+      post.createdAt = formatDateIncludeTime(post.createdAt);
+
+      setPost(post);
+      setLikedUsers(post.likedUsers);
+
+      // 댓글
+      if (Array.isArray(post.commentId)) {
+        const validComments = post.commentId.filter(
+          (comment: CommentData) => comment.deletedAt === null
+        );
+        setComments(validComments);
+      } else {
+        setComments([]);
       }
     } catch (error) {
       setError(error as Error);
@@ -131,17 +86,37 @@ const Post: React.FC = () => {
     }
   };
 
-  // 댓글 등록 API 미완성, 임시 - 백엔드 코드 수정 필요
+  // 게시글 & 댓글 조회 API
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  // 게시글 조회 완료 시 글 수정 모달용 formData 채우기
+  useEffect(() => {
+    // 글 수정용 formData
+    setFormData({
+      title: post?.title || '',
+      content: post?.content || '',
+      communityId: post?.communityId._id || '',
+      postImage: post?.postImage || null,
+    });
+  }, [post]);
+
+  const { handleFormDataChange, handleEditPostSubmit } = usePostCreate(() => {
+    handleEditClick(false);
+    fetchData();
+  });
+
+  // 댓글 등록 API
   const handleWrittenComment = async (comment: string) => {
     try {
       setLoading(true);
       if (comment !== '' && comment !== null) {
         const response = await axiosInstance.post(`comments`, {
-          postId: '1',
-          userId: '2',
+          postId,
+          userId: user?._id,
           text: comment,
         });
-
         const newComment = response.data;
 
         if (comments) {
@@ -294,26 +269,32 @@ const Post: React.FC = () => {
                 value="수정"
                 component={
                   <PostCreate
-                    formData={formData}
+                    postData={post}
                     onFormDataChange={handleFormDataChange}
                   />
                 }
                 onClose={() => handleEditClick(false)}
-                onHandleClick={handleEditPostSubmit}
+                onHandleClick={() => handleEditPostSubmit(postId)}
               />
             )}
           </PostOption>
         </TitleContainer>
         <InformationContainer>
-          <ProfileImg src={post?.userId.profileImage[0]} alt="프로필 이미지" />
-          <p>{post?.userId.nickName}</p>
+          <ProfileImg
+            src={post?.userId?.profileImage?.[0] || DEFAULT_PROFILE}
+            alt="프로필 이미지"
+          />
+          <p>{post?.userId?.nickName || '알수없는 닉네임(임시'}</p>
           <p>|</p>
           {post && <p>{formatDateIncludeTime(post.createdAt)}</p>}
         </InformationContainer>
+        {/* 이미지 */}
         <ContentContainer>
           <Pre>{post?.content}</Pre>
-          {post?.postImage && post.postImage.length > 0 && (
-            <img src={post.postImage[0]} alt="이미지" />
+          {post?.postImage ? (
+            <img src={post?.postImage} alt="이미지" />
+          ) : (
+            <div />
           )}
           <Likes isLiked={isLiked} onClick={() => handleLikesClick()}>
             <LuThumbsUp />
@@ -322,7 +303,7 @@ const Post: React.FC = () => {
         </ContentContainer>
         <CommentContainer>
           <CommentWritingBox
-            nickname="임시닉네임"
+            nickname={user?.nickName || ''}
             onClick={handleWrittenComment}
           />
           {comments?.map((comment) => (
