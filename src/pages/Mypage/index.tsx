@@ -46,7 +46,7 @@ interface UserData {
   email: string;
   nickName: string;
   introduce: string;
-  profileImage: string[];
+  profileImage: string | File | null;
   communityId: CommunityPost[];
   postId: PostId[];
   buddyId: [];
@@ -69,7 +69,7 @@ interface ApiResponse {
   email: string;
   nickName: string;
   introduce: string;
-  profileImage: string[];
+  profileImage: string;
   communityId: CommunityPost[];
   postId: ApiPostId[];
   buddyId: [];
@@ -86,44 +86,66 @@ const Mypage: React.FC = () => {
     email: '',
     nickName: '',
     introduce: '',
-    profileImage: [],
+    profileImage: null,
     communityId: [],
     postId: [],
     buddyId: [],
   });
 
   const [buddiesData, setBuddiesData] = useState<IBuddyProfile[]>([]);
-
+  const [allUsers, setAllUsers] = useState<UserData[]>([]); // 추가: 모든 사용자 데이터를 저장
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [imageFile, setImageFile] = useState<File | string | null>(null);
+  // 전송할 이미지
+  // 변경할 이미지를 고르고, 바로 변경되는 것이 아니기 때문에 저장할 상태가 필요
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
 
       try {
-        // api/users 엔드포인트 호출
-        const response = await axiosInstance.get<{ message: ApiResponse }>(`me`);
-        const data = response.data.message;
-        console.log('me 데이터: ', data)
+        // GET /me 엔드포인트 호출
+        const meResponse = await axiosInstance.get<{ message: ApiResponse }>(
+          `me`
+        );
 
-        const mappedData: UserData = {
-          email: data.email || '',
-          nickName: data.nickName || '',
-          introduce: data.introduce || '',
-          profileImage: data.profileImage || [],
-          communityId: data.communityId || [],
-          postId: data.postId
-            ? data.postId.map((post) => ({
-              title: post.title,
-              content: post.content,
-              createdAt: new Date(post.createdAt),
-            }))
-            : [],
-          buddyId: data.buddyId || [],
-        };
-        setUserData(mappedData);
-        setBuddiesData(mappedData.buddyId);
+        // 응답 구조를 안전하게 확인합니다.
+        const meData = meResponse.data; // optional chaining 사용
+
+        if (!meData) {
+          throw new Error('사용자 데이터가 없습니다.');
+        }
+
+        console.log('me 데이터: ', meData);
+
+        // const mappedMeData: UserData = {
+        //   email: meData.email || '',
+        //   nickName: meData.nickName || '',
+        //   introduce: meData.introduce || '',
+        //   profileImage: meData.profileImage || [],
+        //   communityId: meData.communityId || [],
+        //   postId: meData.postId
+        //     ? meData.postId.map((post) => ({
+        //       title: post.title,
+        //       content: post.content,
+        //       createdAt: new Date(post.createdAt),
+        //     }))
+        //     : [],
+        //   buddyId: meData.buddyId || [],
+        // };
+
+        // setUserData(mappedMeData);
+        // setBuddiesData(mappedMeData.buddyId);
+
+        // GET /users 엔드포인트 호출 (모든 사용자 정보)
+        // const usersResponse = await axiosInstance.get<{ message: UserData[] }>(`users/66b9b34ae9a13c88c643e361`);
+        // const usersData = usersResponse.data?.message || []; // 안전하게 응답 데이터 확인
+        // console.log('users 데이터: ', usersData);
+
+        // setAllUsers(usersData); // 모든 사용자 데이터를 저장
       } catch (error) {
         console.error('사용자 데이터 가져오기 오류:', error);
       } finally {
@@ -144,14 +166,30 @@ const Mypage: React.FC = () => {
     handleUserDataUpdate({ ...userData, nickName: newNickname });
   };
 
-  const handleProfileImageChange = (newImage: string[]) => {
+  // 이미지 작업 추후 진행 File로 붙여야합니다
+  const handleProfileImageChange = (newImage: File) => {
     setUserData((prevData) => ({ ...prevData, profileImage: newImage }));
     handleUserDataUpdate({ ...userData, profileImage: newImage });
   };
 
   const handleUserDataUpdate = async (updatedUserData: UserData) => {
     try {
-      const response = await axiosInstance.put('users', updatedUserData);
+      // 이미지 변경을 포함한 요청을 보내기 위해 폼데이터 생성
+      const formData = new FormData();
+
+      // 이미지는 백엔드 구현 후 추가
+      formData.append('nickName', updatedUserData.nickName);
+      formData.append('introduce', updatedUserData.introduce);
+
+      // 선택 파일이 있을 때에는 그 파일을 append 해준다
+      // 폼데이터에는 null 값을 보낼 수 없으니, 선택된 파일이나 버디이미지가 없는 경우에는 append하지 않습니다: 서버 default 값이 null
+      if (selectedFile) {
+        formData.append('profileImage', selectedFile);
+      } else if (imageFile) {
+        formData.append('profileImage', imageFile);
+      }
+
+      const response = await axiosInstance.put('me', updatedUserData);
       console.log('사용자 데이터 업데이트:', response.data);
     } catch (error) {
       console.error('사용자 데이터 업데이트 오류:', error);

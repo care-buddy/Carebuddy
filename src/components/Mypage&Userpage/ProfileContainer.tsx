@@ -19,8 +19,7 @@ const UserContainer = styled.div`
   align-items: center;
 `;
 
-const ImgContainer = styled.div`
-`;
+const ImgContainer = styled.div``;
 
 const IconButton = styled.span`
   cursor: pointer;
@@ -74,24 +73,30 @@ interface ProfileContainerProps {
   userData: {
     nickName: string;
     introduce: string;
-    profileImage: string[];
+    profileImage: string | null;
   };
 }
 
 const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData }) => {
   const [introduce, setIntroduce] = useState(userData.introduce);
   const [nickName, setNickName] = useState(userData.nickName);
-  const [profileImage, setProfileImage] = useState<string[]>(userData.profileImage || []);
+  const [profileImage, setProfileImage] = useState<string | null>(
+    userData.profileImage || null
+  );
 
   useEffect(() => {
     setIntroduce(userData.introduce);
     setNickName(userData.nickName);
-    setProfileImage(userData.profileImage || []);
+    setProfileImage(userData.profileImage || null);
   }, [userData]);
 
   const handleSaveClick = async () => {
     try {
-      const updates: { introduce?: string; nickName?: string; profileImage?: string[] } = {};
+      const updates: {
+        introduce?: string;
+        nickName?: string;
+        profileImage?: string[];
+      } = {};
       if (introduce !== userData.introduce) {
         updates.introduce = introduce;
       }
@@ -102,10 +107,9 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData }) => {
         updates.profileImage = profileImage;
       }
 
-      const userId = '66b9b34ae9a13c88c643e361'; // 임시로 설정
-
+      // 현재 로그인된 사용자의 정보를 me 엔드포인트로 업데이트
       if (Object.keys(updates).length > 0) {
-        const response = await axiosInstance.put(`users/${userId}`, updates);
+        const response = await axiosInstance.put(`me`, updates);
         alert('변경 사항이 저장되었습니다');
         window.location.reload(); // 페이지 새로고침 추가
       } else {
@@ -120,7 +124,9 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData }) => {
     }
   };
 
-  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       const reader = new FileReader();
@@ -136,9 +142,18 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData }) => {
       <UserContainer>
         <ImgContainer>
           <ImageBox>
-            <img src={profileImage && profileImage.length > 0 ? profileImage[0] : defaultImg} alt="프로필 사진" />
+            <img
+              src={
+                profileImage && profileImage.length > 0
+                  ? profileImage[0]
+                  : defaultImg
+              }
+              alt="프로필 사진"
+            />
           </ImageBox>
-          <IconButton onClick={() => document.getElementById('fileInput')?.click()}>
+          <IconButton
+            onClick={() => document.getElementById('fileInput')?.click()}
+          >
             <FaCamera />
           </IconButton>
           <input
