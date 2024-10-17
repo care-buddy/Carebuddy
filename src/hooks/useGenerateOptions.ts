@@ -62,8 +62,8 @@ const getCommunityOptions = (communityIds: CommunityData[]) => {
 
   // 기본값으로 커뮤니티 추가
   options.unshift({ value: 'community', label: '커뮤니티', category: -1 }); // 커뮤니티 기본값 추가
-  options.unshift({ value: 'community', label: '커뮤니티', category: 0 }); // 커뮤니티 기본값 추가
-  options.unshift({ value: 'community', label: '커뮤니티', category: 1 }); // 커뮤니티 기본값 추가
+  options.unshift({ value: 'community', label: '커뮤니티', category: 0 }); // '강아지'일때 '커뮤니티'
+  options.unshift({ value: 'community', label: '커뮤니티', category: 1 }); // '고양이'일때 '커뮤니티'
 
   return options; // 기본 카테고리 값으로 -1 사용
 };
