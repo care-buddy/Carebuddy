@@ -73,24 +73,30 @@ interface ProfileContainerProps {
   userData: {
     nickName: string;
     introduce: string;
-    profileImage: string[];
+    profileImage: string | null;
   };
 }
 
 const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData }) => {
   const [introduce, setIntroduce] = useState(userData.introduce);
   const [nickName, setNickName] = useState(userData.nickName);
-  const [profileImage, setProfileImage] = useState<string[]>(userData.profileImage || []);
+  const [profileImage, setProfileImage] = useState<string | null>(
+    userData.profileImage || null
+  );
 
   useEffect(() => {
     setIntroduce(userData.introduce);
     setNickName(userData.nickName);
-    setProfileImage(userData.profileImage || []);
+    setProfileImage(userData.profileImage || null);
   }, [userData]);
 
   const handleSaveClick = async () => {
     try {
-      const updates: { introduce?: string; nickName?: string; profileImage?: string[] } = {};
+      const updates: {
+        introduce?: string;
+        nickName?: string;
+        profileImage?: string[];
+      } = {};
       if (introduce !== userData.introduce) {
         updates.introduce = introduce;
       }
@@ -118,7 +124,9 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData }) => {
     }
   };
 
-  const handleProfileImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       const reader = new FileReader();
@@ -134,9 +142,18 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({ userData }) => {
       <UserContainer>
         <ImgContainer>
           <ImageBox>
-            <img src={profileImage && profileImage.length > 0 ? profileImage[0] : defaultImg} alt="프로필 사진" />
+            <img
+              src={
+                profileImage && profileImage.length > 0
+                  ? profileImage[0]
+                  : defaultImg
+              }
+              alt="프로필 사진"
+            />
           </ImageBox>
-          <IconButton onClick={() => document.getElementById('fileInput')?.click()}>
+          <IconButton
+            onClick={() => document.getElementById('fileInput')?.click()}
+          >
             <FaCamera />
           </IconButton>
           <input
