@@ -36,6 +36,7 @@ const GroupContent = styled(ContentList)`
 `;
 
 interface PostId {
+  category: number;
   title: string;
   createdAt: Date;
 }
@@ -60,8 +61,10 @@ const ListContainer: React.FC<ListContainerProps> = ({ postIds, isLoading }) => 
       {postIds.length > 0 ? (
         postIds.map((post, index) => (
           <DataContainer key={index}>
-            <GroupContent>[강아지] 말티즈</GroupContent>
-            <ContentList>{postIds[index]?.title}</ContentList>
+            <GroupContent>
+              {post.category === 0 ? '강아지' : post.category === 1 ? '고양이' : '기타'}
+            </GroupContent>
+            <ContentList>{post.title}</ContentList>
             <ContentList>{new Date(post.createdAt).toLocaleDateString()}</ContentList>
           </DataContainer>
         ))
