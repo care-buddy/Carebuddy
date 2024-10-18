@@ -62,7 +62,7 @@ const ListContainer: React.FC<ListContainerProps> = ({ postIds, isLoading }) => 
         postIds.map((post, index) => (
           <DataContainer key={index}>
             <GroupContent>
-              {post.category === 0 ? '강아지' : post.category === 1 ? '고양이' : '기타'}
+              [{post.category === 0 ? '강아지' : post.category === 1 ? '고양이' : '기타'}] {post.community}
             </GroupContent>
             <ContentList>{post.title}</ContentList>
             <ContentList>{new Date(post.createdAt).toLocaleDateString()}</ContentList>

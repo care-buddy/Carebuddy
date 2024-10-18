@@ -71,7 +71,6 @@ interface UserData {
   nickName: string;
   introduce: string;
   profileImage: string[];
-  communityId: CommunityPost[];
   postId: PostId[];
 }
 
@@ -85,14 +84,19 @@ interface ApiResponse {
   email: string;
   nickName: string;
   introduce: string;
-  profileImage: string | File | null;
+  profileImage: string[];
   postId: ApiPostId[];
 }
 
 interface ApiPostId {
-  category: number;
+  communityId: communityId[];
   title: string;
   createdAt: string;
+}
+
+interface communityId {
+  category: number;
+  community: string;
 }
 
 const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
@@ -146,7 +150,8 @@ const Userpage: React.FC = () => {
           profileImage: data.profileImage || [],
           postId: data.postId
             ? data.postId.map((post) => ({
-              category: post.category,
+              category: post.communityId.category,
+              community: post.communityId.community,
               title: post.title,
               createdAt: new Date(post.createdAt), // Parse createdAt as a Date
             }))
