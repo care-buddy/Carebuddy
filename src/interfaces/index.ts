@@ -53,7 +53,7 @@ export interface User {
   nickName: string;
   email: string;
   password: string;
-  profileImage: string[];
+  profileImage: string | File | null;
   introduce: string;
   isTempPassword: number;
   postId: string[];

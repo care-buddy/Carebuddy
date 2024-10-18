@@ -56,7 +56,7 @@ const router = createBrowserRouter([
           </ProtectedRoute>
         ),
       },
-      { path: 'userpage', element: <Userpage /> },
+      { path: 'userpage/:userId', element: <Userpage /> },
       { path: 'hosInfo', element: <HosInfo /> },
       { path: 'pharInfo', element: <PharInfo /> },
       { path: 'global-search', element: <GlobalSearch /> },
