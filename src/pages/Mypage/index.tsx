@@ -12,7 +12,9 @@ import UserAsk from '@/pages/Mypage/UserAsk';
 import TopBar from '@/components/common/TopBar';
 
 import axiosInstance from '@/utils/axiosInstance';
-import { IBuddyProfile } from '@/interfaces';
+import { CommunityData, IBuddyProfile, User } from '@/interfaces';
+import { useRecoilState } from 'recoil';
+import userState, { UserState } from '@/recoil/atoms/userState';
 
 const Container = styled.div`
   margin: 30px 0;
@@ -47,7 +49,7 @@ interface UserData {
   nickName: string;
   introduce: string;
   profileImage: string | File | null;
-  communityId: CommunityPost[];
+  communityId: CommunityData[];
   postId: PostId[];
   buddyId: [];
 }
@@ -82,19 +84,11 @@ interface ApiPostId {
 }
 
 const Mypage: React.FC = () => {
-  const [userData, setUserData] = useState<UserData>({
-    email: '',
-    nickName: '',
-    introduce: '',
-    profileImage: null,
-    communityId: [],
-    postId: [],
-    buddyId: [],
-  });
+  const [userData, setUserData] = useRecoilState<UserState>(userState);
 
   const [buddiesData, setBuddiesData] = useState<IBuddyProfile[]>([]);
   const [allUsers, setAllUsers] = useState<UserData[]>([]); // 추가: 모든 사용자 데이터를 저장
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const [imageFile, setImageFile] = useState<File | string | null>(null);
@@ -120,32 +114,6 @@ const Mypage: React.FC = () => {
         }
 
         console.log('me 데이터: ', meData);
-
-        // const mappedMeData: UserData = {
-        //   email: meData.email || '',
-        //   nickName: meData.nickName || '',
-        //   introduce: meData.introduce || '',
-        //   profileImage: meData.profileImage || [],
-        //   communityId: meData.communityId || [],
-        //   postId: meData.postId
-        //     ? meData.postId.map((post) => ({
-        //       title: post.title,
-        //       content: post.content,
-        //       createdAt: new Date(post.createdAt),
-        //     }))
-        //     : [],
-        //   buddyId: meData.buddyId || [],
-        // };
-
-        // setUserData(mappedMeData);
-        // setBuddiesData(mappedMeData.buddyId);
-
-        // GET /users 엔드포인트 호출 (모든 사용자 정보)
-        // const usersResponse = await axiosInstance.get<{ message: UserData[] }>(`users/66b9b34ae9a13c88c643e361`);
-        // const usersData = usersResponse.data?.message || []; // 안전하게 응답 데이터 확인
-        // console.log('users 데이터: ', usersData);
-
-        // setAllUsers(usersData); // 모든 사용자 데이터를 저장
       } catch (error) {
         console.error('사용자 데이터 가져오기 오류:', error);
       } finally {
@@ -153,12 +121,25 @@ const Mypage: React.FC = () => {
       }
     };
 
-    fetchData();
+    // fetchData();
   }, []);
 
   const handleIntroduceChange = (newIntroduction: string) => {
-    setUserData((prevData) => ({ ...prevData, introduce: newIntroduction }));
-    handleUserDataUpdate({ ...userData, introduce: newIntroduction });
+    if (userData) {
+      // 상태 업데이트
+      setUserData((prevData: UserState) => {
+        if (prevData) {
+          return {
+            ...prevData,
+            introduce: newIntroduction,
+          };
+        }
+        return prevData;
+      });
+
+      // 서버에 업데이트 요청
+      handleUserDataUpdate({ ...userData, introduce: newIntroduction });
+    }
   };
 
   const handleNickNameChange = (newNickname: string) => {
@@ -172,7 +153,7 @@ const Mypage: React.FC = () => {
     handleUserDataUpdate({ ...userData, profileImage: newImage });
   };
 
-  const handleUserDataUpdate = async (updatedUserData: UserData) => {
+  const handleUserDataUpdate = async (updatedUserData: UserState) => {
     try {
       // 이미지 변경을 포함한 요청을 보내기 위해 폼데이터 생성
       const formData = new FormData();
@@ -218,12 +199,7 @@ const Mypage: React.FC = () => {
       id: '2',
       content: '프로필',
       component: (
-        <ProfileContainer
-          userData={userData}
-          onIntroduceChange={handleIntroduceChange}
-          onNickNameChange={handleNickNameChange}
-          onProfileImageChange={handleProfileImageChange}
-        />
+        <ProfileContainer userData={userData} setUserData={setUserData} />
       ),
     },
     {
