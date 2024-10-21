@@ -75,7 +75,9 @@ interface UserData {
 }
 
 interface PostId {
+  _id: string;  // ID 필드 추가
   category: number;
+  community: string;
   title: string;
   createdAt: Date;
 }
@@ -89,7 +91,8 @@ interface ApiResponse {
 }
 
 interface ApiPostId {
-  communityId: communityId[];
+  _id: string;  // ID 필드 추가
+  communityId: communityId;
   title: string;
   createdAt: string;
 }
@@ -130,7 +133,6 @@ const Userpage: React.FC = () => {
     nickName: '',
     introduce: '',
     profileImage: [],
-    communityId: [],
     postId: [],
   });
 
@@ -150,6 +152,7 @@ const Userpage: React.FC = () => {
           profileImage: data.profileImage || [],
           postId: data.postId
             ? data.postId.map((post) => ({
+              _id: post._id,  // _id 값 추가
               category: post.communityId.category,
               community: post.communityId.community,
               title: post.title,
@@ -183,7 +186,7 @@ const Userpage: React.FC = () => {
     {
       id: '3',
       content: '작성 글 목록',
-      component: <ListContainer postIds={userData.postId} isLoading={isLoading} />,
+      component: <ListContainer postIds={userData.postId} isLoading={isLoading} />,  // postId 전달
     },
   ];
 
