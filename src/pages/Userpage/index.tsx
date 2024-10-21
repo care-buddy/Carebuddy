@@ -71,12 +71,13 @@ interface UserData {
   nickName: string;
   introduce: string;
   profileImage: string[];
-  communityId: CommunityPost[];
   postId: PostId[];
 }
 
 interface PostId {
+  _id: string;  // ID 필드 추가
   category: number;
+  community: string;
   title: string;
   createdAt: Date;
 }
@@ -85,14 +86,20 @@ interface ApiResponse {
   email: string;
   nickName: string;
   introduce: string;
-  profileImage: string | File | null;
+  profileImage: string[];
   postId: ApiPostId[];
 }
 
 interface ApiPostId {
-  category: number;
+  _id: string;  // ID 필드 추가
+  communityId: communityId;
   title: string;
   createdAt: string;
+}
+
+interface communityId {
+  category: number;
+  community: string;
 }
 
 const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
@@ -126,7 +133,6 @@ const Userpage: React.FC = () => {
     nickName: '',
     introduce: '',
     profileImage: [],
-    communityId: [],
     postId: [],
   });
 
@@ -146,7 +152,9 @@ const Userpage: React.FC = () => {
           profileImage: data.profileImage || [],
           postId: data.postId
             ? data.postId.map((post) => ({
-              category: post.category,
+              _id: post._id,  // _id 값 추가
+              category: post.communityId.category,
+              community: post.communityId.community,
               title: post.title,
               createdAt: new Date(post.createdAt), // Parse createdAt as a Date
             }))
@@ -178,7 +186,7 @@ const Userpage: React.FC = () => {
     {
       id: '3',
       content: '작성 글 목록',
-      component: <ListContainer postIds={userData.postId} isLoading={isLoading} />,
+      component: <ListContainer postIds={userData.postId} isLoading={isLoading} />,  // postId 전달
     },
   ];
 

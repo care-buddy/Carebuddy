@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import React from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Container = styled.div`
   margin: 30px 0;
@@ -8,6 +9,7 @@ const Container = styled.div`
 const ContentList = styled.span`
   padding: 10px 0;
   text-align: center;
+  cursor: pointer; // Change cursor to pointer for better UX
 `;
 
 const Title = styled.div`
@@ -36,7 +38,9 @@ const GroupContent = styled(ContentList)`
 `;
 
 interface PostId {
+  _id: string; // Add _id to access the post ID
   category: number;
+  community: string;
   title: string;
   createdAt: Date;
 }
@@ -47,6 +51,12 @@ interface ListContainerProps {
 }
 
 const ListContainer: React.FC<ListContainerProps> = ({ postIds, isLoading }) => {
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handlePostClick = (_id: string) => {
+    navigate(`/post/${_id}`); // Navigate to the post detail page
+  };
+
   if (isLoading) {
     return <div>Loading...</div>;
   }
@@ -59,12 +69,12 @@ const ListContainer: React.FC<ListContainerProps> = ({ postIds, isLoading }) => 
         <Title>작성일</Title>
       </DataContainer>
       {postIds.length > 0 ? (
-        postIds.map((post, index) => (
-          <DataContainer key={index}>
+        postIds.map((post) => (
+          <DataContainer key={post._id}>
             <GroupContent>
-              {post.category === 0 ? '강아지' : post.category === 1 ? '고양이' : '기타'}
+              [{post.category === 0 ? '강아지' : post.category === 1 ? '고양이' : '기타'}] {post.community}
             </GroupContent>
-            <ContentList>{post.title}</ContentList>
+            <ContentList onClick={() => handlePostClick(post._id)}>{post.title}</ContentList> {/* Add onClick */}
             <ContentList>{new Date(post.createdAt).toLocaleDateString()}</ContentList>
           </DataContainer>
         ))
