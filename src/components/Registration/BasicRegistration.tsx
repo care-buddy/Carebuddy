@@ -45,6 +45,13 @@ const BasicRegistration: React.FC<BasicRegistrationProps> = ({ onClose }) => {
         // 이메일이 공백일 경우
         alert('이메일을 입력해주세요.');
       } else {
+        // 이메일 형식 유효성 검사
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(formData.email)) {
+          alert('유효한 이메일 주소를 입력해주세요.');
+          return;
+        }
+
         try {
           const response = await axiosInstance.post('auth/validate-email', {
             email: formData.email,
@@ -55,7 +62,7 @@ const BasicRegistration: React.FC<BasicRegistrationProps> = ({ onClose }) => {
 
             setEmailVerification((prev) => ({
               ...prev,
-              status: 'inProgress', 
+              status: 'inProgress',
             }));
             // 이메일 인증번호 보내기
             await axiosInstance.post('auth/send-email', {
@@ -479,14 +486,16 @@ const LargeText = styled.p`
 const EmailContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center; // 세로 중앙 정렬
 
   button,
   div {
-    width: 18%;
+    min-width: 18%;
   }
 
   input {
     width: 80%;
+    margin-right: 10px; // 오른쪽에 여백 추가
   }
 `;
 
