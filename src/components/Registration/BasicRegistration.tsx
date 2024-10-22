@@ -11,7 +11,7 @@ import LinkButton from '@components/common/LinkButton';
 
 import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 
-import { tempTerms } from '@constants/tempData';
+import term from '@/constants/term';
 
 interface BasicRegistrationProps {
   onClose: () => void;
@@ -378,7 +378,7 @@ const BasicRegistration: React.FC<BasicRegistrationProps> = ({ onClose }) => {
         </TermCheckContainer>
         {viewFullTerms && (
           <TermContainer>
-            <P2>{tempTerms}</P2>
+            <P2>{term}</P2>
           </TermContainer>
         )}
       </Section>
