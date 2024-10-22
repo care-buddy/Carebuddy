@@ -43,27 +43,37 @@ export interface IBuddyProfile {
 export interface IProfilesWrapperProps {
   buddies?: IBuddyProfile[];
   isMe: boolean;
-  fetchBuddiesData: () => void;
+  fetchBuddiesData?: () => void;
 }
 
 // 유저
 export interface User {
-  adminNumber: number;
-  _id: string;
+  adminNumber?: number;
+  _id?: string;
   nickName: string;
   email: string;
-  password: string;
-  profileImage: string[];
+  password?: string;
+  profileImage: string | File | null;
   introduce: string;
-  isTempPassword: number;
-  postId: string[];
-  commentId: string[];
-  buddyId: string[];
-  hospitalId: string[];
+  isTempPassword?: number;
+  postId?: PostData[];
+  commentId?: string[];
+  buddyId: IBuddyProfile[];
+  hospitalId?: string[];
   communityId: CommunityData[];
-  deletedAt: string;
-  createdAt: string;
-  updatedAt: string;
+  deletedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface IPublicUser {
+  email: string;
+  nickName: string;
+  introduce: string;
+  profileImage: string | File | null;
+  communityId: CommunityData[];
+  postId: PostData[];
+  buddyId: [];
 }
 
 // 커뮤니티
@@ -93,7 +103,7 @@ export interface PostData {
   likedUsers: string[];
   content: string;
   deletedAt: string;
-  postImage: string[];
+  postImage: string;
   createdAt: string;
   commentId: CommentData[];
 }

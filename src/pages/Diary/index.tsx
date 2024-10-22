@@ -7,7 +7,7 @@ import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
 // import MockAdapter from 'axios-mock-adapter';
-import { IBuddy, IBuddyProfile, IRecord } from '@/interfaces';
+import { IBuddy, IBuddyProfile, IRecord } from '@/types';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';

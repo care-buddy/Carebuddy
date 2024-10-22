@@ -1,3 +1,5 @@
+import { UserState } from '@/recoil/atoms/userState';
+import { IPublicUser } from '@/types';
 import React from 'react';
 import styled from 'styled-components';
 
@@ -18,13 +20,15 @@ const Item = styled.a`
 
 const Data = styled.span``;
 
-interface UserData {
-  email: string;
-  nickName: string;
-  introduce: string;
-}
+// interface UserData {
+//   email: string;
+//   nickName: string;
+//   introduce: string;
+// }
 
-const UserInfoContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
+const UserInfoContainer: React.FC<{ userData: IPublicUser | UserState }> = ({
+  userData,
+}) => (
   <Container>
     <InfoContainer>
       <Item>이메일</Item>

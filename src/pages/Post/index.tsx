@@ -23,7 +23,7 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import userState from '@/recoil/atoms/userState';
 
-import type { CommentData } from '@/interfaces';
+import type { CommentData } from '@/types';
 
 import DEFAULT_PROFILE from '@/assets/person.png';
 import usePostCreate from '@/hooks/usePostCreate';
