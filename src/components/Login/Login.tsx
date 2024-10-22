@@ -54,10 +54,10 @@ const Login: React.FC<LoginProps> = ({
     setShowPassword((prevState) => !prevState);
   };
 
-  // 체크박스 핸들러
-  const handleCheckBoxChange = () => {
-    setKeepLogin((prevState) => !prevState);
-  };
+  // // 체크박스 핸들러
+  // const handleCheckBoxChange = () => {
+  //   setKeepLogin((prevState) => !prevState);
+  // };
 
   // 로그인 핸들러
   const handleLogin = async () => {
@@ -80,7 +80,6 @@ const Login: React.FC<LoginProps> = ({
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         setUser(userResponse.data.message);
-        console.log('me 컨트롤러가 보낸 정보', userResponse.data.message);
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
@@ -162,7 +161,7 @@ const Login: React.FC<LoginProps> = ({
       </PasswordContainer>
 
       <SignupSection>
-        <CheckBoxSection>
+        {/* <CheckBoxSection>
           <CheckBox
             value="keepLogin"
             text="기억하기"
@@ -170,7 +169,7 @@ const Login: React.FC<LoginProps> = ({
             checked={keepLogin}
             onChange={handleCheckBoxChange}
           />
-        </CheckBoxSection>
+        </CheckBoxSection> */}
         <Button
           buttonStyle="black"
           buttonSize="sm"
@@ -184,9 +183,9 @@ const Login: React.FC<LoginProps> = ({
           로그인
         </Button>
       </LoginContainer>
-      <Button buttonStyle="black" buttonSize="sm" onClick={handleLogout}>
+      {/* <Button buttonStyle="black" buttonSize="sm" onClick={handleLogout}>
         로그아웃
-      </Button>
+      </Button> */}
       <Button buttonStyle="black" buttonSize="sm">
         아이디/비밀번호 찾기
       </Button>
@@ -211,11 +210,12 @@ const Container = styled.div`
 `;
 
 const SignupSection = styled.div`
-  padding-bottom: 12px;
+  padding: 12px 0;
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: space-between;
+  // justify-content: space-between;
+  justify-content: center;
 `;
 
 const CheckBoxSection = styled.div`

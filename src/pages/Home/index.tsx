@@ -1,5 +1,3 @@
-/* eslint-disable no-nested-ternary */
-
 import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 
@@ -25,7 +23,8 @@ import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 const Home: React.FC = () => {
   // 상태 정의
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
-  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 게시글 배열
+  const [posts, setPosts] = useState<PostData[]>([]); // 전체 게시글
+  const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글
   const [category, setCategory] = useState<number | string>(-1); // 선택된 카테고리
   const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
   const [isLoading, setIsLoading] = useState(false); // 데이터 로딩 상태
@@ -36,25 +35,28 @@ const Home: React.FC = () => {
 
   const { categoryOptions, communityOptions } = useGenerateOptions();
 
-  // 초기 게시글 데이터 가져오기 함수
+  const [filteredCommunityOptions, setFilteredCommunityOptions] =
+    useState(communityOptions);
+
+  // 전체 게시글 조회 API & 컴포넌트가 마운트 이후 초기 데이터 가져오기
   const fetchData = useCallback(async () => {
     try {
+      setIsLoading(true);
       const response = await axiosInstance.get(`/posts`);
+      setPosts(response.data.data);
       setSelectedPosts(response.data.data);
     } catch (error) {
       setError(error as Error);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
-  // 컴포넌트가 마운트 된 후 초기 데이터 가져오기
   useEffect(() => {
     fetchData();
   }, []);
 
-  // select 로직 - category 선택에 따른 community 옵션 필터링 로직 추가
-  const [filteredCommunityOptions, setFilteredCommunityOptions] =
-    useState(communityOptions);
-
+  // select 로직 - category 선택에 따라 community 옵션 필터링해서 보여줌
   useEffect(() => {
     if (category !== 'category') {
       const filteredCommunityOptions = communityOptions.filter(
@@ -71,6 +73,7 @@ const Home: React.FC = () => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setCategory(Number(event.target.value));
+    setCommunity('community');
   };
 
   // 커뮤니티 옵션 핸들러
@@ -81,42 +84,27 @@ const Home: React.FC = () => {
     setCommunity(selectedCommunity);
   };
 
-  // select 변경 시 커뮤니티별 게시글 조회 API
+  // select 게시글 조회
   useEffect(() => {
-    const fetchCommunityPosts = async () => {
-      setIsLoading(true);
-
-      // category가 -1일 경우 전체 게시글 조회
-      if (
-        category === -1 ||
-        (category === 0 && community === 'community') ||
-        (category === 1 && community === 'community')
-      ) {
-        await fetchData(); // 전체 게시글을 조회하는 함수 호출
-        setIsLoading(false); // 로딩 상태 종료
-      } else if (community !== 'community') {
-        try {
-          const response = await axiosInstance.get(
-            `/posts/${community}/community` // 선택된 커뮤니티의 _id 사용
-          );
-
-          if (Array.isArray(response.data.data)) {
-            setSelectedPosts(response.data.data);
-          } else {
-            setSelectedPosts([]);
-          }
-        } catch (error) {
-          setError(error as Error);
-        } finally {
-          setIsLoading(false); // 데이터 호출이 끝난 후 로딩 상태를 false로 설정
-        }
-      } else {
-        setIsLoading(false); // 'community'인 경우에도 로딩 상태를 false로 설정
-      }
-    };
-
-    fetchCommunityPosts();
-  }, [category, community]); // community와 category 상태에 의존
+    if (category === -1) {
+      // 카테고리도 선택 안된 경우
+      setSelectedPosts(posts);
+    } else if (category !== -1 && community === 'community') {
+      // 카테고리 선택 O && 커뮤니티 선택 X
+      const filteredPosts = posts.filter(
+        (post) => post.communityId.category === category
+      );
+      setSelectedPosts(filteredPosts);
+    } else {
+      // 카테고리 선택 O && 커뮤니티 선택 O
+      const filteredPosts = posts.filter(
+        (post) =>
+          post.communityId.category === category &&
+          post.communityId._id === community
+      );
+      setSelectedPosts(filteredPosts);
+    }
+  }, [category, community]);
 
   // 추천 그룹 사이드바용 API(전체 그룹 조회)
   useEffect(() => {
@@ -209,6 +197,7 @@ const Home: React.FC = () => {
                   post.communityId ? post.communityId.community : '알 수 없음' // 커뮤니티 이름 체크
                 }
                 communityCategory={
+                  // eslint-disable-next-line no-nested-ternary
                   post.communityId && post.communityId.category !== undefined
                     ? post.communityId.category === 0
                       ? '강아지'

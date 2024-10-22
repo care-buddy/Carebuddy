@@ -66,9 +66,10 @@ const Community: React.FC = () => {
     // 가입 확인
     if (confirm('그룹에 가입하시겠습니까?')) {
       try {
-        await axiosInstance.put(`users/${user?._id}/joinCommunity`, {
+       const result = await axiosInstance.put(`users/${user?._id}/joinCommunity`, {
           communityId,
         });
+        console.log(result)
         navigate(`/community-feed/${communityId}`);
       } catch (error) {
         setError(error as Error);

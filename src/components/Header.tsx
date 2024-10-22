@@ -239,7 +239,7 @@ const Header: React.FC = () => {
             {registrationModalOpen && (
               <SmallModal
                 onClose={() => handleRegistrationModal(false)}
-                component={<BasicRegistration />}
+                component={<BasicRegistration onClose = {() => handleRegistrationModal(false)} />}
               />
             )}
           </NotificationIcon>
@@ -248,6 +248,7 @@ const Header: React.FC = () => {
     </Wrapper>
   );
 };
+
 export default Header;
 
 const Wrapper = styled.header`

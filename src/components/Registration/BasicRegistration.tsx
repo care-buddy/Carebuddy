@@ -1,8 +1,8 @@
-// 이메일 인증 API, 회원가입 API, 유효성검사 추가 필요
-
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-// import axios from 'axios';
+
+import axios from 'axios';
+import axiosInstance from '@/utils/axiosInstance';
 
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
@@ -11,9 +11,13 @@ import LinkButton from '@components/common/LinkButton';
 
 import { LuChevronDown, LuChevronUp } from 'react-icons/lu';
 
-import { tempTerms } from '@constants/tempData';
+import term from '@/constants/term';
 
-const BasicRegistration: React.FC = () => {
+interface BasicRegistrationProps {
+  onClose: () => void;
+}
+
+const BasicRegistration: React.FC<BasicRegistrationProps> = ({ onClose }) => {
   const [agreeChecked, setAgreeChecked] = useState(false); // 모두 동의
   const [agreeChecked2, setAgreeChecked2] = useState(false); // 동의1(만 14세 이상)
   const [agreeChecked3, setAgreeChecked3] = useState(false); // 동의2(이용 약관)
@@ -22,25 +26,121 @@ const BasicRegistration: React.FC = () => {
     status: 'idle',
   }); // 이메일 인증 상태
   const [formData, setFormData] = useState({
-    // formData
     email: '',
+    verificationCode: '',
     nickName: '',
     mobileNumber: '',
+    password: '',
+    passwordCheck: '',
   });
+  const [timeLeft, setTimeLeft] = useState(0); // 남은 시간 상태
 
   // 이메일 인증 핸들러(인증과정 이후 추가되어야 함)
-  const submitEmailVerification = () => {
-    if (emailVerification.status === 'idle') {
-      if (formData.email !== '') {
+  const submitEmailVerification = async () => {
+    if (
+      emailVerification.status === 'idle' ||
+      emailVerification.status === 'inProgress'
+    ) {
+      if (formData.email === '') {
+        // 이메일이 공백일 경우
         alert('이메일을 입력해주세요.');
       } else {
-        setEmailVerification({ status: 'inProgress' });
-        // 이메일 인증 로직
+        // 이메일 형식 유효성 검사
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(formData.email)) {
+          alert('유효한 이메일 주소를 입력해주세요.');
+          return;
+        }
+
+        try {
+          const response = await axiosInstance.post('auth/validate-email', {
+            email: formData.email,
+          });
+
+          if (response.status === 201) {
+            alert('해당 이메일로 인증번호가 발송되었습니다.');
+
+            setEmailVerification((prev) => ({
+              ...prev,
+              status: 'inProgress',
+            }));
+            // 이메일 인증번호 보내기
+            await axiosInstance.post('auth/send-email', {
+              email: formData.email,
+            });
+            setTimeLeft(300); // 300초 = 5분
+          }
+        } catch (error) {
+          if (axios.isAxiosError(error) && error.response) {
+            // 에러 응답 상태 코드가 409일 때
+            if (error.response.status === 409) {
+              alert('이미 가입된 아이디입니다.');
+            } else {
+              // 다른 상태 코드일 때
+              alert(
+                '이메일 유효성 검사 중 오류가 발생했습니다. 다시 시도해주세요.'
+              );
+            }
+          } else {
+            alert('알 수 없는 오류가 발생했습니다. 다시 시도해주세요.');
+          }
+        }
       }
     }
   };
 
-  // formData 핸들러 - 임시: 디바운싱 적용 or 가입하기 누를 때 할 때 다 가져오기
+  const handleVerificationButton = async () => {
+    if (emailVerification.status === 'inProgress') {
+      if (formData.verificationCode === '') {
+        alert('전송된 인증번호를 입력해주세요');
+      } else {
+        try {
+          const response = await axiosInstance.post('auth/validate-authCode', {
+            email: formData.email,
+            authCode: formData.verificationCode,
+          });
+
+          if (response.status === 200) {
+            alert('인증이 성공적으로 완료되었습니다!');
+            setEmailVerification({
+              status: 'succeed',
+            });
+          } else {
+            setEmailVerification({
+              status: 'failed',
+            });
+          }
+        } catch (error) {
+          alert('인증 중 오류가 발생했습니다. 다시 시도해주세요.');
+        }
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (timeLeft > 0) {
+      const countdown = setInterval(() => {
+        setTimeLeft((prevTime) => {
+          if (prevTime <= 1) {
+            clearInterval(countdown);
+            setEmailVerification((prev) => ({
+              ...prev,
+              status: 'idle',
+            }));
+            return 0; // Return 0 explicitly when the countdown ends
+          }
+          return prevTime - 1; // Return the updated time
+        });
+      }, 1000); // 1초마다 호출
+
+      // 컴포넌트가 언마운트 될 때 또는 타이머가 재시작될 때 setInterval을 정리
+      return () => clearInterval(countdown);
+    }
+
+    return undefined;
+  }, [timeLeft]);
+
+  // formData 핸들러
   const handleFormData = (
     e: React.ChangeEvent<HTMLInputElement>,
     name: string
@@ -54,6 +154,81 @@ const BasicRegistration: React.FC = () => {
   // 체크박스 핸들러
   const handleCheckBoxChange = () => {
     setAgreeChecked((prevState) => !prevState);
+  };
+
+  // 가입 API
+  const handleRegisterButton = async () => {
+    // 유효성 검사
+    if (emailVerification.status !== 'succeed') {
+      alert('이메일 인증을 완료해주세요.');
+      return;
+    }
+
+    if (
+      !formData.nickName ||
+      !formData.email ||
+      !formData.mobileNumber ||
+      !formData.password ||
+      !formData.passwordCheck
+    ) {
+      alert('모든 필수 입력 필드를 작성해주세요.');
+      return;
+    }
+
+    if (formData.password !== formData.passwordCheck) {
+      alert('비밀번호가 일치하지 않습니다. 다시 확인해주세요.');
+      return;
+    }
+
+    // 비밀번호 복잡성 검사 (6자 이상, 영문자 대/소문자 혼합)
+    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z]).{6,}$/;
+    if (!passwordPattern.test(formData.password)) {
+      alert(
+        '비밀번호는 영문자 대문자, 소문자를 혼용하여 6자 이상으로 설정해주십시오.'
+      );
+      setFormData({
+        ...formData,
+        password: '',
+        passwordCheck: '',
+      });
+      return;
+    }
+
+    // 핸드폰 번호 유효성 검사 (숫자만 포함, 10~11자리)
+    const phonePattern = /^\d{10,11}$/;
+    if (!phonePattern.test(formData.mobileNumber)) {
+      alert(
+        '유효한 핸드폰 번호를 입력해주세요. 숫자만 포함하여 10자리 또는 11자리여야 합니다.'
+      );
+      setFormData({
+        ...formData,
+        mobileNumber: '',
+      });
+      return;
+    }
+
+    if (!agreeChecked2 || !agreeChecked3) {
+      alert('필수 이용약관에 동의해 주세요.');
+      return;
+    }
+
+    try {
+      const signupResponse = await axiosInstance.post('auth/signup', {
+        nickName: formData.nickName,
+        email: formData.email,
+        mobileNumber: formData.mobileNumber,
+        password: formData.password,
+      });
+
+      if (signupResponse.status === 201) {
+        alert('회원가입이 완료되었습니다!');
+        onClose(); // 모달 닫기
+      } else {
+        alert('회원가입 중 문제가 발생했습니다. 다시 시도해주세요.');
+      }
+    } catch (error) {
+      alert('회원가입 중 오류가 발생했습니다. 다시 시도해주세요.');
+    }
   };
 
   useEffect(() => {
@@ -99,19 +274,68 @@ const BasicRegistration: React.FC = () => {
               발송
             </Button>
           )}
-          {emailVerification.status === 'inProgress' && <Timer>3:21</Timer>}
+          {emailVerification.status === 'succeed' && (
+            <Button
+              buttonSize="sm"
+              buttonStyle="square-grey"
+              onClick={submitEmailVerification}
+            >
+              인증 완료
+            </Button>
+          )}
+          {emailVerification.status === 'inProgress' && (
+            <Timer>{`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, '0')}`}</Timer>
+          )}
         </EmailContainer>
         {emailVerification.status === 'inProgress' && (
-          <EmailContainer>
-            <Input
-              placeholder="메일로 발송된 인증 번호를 입력해주세요."
-              placeholderColor="light-grey"
-            />
-            <Button buttonSize="sm" buttonStyle="square-grey">
-              인증
-            </Button>
-          </EmailContainer>
+          <>
+            <EmailContainer>
+              <Input
+                placeholder="메일로 발송된 인증 번호를 입력해주세요."
+                placeholderColor="light-grey"
+                onChange={(e) => handleFormData(e, 'verificationCode')}
+              />
+              <Button
+                buttonSize="sm"
+                buttonStyle="square-grey"
+                onClick={handleVerificationButton}
+              >
+                인증
+              </Button>
+            </EmailContainer>
+            <ResendVerificationCode>
+              <Button
+                buttonSize="sm"
+                buttonStyle="grey"
+                onClick={submitEmailVerification}
+              >
+                인증번호 다시 전송하기
+              </Button>
+            </ResendVerificationCode>
+          </>
         )}
+      </Section>
+
+      <Section>
+        <Heading>비밀번호</Heading>
+        <PasswordText>
+          비밀번호는 영문자 대문자, 소문자를 혼용하여 6자 이상으로
+          설정해주십시오.
+        </PasswordText>
+        <PasswordContainer>
+          <Input
+            type="password"
+            placeholder="비밀번호를 입력해주세요"
+            placeholderColor="light-grey"
+            onChange={(e) => handleFormData(e, 'password')}
+          />
+          <Input
+            type="password"
+            placeholder="비밀번호를 새로 입력해주세요"
+            placeholderColor="light-grey"
+            onChange={(e) => handleFormData(e, 'passwordCheck')}
+          />
+        </PasswordContainer>
       </Section>
 
       <Section>
@@ -166,14 +390,18 @@ const BasicRegistration: React.FC = () => {
         </TermCheckContainer>
         {viewFullTerms && (
           <TermContainer>
-            <P2>{tempTerms}</P2>
+            <P2>{term}</P2>
           </TermContainer>
         )}
       </Section>
 
       <Section>
         <div>
-          <Button buttonStyle="square-green" buttonSize="md">
+          <Button
+            buttonStyle="square-green"
+            buttonSize="md"
+            onClick={handleRegisterButton}
+          >
             가입하기
           </Button>
         </div>
@@ -258,14 +486,30 @@ const LargeText = styled.p`
 const EmailContainer = styled.div`
   display: flex;
   justify-content: space-between;
+  align-items: center; // 세로 중앙 정렬
 
   button,
   div {
-    width: 18%;
+    min-width: 18%;
   }
 
   input {
     width: 80%;
+    margin-right: 10px; // 오른쪽에 여백 추가
+  }
+`;
+
+const PasswordContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  input {
+    width: 80%;
+  }
+
+  & > * {
+    margin-bottom: 10px;
   }
 `;
 
@@ -279,4 +523,17 @@ const Timer = styled.div`
   border: none;
   padding: 8px 16px;
   font-size: var(--font-size-ft-1);
+`;
+
+const ResendVerificationCode = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
+const PasswordText = styled.p`
+  color: var(--color-grey-1);
+  font-size: var(--font-size-sm-1);
+  font-weight: var(--font-weight-regular);
+  background-color: transparent;
+  padding: 0;
 `;
