@@ -16,6 +16,8 @@ import authState from '@/recoil/atoms/authState';
 import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
+import { useNavigate } from 'react-router-dom';
+import validationAlertState from '@/recoil/atoms/validationAlertState';
 
 interface LoginProps {
   onOpenRegistrationModal: () => void;

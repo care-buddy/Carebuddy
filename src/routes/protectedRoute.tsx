@@ -4,11 +4,10 @@
 import authState from '@/recoil/atoms/authState';
 import loadingState from '@/recoil/atoms/loadingState';
 import loginModalState from '@/recoil/atoms/loginModalState';
-import isAuthenticatedState from '@/recoil/selectors/authSelector';
 import axiosInstance from '@/utils/axiosInstance';
 import React, { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState } from 'recoil';
 
 // children props: component 내부의 모든 것
 export default function ProtectedRoute({
@@ -17,9 +16,9 @@ export default function ProtectedRoute({
   children: React.ReactNode;
 }) {
   const [redirect, setRedirect] = useState(false);
-  const [isLoading, setLoading] = useRecoilState(loadingState);
+  const [, setLoading] = useRecoilState(loadingState);
   const [, setLoginModalOpen] = useRecoilState(loginModalState);
-  const [auth, setAuth] = useRecoilState(authState);
+  const [, setAuth] = useRecoilState(authState);
 
   useEffect(() => {
     const checkAuth = async () => {

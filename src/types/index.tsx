@@ -50,17 +50,17 @@ export interface IProfilesWrapperProps {
 export interface User {
   adminNumber?: number;
   _id?: string;
-  nickName: string;
-  email: string;
+  nickName?: string;
+  email?: string;
   password?: string;
-  profileImage: string | File | null;
-  introduce: string;
+  profileImage?: string | File | null;
+  introduce?: string;
   isTempPassword?: number;
   postId?: PostData[];
   commentId?: string[];
-  buddyId: IBuddyProfile[];
+  buddyId?: IBuddyProfile[];
   hospitalId?: string[];
-  communityId: CommunityData[];
+  communityId?: CommunityData[];
   deletedAt?: string;
   createdAt?: string;
   updatedAt?: string;
@@ -71,9 +71,9 @@ export interface IPublicUser {
   nickName: string;
   introduce: string;
   profileImage: string | File | null;
-  communityId: CommunityData[];
+  communityId?: CommunityData[];
   postId: PostData[];
-  buddyId: [];
+  buddyId?: [];
 }
 
 // 커뮤니티

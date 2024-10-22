@@ -7,7 +7,7 @@ import Button from '@/components/common/Button';
 import TextArea from '@/components/common/TextArea';
 import Input from '@/components/common/Input';
 import axiosInstance from '@/utils/axiosInstance';
-import userState, { UserState } from '@/recoil/atoms/userState';
+import { UserState } from '@/recoil/atoms/userState';
 import { ImageBox } from './containerComponents';
 
 const Container = styled.div`
@@ -73,7 +73,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
   userData,
   setUserData,
 }) => {
-  const [profileImage, setProfileImage] = useState<File | string | null>(null);
+  const [, setProfileImage] = useState<File | string | null>(null);
   const [formData, setFormData] = useState<FormData | null>(null); // 수정/등록을 위한 폼데이터 상태
 
   // 전송할 이미지
@@ -98,8 +98,6 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     // 폼데이터에는 null 값을 보낼 수 없으니, 선택된 파일이나 버디이미지가 없는 경우에는 append하지 않습니다: 서버 default 값이 null
     if (selectedFile) {
       formData.append('profileImage', selectedFile);
-
-      // } else formData.append('buddyImage', buddyImage);
     }
 
     return formData;
@@ -117,8 +115,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
         nickName: userData.nickName ?? '',
         profileImage: userData.profileImage,
       });
-
-      setProfileImage(userData.profileImage);
+      if (userData.profileImage) setProfileImage(userData.profileImage);
     }
   }, []);
 
@@ -131,17 +128,17 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
       // 현재 로그인된 사용자의 정보를 me 엔드포인트로 업데이트
 
       const response = await axiosInstance.put(`me`, formData);
-      // UserState 업데이트
 
-      const printFormData = (formData: FormData) => {
-        // FormData.entries()를 사용하여 모든 항목을 순회합니다.
-        for (const [key, value] of formData.entries()) {
-          console.log(`${key}:`, value);
-        }
-      };
+      // 테스트용 폼데이터 출력 함수입니다
+      // const printFormData = (formData: FormData) => {
+      //   // FormData.entries()를 사용하여 모든 항목을 순회합니다.
+      //   for (const [key, value] of formData.entries()) {
+      //     console.log(`${key}:`, value);
+      //   }
+      // };
 
-      // formData를 사용하여 요청하기 전에 폼 데이터 내용 출력
-      printFormData(formData);
+      // // formData를 사용하여 요청하기 전에 폼 데이터 내용 출력
+      // printFormData(formData);
 
       // 프로필 이미지가 File일 경우 URL을 생성
       const imageUrl = response.data.data.profileImage;
@@ -151,7 +148,7 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
         ...prevData,
         introduce: userInfo.introduce,
         nickName: userInfo.nickName,
-        profileImage: imageUrl || prevData.profileImage, // 받아온 URL로 프로필 이미지 업데이트
+        profileImage: imageUrl || prevData?.profileImage, // 받아온 URL로 프로필 이미지 업데이트
       }));
       alert('변경 사항이 저장되었습니다');
       // console.log(response.data.data);
@@ -172,7 +169,6 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
     const file = event?.target.files?.[0];
 
     if (file) {
-      // const imageUrl = URL.createObjectURL(file);
       setSelectedFile(file);
     }
   };
@@ -184,9 +180,9 @@ const ProfileContainer: React.FC<ProfileContainerProps> = ({
   let imageSrc: string | null;
   if (selectedFile) {
     imageSrc = URL.createObjectURL(selectedFile);
-  } else if (typeof userData.profileImage === 'string') {
+  } else if (typeof userData?.profileImage === 'string') {
     imageSrc = userData.profileImage;
-  } else if (userData.profileImage) {
+  } else if (userData?.profileImage) {
     imageSrc = URL.createObjectURL(userData.profileImage);
   } else {
     imageSrc = null; // 기본 이미지 URL
