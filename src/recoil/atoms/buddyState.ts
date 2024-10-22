@@ -1,5 +1,5 @@
 import { atom } from 'recoil';
-import { IBuddyProfile } from '@/interfaces';
+import { IBuddyProfile } from '@/types';
 
 interface Buddy {
   userName: string | null;

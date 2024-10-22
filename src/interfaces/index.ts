@@ -56,9 +56,9 @@ export interface User {
   profileImage: string | File | null;
   introduce: string;
   isTempPassword?: number;
-  postId: string[];
+  postId?: PostData[];
   commentId?: string[];
-  buddyId: string[];
+  buddyId: IBuddyProfile[];
   hospitalId?: string[];
   communityId: CommunityData[];
   deletedAt?: string;

@@ -1,4 +1,4 @@
-import { IRecord } from '@/interfaces';
+import { IRecord } from '@/types';
 
 const validateRecordForm = (
   formData: IRecord,

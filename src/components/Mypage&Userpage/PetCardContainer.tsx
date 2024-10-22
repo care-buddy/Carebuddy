@@ -9,7 +9,7 @@ const Container = styled.div`
 `;
 
 interface Props {
-  buddyData: IBuddyProfile[];
+  buddyData?: IBuddyProfile[];
   isMe: boolean;
 }
 

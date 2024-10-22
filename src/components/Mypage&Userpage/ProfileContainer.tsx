@@ -8,6 +8,7 @@ import TextArea from '@/components/common/TextArea';
 import Input from '@/components/common/Input';
 import axiosInstance from '@/utils/axiosInstance';
 import userState, { UserState } from '@/recoil/atoms/userState';
+import { ImageBox } from './containerComponents';
 
 const Container = styled.div`
   margin: 30px 0;
@@ -61,35 +62,16 @@ const List = styled.span`
   margin: 15px;
 `;
 
-const ImageBox = styled.div`
-  img {
-    height: 150px;
-    width: 150px;
-    padding: 10px;
-
-    border-radius: 50%;
-    border: 0;
-    overflow: hidden;
-    text-align: center;
-  }
-`;
-
 const Data = styled.span``;
 
 interface ProfileContainerProps {
-  userData: {
-    nickName: string;
-    introduce: string;
-    profileImage: File | string | null;
-  };
-  setUserData;
-  fetchData;
+  userData: UserState;
+  setUserData: React.Dispatch<React.SetStateAction<UserState>>;
 }
 
 const ProfileContainer: React.FC<ProfileContainerProps> = ({
   userData,
   setUserData,
-  fetchData,
 }) => {
   const [profileImage, setProfileImage] = useState<File | string | null>(null);
   const [formData, setFormData] = useState<FormData | null>(null); // 수정/등록을 위한 폼데이터 상태

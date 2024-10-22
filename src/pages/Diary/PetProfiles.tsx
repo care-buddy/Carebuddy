@@ -8,7 +8,7 @@ import { Pagination, Virtual } from 'swiper/modules';
 import { LuPlus } from 'react-icons/lu';
 import Modal from '@/components/common/Modal';
 import PetRegister from '@/components/PetRegister/PetRegister';
-import { IBuddy, IBuddyProfile, IProfilesWrapperProps } from '@/interfaces';
+import { IBuddy, IBuddyProfile, IProfilesWrapperProps } from '@/types';
 // import MockAdapter from 'axios-mock-adapter';
 // import { tempProfileSrc } from '@constants/tempData';
 // import DefaultPetProfileImg from '@assets/defaultPetProfile.png';

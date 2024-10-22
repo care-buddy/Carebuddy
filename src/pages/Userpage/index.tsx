@@ -1,23 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom';  // useParams 훅 추가
+import { useParams } from 'react-router-dom'; // useParams 훅 추가
 import axiosInstance from '@/utils/axiosInstance';
 import defaultImg from '@/assets/person.png';
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
 import TopBar from '@/components/common/TopBar';
-import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
-import { tempProfileSrc } from '@constants/tempData';
+import {
+  Menu,
+  ImageBox,
+} from '@/components/Mypage&Userpage/containerComponents';
+import { User } from '@/types';
 
 const Container = styled.div``;
-
-const Menu = styled.div`
-  padding: 10px 10px 10px 0;
-  font-weight: bold;
-  font-size: 22px;
-  border-bottom: 1px solid #cecece;
-  padding-bottom: 10px;
-`;
 
 const Item = styled.a`
   font-weight: bold;
@@ -52,79 +47,66 @@ const ImgContainer = styled.div`
 const Info = styled.div`
   display: flex;
   flex-direction: column;
-  margin-left: 50px;
+  margin-left: 4rem;
 `;
 
 const InputList = styled.span`
   display: flex;
 `;
 
-const ImageBox = styled.div`
-  img {
-    height: 180px;
-    padding: 10px;
-  }
-`;
-
 interface UserData {
   email: string;
   nickName: string;
   introduce: string;
-  profileImage: string[];
+  profileImage: string | File | null;
   postId: PostId[];
 }
 
 interface PostId {
-  _id: string;  // ID 필드 추가
+  _id: string; // ID 필드 추가
   category: number;
-  community: string;
+  communityId: string;
   title: string;
   createdAt: Date;
 }
 
-interface ApiResponse {
-  email: string;
-  nickName: string;
-  introduce: string;
-  profileImage: string[];
-  postId: ApiPostId[];
-}
+const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => {
+  // 선택된 파일이 있으면 해당 파일의 URL을 생성하여 사용
+  // 그렇지 않으면, imgView가 URL인지 확인하고 해당 URL을 사용
+  // imgView가 File일 경우 URL.createObjectURL로 변환
+  let imageSrc: string | null;
+  if (typeof userData.profileImage === 'string') {
+    imageSrc = userData.profileImage;
+  } else if (userData.profileImage) {
+    imageSrc = URL.createObjectURL(userData.profileImage);
+  } else {
+    imageSrc = null; // 기본 이미지 URL
+  }
 
-interface ApiPostId {
-  _id: string;  // ID 필드 추가
-  communityId: communityId;
-  title: string;
-  createdAt: string;
-}
-
-interface communityId {
-  category: number;
-  community: string;
-}
-
-const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => (
-  <Container>
-    <UserContainer>
-      <ImgContainer>
-        <ImageBox>
-          <img src={defaultImg} alt="프로필 사진" />
-        </ImageBox>
-      </ImgContainer>
-      <Info>
-        <InputList>
-          <List>
-            <ListItem bold>{userData.nickName}</ListItem>
-          </List>
-        </InputList>
-        <InputList>
-          <List>
-            <ListItem>{userData.introduce}</ListItem>
-          </List>
-        </InputList>
-      </Info>
-    </UserContainer>
-  </Container>
-);
+  return (
+    <Container>
+      <UserContainer>
+        <ImgContainer>
+          <ImageBox>
+            <img src={imageSrc || defaultImg} alt="프로필 사진" />
+          </ImageBox>
+        </ImgContainer>
+        <Info>
+          <InputList>
+            <List>
+              <ListItem bold>{userData.nickName}</ListItem>
+            </List>
+          </InputList>
+          <InputList>
+            <List>
+              <ListItem>{userData.introduce}</ListItem>
+            </List>
+          </InputList>
+        </Info>
+      </UserContainer>
+    </Container>
+  );
+};
 
 const Userpage: React.FC = () => {
   const { userId } = useParams<{ userId: string }>(); // URL에서 userId를 받아온다
@@ -132,7 +114,7 @@ const Userpage: React.FC = () => {
     email: '',
     nickName: '',
     introduce: '',
-    profileImage: [],
+    profileImage: null,
     postId: [],
   });
 
@@ -142,23 +124,18 @@ const Userpage: React.FC = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.get<{ message: ApiResponse }>(`users/${userId}`);
+        const response = await axiosInstance.get<{ message: UserData }>(
+          `users/${userId}`
+        );
         const data = response.data.message;
 
         const mappedData: UserData = {
           email: data.email || '',
           nickName: data.nickName || '',
           introduce: data.introduce || '',
-          profileImage: data.profileImage || [],
-          postId: data.postId
-            ? data.postId.map((post) => ({
-              _id: post._id,  // _id 값 추가
-              category: post.communityId.category,
-              community: post.communityId.community,
-              title: post.title,
-              createdAt: new Date(post.createdAt), // Parse createdAt as a Date
-            }))
-            : [],
+          profileImage: data.profileImage || null,
+          postId: data.postId || [],
+          buddyId: data.buddyId,
         };
         console.log('user 데이터: ', data);
         setUserData(mappedData);
@@ -180,13 +157,15 @@ const Userpage: React.FC = () => {
     },
     {
       id: '2',
-      content: 'User의 반려동물',
+      content: `${userData.nickName}의 반려동물`,
       component: <PetCardContainer buddyData={userData.buddyId} isMe={false} />,
     },
     {
       id: '3',
       content: '작성 글 목록',
-      component: <ListContainer postIds={userData.postId} isLoading={isLoading} />,  // postId 전달
+      component: (
+        <ListContainer postIds={userData.postId} isLoading={isLoading} />
+      ), // postId 전달
     },
   ];
 
