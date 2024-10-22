@@ -4,7 +4,7 @@ import Input from '@/components/common/Input';
 import Radio from '@/components/common/Radio';
 import CheckBox from '@/components/common/CheckBox';
 import TextArea from '@/components/common/TextArea';
-import { IRecord } from '@/interfaces';
+import { IRecord } from '@/types';
 import { LuPlusCircle, LuMinusCircle } from 'react-icons/lu';
 import { CSSTransition } from 'react-transition-group';
 

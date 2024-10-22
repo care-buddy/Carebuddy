@@ -1,6 +1,6 @@
 import { tempProfileSrc } from '@constants/tempData';
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
-import { IRecord } from '@/interfaces';
+import { IRecord } from '@/types';
 
 export const dummyBuddies = {
   name: '주인이름',

@@ -11,11 +11,9 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import CATEGORY from '@/constants/communityConstants';
 
-import { CommunityData } from '@/interfaces/index';
+import { CommunityData, User } from '@/types/index';
 
 import userState from '@/recoil/atoms/userState';
-
-import { User } from '@/types/index';
 
 const Community: React.FC = () => {
   const navigate = useNavigate();

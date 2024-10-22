@@ -1,4 +1,4 @@
-import { User } from '@/interfaces/index';
+import { User } from '@/types';
 import { atom } from 'recoil';
 import { recoilPersist } from 'recoil-persist';
 
@@ -12,8 +12,8 @@ const { persistAtom } = recoilPersist({
 
 // 유저 정보를 저장할 Atom
 const userState = atom<UserState>({
-  key: 'userState', 
-  default: null, 
+  key: 'userState',
+  default: null,
   effects_UNSTABLE: [persistAtom],
 });
 

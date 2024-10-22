@@ -23,7 +23,7 @@ import { notifications } from '@/constants/tempData'; // 로그인때문에 내�
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 import loginModalState from '@/recoil/atoms/loginModalState';
 
-import { CommunityData } from '@/interfaces/index';
+import { CommunityData } from '@/types';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);

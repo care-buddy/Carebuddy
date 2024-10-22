@@ -31,7 +31,7 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import loginModalState from '@/recoil/atoms/loginModalState';
 
-import { PostData, User } from '@/interfaces/index';
+import { PostData, User } from '@/types';
 
 import userState from '@/recoil/atoms/userState';
 
