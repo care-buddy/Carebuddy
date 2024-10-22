@@ -23,7 +23,7 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import userState from '@/recoil/atoms/userState';
 
-import type { CommentData } from '@/types';
+import type { CommentData, PostData } from '@/types';
 
 import DEFAULT_PROFILE from '@/assets/person.png';
 import usePostCreate from '@/hooks/usePostCreate';
@@ -36,7 +36,7 @@ interface FormData {
 }
 
 const Post: React.FC = () => {
-  const [post, setPost] = useState<FormData | null>(null); // 게시글
+  const [post, setPost] = useState<PostData | null>(null); // 게시글
   const [comments, setComments] = useState<CommentData[] | null>(null); // 댓글
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
 
@@ -97,7 +97,7 @@ const Post: React.FC = () => {
     setFormData({
       title: post?.title || '',
       content: post?.content || '',
-      communityId: post?.communityId._id || '',
+      communityId: post?.communityId?._id || '',
       postImage: post?.postImage || null,
     });
   }, [post]);

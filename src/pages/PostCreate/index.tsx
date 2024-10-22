@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import Select from '@/components/common/Select';
 import Input from '@/components/common/Input';
 import TextArea from '@/components/common/TextArea';
+import { PostData } from '@/types';
 
 const Container = styled.div`
   display: flex;
@@ -51,12 +52,7 @@ const PreviewImage = styled.img`
 // `;
 
 interface PostCreateProps {
-  postData: {
-    title?: string;
-    content?: string;
-    communityId?: string;
-    postImage: File | string | null;
-  } | null;
+  postData: PostData | null;
   onFormDataChange: (FormData: FormData) => void;
 }
 

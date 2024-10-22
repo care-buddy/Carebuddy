@@ -91,7 +91,7 @@ const Mypage: React.FC = () => {
     {
       id: '2',
       content: '프로필',
-      component: (
+      component: userData && (
         <ProfileContainer userData={userData} setUserData={setUserData} />
       ),
     },

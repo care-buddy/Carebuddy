@@ -37,7 +37,7 @@ const usePostCreate = (onSuccess: () => void) => {
     }
   };
 
-  const handleEditPostSubmit = async (id: string) => {
+  const handleEditPostSubmit = async (id: string | undefined) => {
     try {
       console.log(formDataToJson(formData));
       const response = await axiosInstance.put(`posts/${id}`, formData); // 임시. 추후 백엔드에서 엔드포인트 변경 시 수정

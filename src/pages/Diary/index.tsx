@@ -7,7 +7,7 @@ import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
 // import MockAdapter from 'axios-mock-adapter';
-import { IBuddy, IBuddyProfile, IRecord } from '@/types';
+import { IRecord } from '@/types';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';
@@ -18,7 +18,6 @@ import {
 } from 'recoil';
 import buddyState from '@/recoil/atoms/buddyState';
 import selectedIdState from '@/recoil/atoms/selectedIdState';
-import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import ErrorAlert from '@/components/common/ErrorAlert';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
@@ -148,17 +147,11 @@ const Diary: React.FC = () => {
   // 기록 등록을 위한 Record 상태
   const [formData, setFormData] = useState<IRecord>(nullData);
 
-  // const [buddiesData, setBuddiesData] = useState<ProfilesWrapperProps | null>(
-  //   null
-  // );
   const [buddiesData, setBuddiesData] = useRecoilState(buddyState);
 
-  // const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useRecoilState(selectedIdState);
   const [isLoading, setLoading] = useState(true);
-  // state에 transition을 적용하기 위해 사용
-  // const [isLoading, setLoading] =
-  //   useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
+
   // 화면 렌더링 시 버디와 로딩 상태를 공유할 경우, 버디만 렌더링 완료된 경우에 로딩 상태가 false가 되므로 분리한다.
   const [isRecordLoading, setRecordLoading] = useState(false);
   // const [error, setError] = useState<Error | null>(null);
@@ -168,11 +161,8 @@ const Diary: React.FC = () => {
   const [recordsData, setRecords] = useState<IRecord[] | null>([]);
 
   // 유효성 검사 알림 상태
-  // const [showAlert, setShowAlert] = useState(false);
-  // const [alertMessage, setAlertMessage] = useState('');
   const [alertState, setAlertState] = useRecoilState(validationAlertState);
 
-  // const [hasRecords, setHasRecords] = useState(false);
   const [hasRecords, setHasRecords] = useState(false);
 
   const [isCheckSymptom, setCheckSymptom] = useState(false);
@@ -291,16 +281,6 @@ const Diary: React.FC = () => {
     return <ErrorAlert />;
   }
 
-  // 필요 없는 로직인가?
-  // const handleSubmitBuddy = (newBuddy: BuddyProfile) => {
-  //   if (buddiesData?.buddies) {
-  //     setBuddiesData((prevData) => ({
-  //       ...prevData,
-  //       buddies: [...prevData.buddies, newBuddy],
-  //     }));
-  //   }
-  // };
-
   // 모달 관련 함수
   const handleOpenModal = () => {
     setModalOpen(true);
@@ -312,24 +292,24 @@ const Diary: React.FC = () => {
     setFormData(nullData);
   };
 
-  const formDataToJson = (formData: FormData) => {
-    const obj: { [key: string]: any } = {};
+  // 폼데이터 출력용 테스트 함수
+  // const formDataToJson = (formData: FormData) => {
+  //   const obj: { [key: string]: any } = {};
 
-    for (const [key, value] of formData.entries()) {
-      // FormData.entries()에서 value가 Blob일 경우, 직접 변환하기 어려우므로
-      // 텍스트로 변환할 수 있는 경우를 제외하고는 문자열로 저장합니다.
-      if (value instanceof Blob) {
-        obj[key] = value instanceof File ? value.name : value.toString();
-      } else {
-        obj[key] = value;
-      }
-    }
+  //   for (const [key, value] of formData.entries()) {
+  //     // FormData.entries()에서 value가 Blob일 경우, 직접 변환하기 어려우므로
+  //     // 텍스트로 변환할 수 있는 경우를 제외하고는 문자열로 저장합니다.
+  //     if (value instanceof Blob) {
+  //       obj[key] = value instanceof File ? value.name : value.toString();
+  //     } else {
+  //       obj[key] = value;
+  //     }
+  //   }
 
-    return obj;
-  };
+  //   return obj;
+  // };
 
   const handleFormSubmit = async () => {
-    console.log(formData);
     if (
       validateRecordForm(
         formData,
@@ -376,11 +356,13 @@ const Diary: React.FC = () => {
         record._id === updatedRecord._id ? updatedRecord : record
       );
       setRecords(updatedRecords);
-      fetchRecordsData(updatedRecord.buddyId);
+      if (updatedRecord.buddyId) {
+        fetchRecordsData(updatedRecord.buddyId);
+      }
     }
   };
 
-  const handleDeleteRecord = async (recordId: string) => {
+  const handleDeleteRecord = async (recordId?: string) => {
     // 삭제 PUT 요청 설정
     if (window.confirm('삭제하시겠습니까?')) {
       try {

@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 import styled from 'styled-components';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { PostData } from '@/types';
 
@@ -38,18 +39,10 @@ const GroupContent = styled(ContentList)`
   color: #6d987a;
 `;
 
-interface PostId {
-  _id: string; // Add _id to access the post ID
-  category: number;
-  community: string;
-  title: string;
-  createdAt: Date;
-}
-
-interface ListContainerProps {
+type ListContainerProps = {
   postIds?: PostData[];
   isLoading: boolean;
-}
+};
 
 const ListContainer: React.FC<ListContainerProps> = ({
   postIds,
@@ -65,7 +58,8 @@ const ListContainer: React.FC<ListContainerProps> = ({
     return <div>Loading...</div>;
   }
 
-  const nonDeletedPosts = postIds.filter((post) => post.deletedAt === null);
+  const nonDeletedPosts =
+    postIds && postIds.filter((post) => post.deletedAt === null);
 
   return (
     <Container>
@@ -74,19 +68,19 @@ const ListContainer: React.FC<ListContainerProps> = ({
         <Title>글제목</Title>
         <Title>작성일</Title>
       </DataContainer>
-      {nonDeletedPosts.length > 0 ? (
+      {nonDeletedPosts && nonDeletedPosts.length > 0 ? (
         nonDeletedPosts
           // .filter((post) => post.deletedAt === null)
           .map((post) => (
             <DataContainer key={post._id}>
               <GroupContent>
                 [
-                {post.category === 0
+                {post.communityId.category === 0
                   ? '강아지'
-                  : post.category === 1
+                  : post.communityId.category === 1
                     ? '고양이'
                     : '기타'}
-                ] {post.community}
+                ] {post.communityId.community}
               </GroupContent>
               <ContentList onClick={() => handlePostClick(post._id)}>
                 {post.title}

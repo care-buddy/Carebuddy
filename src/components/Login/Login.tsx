@@ -16,6 +16,8 @@ import authState from '@/recoil/atoms/authState';
 import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
+import { useNavigate } from 'react-router-dom';
+import validationAlertState from '@/recoil/atoms/validationAlertState';
 
 interface LoginProps {
   onOpenRegistrationModal: () => void;
@@ -77,8 +79,8 @@ const Login: React.FC<LoginProps> = ({
         const userResponse = await axiosInstance.get('me', {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-        setUser(userResponse.data.message); 
-        console.log('me 컨트롤러가 보낸 정보', userResponse.data.message)
+        setUser(userResponse.data.message);
+        console.log('me 컨트롤러가 보낸 정보', userResponse.data.message);
 
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();

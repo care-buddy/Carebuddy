@@ -107,6 +107,7 @@ const Header: React.FC = () => {
       await axiosInstance.delete('auth/logout', {
         data: { email: user?.email },
       });
+      navigate('/');
 
       deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
 
@@ -118,7 +119,6 @@ const Header: React.FC = () => {
     } catch (error) {
       console.error(error); // 임시. 나중에 변경
     }
-    window.location.href = '/';
   };
 
   // 임시

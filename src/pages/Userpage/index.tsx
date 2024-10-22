@@ -10,7 +10,7 @@ import {
   Menu,
   ImageBox,
 } from '@/components/Mypage&Userpage/containerComponents';
-import { User } from '@/types';
+import { IPublicUser } from '@/types';
 
 const Container = styled.div``;
 
@@ -54,23 +54,9 @@ const InputList = styled.span`
   display: flex;
 `;
 
-interface UserData {
-  email: string;
-  nickName: string;
-  introduce: string;
-  profileImage: string | File | null;
-  postId: PostId[];
-}
-
-interface PostId {
-  _id: string; // ID 필드 추가
-  category: number;
-  communityId: string;
-  title: string;
-  createdAt: Date;
-}
-
-const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => {
+const ProfileContainer: React.FC<{ userData: IPublicUser }> = ({
+  userData,
+}) => {
   // 선택된 파일이 있으면 해당 파일의 URL을 생성하여 사용
   // 그렇지 않으면, imgView가 URL인지 확인하고 해당 URL을 사용
   // imgView가 File일 경우 URL.createObjectURL로 변환
@@ -110,7 +96,7 @@ const ProfileContainer: React.FC<{ userData: UserData }> = ({ userData }) => {
 
 const Userpage: React.FC = () => {
   const { userId } = useParams<{ userId: string }>(); // URL에서 userId를 받아온다
-  const [userData, setUserData] = useState<UserData>({
+  const [userData, setUserData] = useState<IPublicUser>({
     email: '',
     nickName: '',
     introduce: '',
@@ -124,12 +110,12 @@ const Userpage: React.FC = () => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        const response = await axiosInstance.get<{ message: UserData }>(
+        const response = await axiosInstance.get<{ message: IPublicUser }>(
           `users/${userId}`
         );
         const data = response.data.message;
 
-        const mappedData: UserData = {
+        const mappedData: IPublicUser = {
           email: data.email || '',
           nickName: data.nickName || '',
           introduce: data.introduce || '',
@@ -137,7 +123,6 @@ const Userpage: React.FC = () => {
           postId: data.postId || [],
           buddyId: data.buddyId,
         };
-        console.log('user 데이터: ', data);
         setUserData(mappedData);
       } catch (error) {
         console.error('사용자 데이터 가져오기 오류:', error);
