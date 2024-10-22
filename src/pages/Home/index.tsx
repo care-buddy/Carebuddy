@@ -57,7 +57,6 @@ const Home: React.FC = () => {
   }, []);
 
   // select 로직 - category 선택에 따라 community 옵션 필터링해서 보여줌
-
   useEffect(() => {
     if (category !== 'category') {
       const filteredCommunityOptions = communityOptions.filter(
