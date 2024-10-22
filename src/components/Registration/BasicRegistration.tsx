@@ -51,11 +51,11 @@ const BasicRegistration: React.FC<BasicRegistrationProps> = ({ onClose }) => {
           });
 
           if (response.status === 201) {
-            alert('해당 아이디로 가입이 가능합니다');
+            alert('해당 이메일로 인증번호가 발송되었습니다.');
 
             setEmailVerification((prev) => ({
               ...prev,
-              status: 'inProgress', // 원하는 속성만 변경
+              status: 'inProgress', 
             }));
             // 이메일 인증번호 보내기
             await axiosInstance.post('auth/send-email', {
@@ -133,7 +133,7 @@ const BasicRegistration: React.FC<BasicRegistrationProps> = ({ onClose }) => {
     return undefined;
   }, [timeLeft]);
 
-  // formData 핸들러 - 임시: 디바운싱 적용 or 가입하기 누를 때 할 때 다 가져오기
+  // formData 핸들러
   const handleFormData = (
     e: React.ChangeEvent<HTMLInputElement>,
     name: string
@@ -197,6 +197,11 @@ const BasicRegistration: React.FC<BasicRegistrationProps> = ({ onClose }) => {
         ...formData,
         mobileNumber: '',
       });
+      return;
+    }
+
+    if (!agreeChecked2 || !agreeChecked3) {
+      alert('필수 이용약관에 동의해 주세요.');
       return;
     }
 
