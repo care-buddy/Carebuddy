@@ -71,6 +71,7 @@ const Post: React.FC = () => {
       post.createdAt = formatDateIncludeTime(post.createdAt);
 
       setPost(post);
+      console.log('post', post)
       setLikedUsers(post.likedUsers);
 
       // 댓글
@@ -79,7 +80,7 @@ const Post: React.FC = () => {
           (comment: CommentData) => comment.deletedAt === null
         );
         setComments(validComments);
-        console.log(validComments);
+        console.log('comment', validComments)
       } else {
         setComments([]);
       }
@@ -127,12 +128,11 @@ const Post: React.FC = () => {
           text: comment,
         });
         const newComment = response.data;
+        console.log('실시간comment', newComment)
 
-        if (comments) {
-          setComments([...comments, newComment]);
-        } else {
-          setComments([newComment]);
-        }
+        setComments((prevComments) =>
+          prevComments ? [...prevComments, newComment] : [newComment]
+        );
       } else {
         alert('댓글 내용을 입력해주세요.');
       }
@@ -250,6 +250,10 @@ const Post: React.FC = () => {
     navigate(`/community-feed/${post?.communityId._id}`); // 이동할 경로 설정 (예: '/posts')
   };
 
+  const handleNicknameClick = () => {
+    navigate(`/userpage/${post?.userId._id}`);
+  };
+
   return (
     <>
       <TopBar
@@ -302,7 +306,9 @@ const Post: React.FC = () => {
             src={post?.userId?.profileImage || DEFAULT_PROFILE}
             alt="프로필 이미지"
           />
-          <p>{post?.userId?.nickName || '알수없는 닉네임(임시'}</p>
+          <Nickname onClick={handleNicknameClick}>
+            {post?.userId?.nickName || '알수없는 닉네임(임시)'}
+          </Nickname>
           <p>|</p>
           {post && <p>{formatDateIncludeTime(post.createdAt)}</p>}
         </InformationContainer>
@@ -321,7 +327,7 @@ const Post: React.FC = () => {
         </ContentContainer>
         <CommentContainer>
           <CommentWritingBox
-            nickname={user?.nickName || ''}
+            nickname={user?.nickName || '알수없는 닉네임(임시)'}
             onClick={handleWrittenComment}
           />
           {comments?.map((comment) => (
@@ -329,9 +335,9 @@ const Post: React.FC = () => {
               key={comment._id}
               commentId={comment._id}
               text={comment.text}
-              nickname={comment.userId.nickName}
+              nickName={comment.userId?.nickName}
               date={formatDateIncludeTime(comment.createdAt)}
-              profileImg={comment.userId.profileImage}
+              profileImg={comment.userId?.profileImage}
               onEdit={handleCommentEdit}
               onDelete={handleCommentDelete}
             />
@@ -434,3 +440,7 @@ const CommentContainer = styled.div`
 const Pre = styled.pre`
   white-space: pre-wrap;
 `;
+
+const Nickname = styled.p`
+  cursor: pointer;
+`
