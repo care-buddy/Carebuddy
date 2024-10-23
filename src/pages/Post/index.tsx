@@ -128,12 +128,11 @@ const Post: React.FC = () => {
           text: comment,
         });
         const newComment = response.data;
+        console.log('실시간comment', newComment)
 
-        if (comments) {
-          setComments([...comments, newComment]);
-        } else {
-          setComments([newComment]);
-        }
+        setComments((prevComments) =>
+          prevComments ? [...prevComments, newComment] : [newComment]
+        );
       } else {
         alert('댓글 내용을 입력해주세요.');
       }
@@ -303,7 +302,7 @@ const Post: React.FC = () => {
             alt="프로필 이미지"
           />
           <Nickname onClick={handleNicknameClick}>
-            {post?.userId?.nickName || '알수없는 닉네임(임시'}
+            {post?.userId?.nickName || '알수없는 닉네임(임시)'}
           </Nickname>
           <p>|</p>
           {post && <p>{formatDateIncludeTime(post.createdAt)}</p>}
@@ -323,7 +322,7 @@ const Post: React.FC = () => {
         </ContentContainer>
         <CommentContainer>
           <CommentWritingBox
-            nickname={user?.nickName || ''}
+            nickname={user?.nickName || '알수없는 닉네임(임시)'}
             onClick={handleWrittenComment}
           />
           {comments?.map((comment) => (
@@ -331,9 +330,9 @@ const Post: React.FC = () => {
               key={comment._id}
               commentId={comment._id}
               text={comment.text}
-              nickname={comment.userId.nickName}
+              nickName={comment.userId?.nickName}
               date={formatDateIncludeTime(comment.createdAt)}
-              profileImg={comment.userId.profileImage}
+              profileImg={comment.userId?.profileImage}
               onEdit={handleCommentEdit}
               onDelete={handleCommentDelete}
             />

@@ -12,7 +12,7 @@ import personProfile from '@/assets/person.png';
 type CommentProps = {
   text: string;
   profileImg?: string[];
-  nickname: string;
+  nickName: string;
   date: string;
   onEdit: (comment: string, commentId: string) => void;
   onDelete: (commentId: string) => void;
@@ -23,7 +23,7 @@ type CommentProps = {
 const Comment: React.FC<CommentProps> = ({
   text,
   profileImg,
-  nickname,
+  nickName,
   date,
   onEdit,
   onDelete,
@@ -63,7 +63,7 @@ const Comment: React.FC<CommentProps> = ({
       <Container>
         <Div>
           <Info>
-            <Nickname onClick={handleNicknameClick}>{nickname}</Nickname> {/* Clickable nickname */}
+            <Nickname onClick={handleNicknameClick}>{nickName}</Nickname>
             <UploadedDate>{date}</UploadedDate>
           </Info>
           <ActionButton
