@@ -15,7 +15,7 @@ export interface IBuddy {
 
 export interface IRecord {
   _id?: string; // 모킹용입니다.
-  buddyId: string; // 버디 수정 후 Record fetch 시 필요
+  buddyId?: string; // 버디 수정 후 Record fetch 시 필요
   doctorName: string | null;
   address: string | null;
   consultationStatus: boolean;

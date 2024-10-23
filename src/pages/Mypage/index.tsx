@@ -98,9 +98,7 @@ const Mypage: React.FC = () => {
     {
       id: '3',
       content: '반려동물 프로필',
-      component: (
-        <PetCardContainer buddyData={userData?.buddyId} isMe={false} />
-      ),
+      component: <PetCardContainer buddies={userData?.buddyId} isMe={false} />,
     },
     {
       id: '4',

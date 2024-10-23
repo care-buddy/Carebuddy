@@ -6,16 +6,11 @@ import 'swiper/css/navigation';
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
-// import MockAdapter from 'axios-mock-adapter';
 import { IRecord } from '@/types';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';
-import {
-  useRecoilState,
-  // eslint-disable-next-line camelcase
-  // useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
-} from 'recoil';
+import { useRecoilState } from 'recoil';
 import buddyState from '@/recoil/atoms/buddyState';
 import selectedIdState from '@/recoil/atoms/selectedIdState';
 import errorState from '@/recoil/atoms/errorState';
@@ -185,7 +180,6 @@ const Diary: React.FC = () => {
 
       const fetchedBuddies = response.data.message;
 
-      console.log(fetchedBuddies);
       if (fetchedBuddies.length === 0 || isAllProfilesDeleted) {
         setBuddiesData({
           userName: fetchedBuddies.userName,
@@ -259,7 +253,6 @@ const Diary: React.FC = () => {
   }, [buddiesData, selectedId, isAllProfilesDeleted]);
 
   useEffect(() => {
-    // fetchBuddiesData();
     // 버디가 있는 경우에는, 첫 번째 버디의 병원 기록을 받아온다
     if (selectedId) fetchRecordsData(selectedId);
   }, [selectedId]);
@@ -342,13 +335,6 @@ const Diary: React.FC = () => {
       }
     }
   };
-
-  // PetProfiles가 마운트될 때, 버디프로필이 있다면 실행된다.
-  // 따라서 프로필이 있다면 selectedId 상태가 초기값이 null에서 id로 업데이트된다
-
-  // const handleSelectedId = (buddyId: string) => {
-  //   setSelectedId(buddyId);
-  // };
 
   const handleUpdateRecord = (updatedRecord: IRecord) => {
     if (recordsData) {
