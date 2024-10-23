@@ -68,6 +68,7 @@ const Post: React.FC = () => {
       post.createdAt = formatDateIncludeTime(post.createdAt);
 
       setPost(post);
+      console.log('post', post)
       setLikedUsers(post.likedUsers);
 
       // 댓글
@@ -76,6 +77,7 @@ const Post: React.FC = () => {
           (comment: CommentData) => comment.deletedAt === null
         );
         setComments(validComments);
+        console.log('comment', validComments)
       } else {
         setComments([]);
       }
