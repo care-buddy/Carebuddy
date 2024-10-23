@@ -27,7 +27,7 @@ const Home: React.FC = () => {
   const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글
   const [category, setCategory] = useState<number | string>(-1); // 선택된 카테고리
   const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
-  const [isLoading, setIsLoading] = useState(false); // 데이터 로딩 상태
+  const [, setIsLoading] = useState(false); // 데이터 로딩 상태
   const [error, setError] = useState<Error | null>(null);
   const [recommendedCommunities, setRecommendedCommunities] = useState<
     CommunityData[] | null

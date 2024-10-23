@@ -22,7 +22,7 @@ import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
 
 import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
-import default_profile from '@/assets/person.png';
+import DefaultProfile from '@/assets/person.png';
 
 import usePostCreate from '@/hooks/usePostCreate';
 
@@ -34,9 +34,6 @@ import loginModalState from '@/recoil/atoms/loginModalState';
 import { PostData, User } from '@/types';
 
 import userState from '@/recoil/atoms/userState';
-
-// 임시 데이터 - 백엔드 로직 이후 변경
-import { tempGroupMember } from '@constants/tempData';
 
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
@@ -94,12 +91,15 @@ const CommunityFeed: React.FC = () => {
   const handleWithdrawalCommunity = async () => {
     if (confirm('커뮤니티를 탈퇴하시겠습니까?')) {
       try {
-        await axiosInstance.put(`/user/${user?._id}/withdrawalCommunity`, {
+        await axiosInstance.put(`users/${user?._id}/withdrawalCommunity`, {
           communityId,
         });
 
         navigate('/');
+
+        
       } catch (error) {
+        console.log(error)
         setError(error as Error);
       } finally {
         setLoading(false);
@@ -121,7 +121,10 @@ const CommunityFeed: React.FC = () => {
           `/posts/${communityId}/community`
         );
 
-        setPosts(response.data.data);
+        const filteredPosts = response.data.data.filter(
+          (post: PostData) => !post.deletedAt
+        );
+        setPosts(filteredPosts);
       } catch (error) {
         setError(error as Error);
       } finally {
@@ -172,26 +175,24 @@ const CommunityFeed: React.FC = () => {
     return <Loading />;
   }
 
-  // 복잡한 JSX 코드를 변수에 넣어 정리 - 임시. 개발용 null 대비
   const renderAllPosts = () => {
-    if (Array.isArray(posts)) {
-      posts?.map((post) => (
-        <FeedBox
-          key={post._id}
-          postId={post._id}
-          title={post.title}
-          content={post.content}
-          uploadedDate={formatDate(post.createdAt)}
-          // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시
-          nickname={post.userId?.nickName || 'Unknown User'}
-          // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
-          profileSrc={post.userId?.profileImage?.[0] || 'default_profile'}
-          // likedUsers 배열의 길이를 안전하게 체크
-          likeCount={post.likedUsers?.length || 0}
-          commentCount={post.commentId?.length || 0}
-        />
-      ));
+    if (!posts || posts.length === 0) {
+      return <NoPostsFound>게시글이 없습니다.</NoPostsFound>;
     }
+  
+    return posts.map((post) => (
+      <FeedBox
+        key={post._id}
+        postId={post._id}
+        title={post.title}
+        content={post.content}
+        uploadedDate={formatDate(post.createdAt)}
+        nickname={post.userId?.nickName || 'Unknown User'}
+        profileSrc={post.userId?.profileImage?.[0] || '/default-profile.png'}
+        likeCount={post.likedUsers?.length || 0}
+        commentCount={post.commentId?.length || 0}
+      />
+    ));
   };
 
   const renderFilteredPosts = () => {
