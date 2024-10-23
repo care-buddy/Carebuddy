@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilState } from 'recoil';
+
+import userState from '@/recoil/atoms/userState';
 
 import CommunityCard from '@/components/Community/CommunityCard';
 import Button from '@/components/common/Button';
@@ -10,17 +12,17 @@ import axiosInstance from '@/utils/axiosInstance';
 import loadingState from '@/recoil/atoms/loadingState';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
 import ValidationAlert from '@/components/common/ValidationAlert';
-import userState from '@/recoil/atoms/userState';
 import CATEGORY from '@/constants/communityConstants';
 
-import { CommunityData, User } from '@/types/index';
+import { CommunityData } from '@/types/index';
 
 const Community: React.FC = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState<number>(0); // 종 버튼
   const [communities, setCommunities] = useState<CommunityData[] | []>([]);
   const [error, setError] = useState<Error | null>(null);
-  const user = useRecoilValue(userState) || ({} as User);
+  const [user , setUser] = useRecoilState(userState);
+
 
   const [, setLoading] = useRecoilState(loadingState);
   const [alertState, setAlertState] = useRecoilState(validationAlertState);
@@ -73,6 +75,10 @@ const Community: React.FC = () => {
         );
 
         if (response.status === 200) {
+          // 유저 정보 업데이트를 위해 me API 호출
+          const userResponse = await axiosInstance.get('me');
+          setUser(userResponse.data.message);
+
           navigate(`/community-feed/${communityId}`);
         } else if (response.status === 400) {
           // 사용자가 이미 그룹에 가입된 경우
