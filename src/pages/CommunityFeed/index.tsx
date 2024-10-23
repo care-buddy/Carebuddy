@@ -156,7 +156,7 @@ const CommunityFeed: React.FC = () => {
   }, [searchTerm]);
 
   useEffect(() => {
-    const filteredPost: PostData[] | null = posts
+    const filteredPost: PostData[] | null = Array.isArray(posts)
       ? posts.filter((post) => post.title.includes(searchTerm))
       : null;
     setFilteredPosts(filteredPost);
@@ -172,45 +172,27 @@ const CommunityFeed: React.FC = () => {
     return <Loading />;
   }
 
-  // 리팩토링하고싶은 부분
-  // const renderPosts = (posts: PostData[] | null) => {
-  //   if (!posts || posts.length === 0) {
-  //     return <NoPostsFound>검색어에 해당하는 게시글이 없습니다.</NoPostsFound>;
-  //   }
-  //   return posts.map((post) => (
-  //     <FeedBox
-  //       key={post._id}
-  //       postId={post._id}
-  //       title={post.title}
-  //       content={post.content}
-  //       uploadedDate={formatDate(post.createdAt)}
-  //       nickname={post.userId.nickName}
-  //       profileSrc={post.userId.profileImage[0]}
-  //       likeCount={post.likedUsers.length}
-  //     />
-  //   ));
-  // };
-
-  // {isSearching ? renderPosts(filteredPosts) : renderPosts(posts)}
-
   // 복잡한 JSX 코드를 변수에 넣어 정리 - 임시. 개발용 null 대비
-  const renderAllPosts = () =>
-    posts?.map((post) => (
-      <FeedBox
-        key={post._id}
-        postId={post._id}
-        title={post.title}
-        content={post.content}
-        uploadedDate={formatDate(post.createdAt)}
-        // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시
-        nickname={post.userId?.nickName || 'Unknown User'}
-        // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
-        profileSrc={post.userId?.profileImage?.[0] || 'default_profile'}
-        // likedUsers 배열의 길이를 안전하게 체크
-        likeCount={post.likedUsers?.length || 0}
-        commentCount={post.commentId?.length || 0}
-      />
-    ));
+  const renderAllPosts = () => {
+    if (Array.isArray(posts)) {
+      posts?.map((post) => (
+        <FeedBox
+          key={post._id}
+          postId={post._id}
+          title={post.title}
+          content={post.content}
+          uploadedDate={formatDate(post.createdAt)}
+          // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시
+          nickname={post.userId?.nickName || 'Unknown User'}
+          // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
+          profileSrc={post.userId?.profileImage?.[0] || 'default_profile'}
+          // likedUsers 배열의 길이를 안전하게 체크
+          likeCount={post.likedUsers?.length || 0}
+          commentCount={post.commentId?.length || 0}
+        />
+      ));
+    }
+  };
 
   const renderFilteredPosts = () => {
     if (filteredPosts && filteredPosts.length > 0) {

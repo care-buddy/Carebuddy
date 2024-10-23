@@ -1,29 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useRecoilState } from 'recoil';
 
 import CommunityCard from '@/components/Community/CommunityCard';
 import Button from '@/components/common/Button';
 import TopBar from '@/components/common/TopBar';
-
 import axiosInstance from '@/utils/axiosInstance';
-
+import loadingState from '@/recoil/atoms/loadingState';
+import validationAlertState from '@/recoil/atoms/validationAlertState';
+import ValidationAlert from '@/components/common/ValidationAlert';
+import userState from '@/recoil/atoms/userState';
 import CATEGORY from '@/constants/communityConstants';
 
 import { CommunityData, User } from '@/types/index';
 
-import userState from '@/recoil/atoms/userState';
-
 const Community: React.FC = () => {
   const navigate = useNavigate();
   const [category, setCategory] = useState<number>(0); // 종 버튼
-  const [communities, setCommunities] = useState<CommunityData[] | []>([]); // 커뮤니티 목록
-  const [isLoading, setLoading] = useState(true);
+  const [communities, setCommunities] = useState<CommunityData[] | []>([]);
   const [error, setError] = useState<Error | null>(null);
   const user = useRecoilValue(userState) || ({} as User);
 
-  // 종 버튼 클릭 핸들러
+  const [, setLoading] = useRecoilState(loadingState);
+  const [alertState, setAlertState] = useRecoilState(validationAlertState);
+
   const isDogCategory = category === CATEGORY.dog;
   const isCatCategory = category === CATEGORY.cat;
 
@@ -33,54 +34,63 @@ const Community: React.FC = () => {
     }
   };
 
-  // 커뮤니티 목록 가져오기
   useEffect(() => {
-    const fetchData = () => {
-      axiosInstance
-        .get('communities')
-        .then((response) => {
-          if (response.status === 200) {
-            setCommunities(response.data.data);
-          } else {
-            throw new Error('Failed to fetch data');
-          }
-        })
-        .catch((error) => {
-          setError(error);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axiosInstance.get('communities');
+        if (response.status === 200) {
+          setCommunities(response.data.data);
+        } else {
+          throw new Error('Failed to fetch data');
+        }
+      } catch (error) {
+        setError(error as Error);
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchData();
-  }, []);
+  }, [setLoading]);
 
   const handleJoinButtonClick = async (communityId: string) => {
-    // 사용자 로그인 여부 확인
     if (!user?._id) {
-      alert('로그인 후 그룹에 가입할 수 있습니다.'); // 로그인하지 않은 경우 알림
+      setAlertState({
+        showAlert: true,
+        alertMessage: '로그인 후 이용하실 수 있습니다.',
+      });
       return;
     }
 
-    // 가입 확인
-    if (confirm('그룹에 가입하시겠습니까?')) {
-      try {
-       const result = await axiosInstance.put(`users/${user?._id}/joinCommunity`, {
-          communityId,
-        });
-        console.log(result)
-        navigate(`/community-feed/${communityId}`);
-      } catch (error) {
-        setError(error as Error);
+    try {
+      if (confirm('그룹에 가입하시겠습니까?')) {
+        const response = await axiosInstance.put(
+          `users/${user._id}/joinCommunity`,
+          {
+            communityId,
+          }
+        );
+
+        if (response.status === 200) {
+          navigate(`/community-feed/${communityId}`);
+        } else if (response.status === 400) {
+          // 사용자가 이미 그룹에 가입된 경우
+          alert('사용자가 이미 그룹에 가입되어 있습니다.');
+        } else if (response.status === 404) {
+          // 사용자나 그룹을 찾을 수 없는 경우
+          alert('요청한 사용자나 그룹을 찾을 수 없습니다.');
+        } else {
+          // 그 외의 에러 처리
+          throw new Error('Failed to join community');
+        }
       }
+    } catch (error) {
+      setError(error as Error);
+    } finally {
+      setLoading(false);
     }
   };
-
-  // 로딩, 에러 처리 - 임시. 미완성
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
 
   if (error) {
     return <div>Error: {error.message}</div>;
@@ -116,12 +126,18 @@ const Community: React.FC = () => {
               onButtonClick={() => handleJoinButtonClick(community._id)}
               joined={
                 Array.isArray(user?.communityId) &&
-                user.communityId?.some((c) => c._id === community._id) // communityId가 배열인지 확인
+                user.communityId?.some((c) => c._id === community._id)
               }
               communityId={community._id}
             />
           ))}
       </CardContainer>
+      {alertState.showAlert && (
+        <ValidationAlert
+          message={alertState.alertMessage}
+          onClose={() => setAlertState({ showAlert: false, alertMessage: '' })}
+        />
+      )}
     </>
   );
 };

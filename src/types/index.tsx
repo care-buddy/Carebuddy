@@ -95,9 +95,9 @@ export interface PostData {
   };
   communityId: {
     _id: string;
-    category: string | number;
-    community: string;
-    deletedAt: string;
+    category?: string | number;
+    community?: string;
+    deletedAt?: string;
   };
   title: string;
   likedUsers: string[];

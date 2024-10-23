@@ -1,5 +1,4 @@
-// 게시글 작성 말고, 게시글 수정의 경우에는 카테고리 변경 불가능하도록 수정 !
-// + 이미 카테고리가 있을 경우 받아오도록 수정
+// 게시글 수정의 경우에는 카테고리 변경 불가능하도록 수정 !
 
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
@@ -8,74 +7,19 @@ import Input from '@/components/common/Input';
 import TextArea from '@/components/common/TextArea';
 import { PostData } from '@/types';
 
-const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const SelectWrapper = styled.div`
-  margin-bottom: 15px;
-`;
-
-const InputWrapper = styled.div`
-  margin-bottom: 15px;
-`;
-
-const TextAreaWrapper = styled.div`
-  margin-bottom: 15px;
-`;
-
-const ImageUploadWrapper = styled.div``;
-
-const ImageUploadLabel = styled.label`
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: 14px;
-`;
-
-const ImagePreview = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: 10px;
-`;
-
-const PreviewImage = styled.img`
-  width: 50px;
-  height: 50px;
-  object-fit: cover;
-  margin-right: 10px;
-`;
-
-// 사용하지 않는 컴포넌트?
-// const FileName = styled.span`
-//   font-size: 14px;
-// `;
+import useGenerateOptions from '@/hooks/useGenerateOptions';
 
 interface PostCreateProps {
   postData: PostData | null;
   onFormDataChange: (FormData: FormData) => void;
 }
 
-const SpeciesOptions = [
-  { value: '', label: '종을 선택해주세요' },
-  { value: '0', label: '강아지' },
-  { value: '1', label: '고양이' },
-];
-
-const SelectOptions = [
-  { value: '', label: '그룹을 선택해주세요' },
-  { value: '66b5ba8c19ffced581357307', label: '생식기·중성화·유선' },
-  { value: '66c687429ac226b8a246a791', label: '생식기·중성화·유선' },
-];
-
 const PostCreate: React.FC<PostCreateProps> = ({
   postData,
   onFormDataChange,
 }) => {
   const [imageFiles, setImageFiles] = useState<File | string | null>(null);
-
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
-
   const [postInfo, setPostInfo] = useState({
     title: postData?.title ?? '',
     content: postData?.content ?? '',
@@ -83,9 +27,51 @@ const PostCreate: React.FC<PostCreateProps> = ({
     postImage: postData?.postImage,
   });
 
-  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-    setPostInfo({ ...postInfo, communityId: event.target.value });
+  const [category, setCategory] = useState<number | string>(-1); // 선택된 카테고리
+  const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
+
+  const { categoryOptions, communityOptions } = useGenerateOptions();
+
+  const [filteredCommunityOptions, setFilteredCommunityOptions] =
+    useState(communityOptions);
+
+  // select 로직 - category 선택에 따라 community 옵션 필터링해서 보여줌
+  useEffect(() => {
+    if (category !== 'category') {
+      const filteredCommunityOptions = communityOptions.filter(
+        (community) => community.category === category
+      );
+      setFilteredCommunityOptions(filteredCommunityOptions);
+    } else {
+      setFilteredCommunityOptions(communityOptions);
+    }
+  }, [category]);
+
+  // 카테고리 옵션 핸들러
+  const handleCategoryOptions = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setCategory(Number(event.target.value));
+    setCommunity('community');
   };
+
+  // 커뮤니티 옵션 핸들러
+  const handleCommunityOptions = async (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const selectedCommunity = event.target.value;
+    setCommunity(selectedCommunity);
+  };
+
+  useEffect(() => {
+    setPostInfo({
+      ...postInfo,
+      communityId: {
+        ...postInfo.communityId,
+        _id: community, // community를 _id에 할당
+      },
+    });
+  }, [community]);
 
   const handleContentChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
@@ -111,7 +97,12 @@ const PostCreate: React.FC<PostCreateProps> = ({
       setPostInfo({
         title: postData.title ?? '',
         content: postData.content ?? '',
-        communityId: postData.communityId ?? '',
+        communityId: {
+          _id: postData?.communityId?._id || '',
+          category: postData?.communityId?.category || '',
+          community: postData?.communityId?.community || '',
+          deletedAt: postData?.communityId?.deletedAt || '',
+        },
         postImage: postData.postImage ?? '',
       });
 
@@ -162,13 +153,18 @@ const PostCreate: React.FC<PostCreateProps> = ({
   return (
     <Container>
       <SelectWrapper>
-        <Select selectStyle="square" selectSize="sm" options={SpeciesOptions} />
+        <Select
+          selectStyle="square"
+          selectSize="sm"
+          options={categoryOptions}
+          onChange={handleCategoryOptions}
+        />
         <Select
           selectStyle="square"
           selectSize="bg"
-          options={SelectOptions}
-          value={postInfo?.communityId || ''}
-          onChange={handleSelectChange}
+          options={filteredCommunityOptions}
+          value={postInfo?.communityId._id || ''}
+          onChange={handleCommunityOptions}
         />
       </SelectWrapper>
       <InputWrapper>
@@ -215,3 +211,41 @@ const PostCreate: React.FC<PostCreateProps> = ({
 };
 
 export default PostCreate;
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+`;
+
+const SelectWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const InputWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const TextAreaWrapper = styled.div`
+  margin-bottom: 15px;
+`;
+
+const ImageUploadWrapper = styled.div``;
+
+const ImageUploadLabel = styled.label`
+  cursor: pointer;
+  text-decoration: underline;
+  font-size: 14px;
+`;
+
+const ImagePreview = styled.div`
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+`;
+
+const PreviewImage = styled.img`
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+  margin-right: 10px;
+`;

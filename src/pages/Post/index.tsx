@@ -31,7 +31,12 @@ import usePostCreate from '@/hooks/usePostCreate';
 interface FormData {
   title: string;
   content: string;
-  communityId: string;
+  communityId: {
+    _id: string;
+    category: string | number;
+    community: string;
+    deletedAt: string;
+  };
   postImage: string | null;
 }
 
@@ -46,7 +51,7 @@ const Post: React.FC = () => {
   const [, setFormData] = useState<FormData>({
     title: '',
     content: '',
-    communityId: '',
+    communityId: { _id: '', category: '', community: '', deletedAt: '' },
     postImage: null,
   });
 
@@ -54,7 +59,7 @@ const Post: React.FC = () => {
 
   const user = useRecoilValue(userState);
 
-  const [likedUsers, setLikedUsers] = useState([]);
+  const [likedUsers, setLikedUsers] = useState<string[]>(['']);
   const [isLiked, setIsLiked] = useState(false); // 좋아요 여부 상태
 
   const fetchData = async () => {
@@ -97,7 +102,12 @@ const Post: React.FC = () => {
     setFormData({
       title: post?.title || '',
       content: post?.content || '',
-      communityId: post?.communityId?._id || '',
+      communityId: {
+        _id: post?.communityId?._id || '',
+        category: post?.communityId?.category || '',
+        community: post?.communityId?.community || '',
+        deletedAt: post?.communityId?.deletedAt || '',
+      },
       postImage: post?.postImage || null,
     });
   }, [post]);
@@ -227,9 +237,9 @@ const Post: React.FC = () => {
   };
 
   useEffect(() => {
-    setIsLiked(likedUsers.includes(user?._id));
-  }, [likedUsers]);
-
+    setIsLiked(user?._id ? likedUsers.includes(user._id) : false);
+  }, [likedUsers, user?._id]);
+  
   if (isLoading) return <Loading />;
 
   if (error) {

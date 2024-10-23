@@ -1,5 +1,3 @@
-// 데이터 들어오면 로직으로 키그 조정
-
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
@@ -21,36 +19,36 @@ const CommunityCard: React.FC<CommunityCardProps> = ({
   introduction,
   onButtonClick,
   joined,
-  communityId
+  communityId,
 }) => (
-  <CardContainer>
-    <CardContent to={`/community-feed/${communityId}`}>
-      <IconContainer>
-        <LuMessagesSquare />
-      </IconContainer>
-      <InfoContainer>
-        <Name>{name}</Name>
-        <Introduction>{introduction}</Introduction>
-      </InfoContainer>
-    </CardContent>
-    <JoinInfoContainer>
-      {joined ? (
-        <NoticeContainer>
-          <LuCheckCheck />
-          <Notice>가입된 그룹입니다</Notice>
-        </NoticeContainer>
-      ) : (
-        <Button
-          buttonStyle="square-white"
-          buttonSize="sm"
-          onClick={onButtonClick}
-        >
-          가입
-        </Button>
-      )}
-    </JoinInfoContainer>
-  </CardContainer>
-);
+    <CardContainer>
+      <CardContent to={`/community-feed/${communityId}`}>
+        <IconContainer>
+          <LuMessagesSquare />
+        </IconContainer>
+        <InfoContainer>
+          <Name>{name}</Name>
+          <Introduction>{introduction}</Introduction>
+        </InfoContainer>
+      </CardContent>
+      <JoinInfoContainer>
+        {joined ? (
+          <NoticeContainer>
+            <LuCheckCheck />
+            <Notice>가입된 그룹입니다</Notice>
+          </NoticeContainer>
+        ) : (
+          <Button
+            buttonStyle="square-white"
+            buttonSize="sm"
+            onClick={onButtonClick}
+          >
+            가입
+          </Button>
+        )}
+      </JoinInfoContainer>
+    </CardContainer>
+  );
 
 export default CommunityCard;
 
@@ -74,7 +72,7 @@ const CardContent = styled(Link)`
   color: var(--color-black);
   cursor: pointer;
   display: flex;
-  flex: 1; 
+  flex: 1;
 `;
 
 const IconContainer = styled.div`
@@ -118,7 +116,7 @@ const NoticeContainer = styled.div`
   display: flex;
   flex-direction: row;
   align-items: center;
-      color: var(--color-grey-1);
+  color: var(--color-grey-1);
 
   & > * {
     margin-right: 4px;
