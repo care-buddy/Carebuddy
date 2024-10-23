@@ -25,6 +25,7 @@ import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 import DefaultProfile from '@/assets/person.png';
 
 import usePostCreate from '@/hooks/usePostCreate';
+import useUpdateMe from '@/hooks/useUpdateMe';
 
 import formatDate from '@/utils/formatDate';
 import axiosInstance from '@/utils/axiosInstance';
@@ -56,6 +57,7 @@ const CommunityFeed: React.FC = () => {
 
   const { communityId } = useParams();
   const navigate = useNavigate();
+  const updateMe = useUpdateMe();
 
   const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
     () => {
@@ -95,6 +97,7 @@ const CommunityFeed: React.FC = () => {
           communityId,
         });
 
+        updateMe();
         navigate('/');
       } catch (error) {
         setError(error as Error);
@@ -219,7 +222,7 @@ const CommunityFeed: React.FC = () => {
         category="커뮤니티"
         title={
           posts && posts.length > 0
-            ? posts[0].communityId.community 
+            ? posts[0].communityId.community
             : '커뮤니티 제목을 불러오는 중...'
         }
         communityCategory={
