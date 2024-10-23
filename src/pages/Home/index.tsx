@@ -20,6 +20,9 @@ import usePostCreate from '@/hooks/usePostCreate';
 import axiosInstance from '@/utils/axiosInstance';
 import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
+import DefaultProfile from '@/assets/person.png';
+
+
 const Home: React.FC = () => {
   // 상태 정의
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
@@ -27,7 +30,7 @@ const Home: React.FC = () => {
   const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글
   const [category, setCategory] = useState<number | string>(-1); // 선택된 카테고리
   const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
-  const [isLoading, setIsLoading] = useState(false); // 데이터 로딩 상태
+  const [, setIsLoading] = useState(false); // 데이터 로딩 상태
   const [error, setError] = useState<Error | null>(null);
   const [recommendedCommunities, setRecommendedCommunities] = useState<
     CommunityData[] | null
@@ -38,13 +41,15 @@ const Home: React.FC = () => {
   const [filteredCommunityOptions, setFilteredCommunityOptions] =
     useState(communityOptions);
 
-  // 전체 게시글 조회 API & 컴포넌트가 마운트 이후 초기 데이터 가져오기
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.get(`/posts`);
-      setPosts(response.data.data);
-      setSelectedPosts(response.data.data);
+      const filteredPosts = response.data.data.filter(
+        (post: PostData) => !post.deletedAt
+      );
+      setPosts(filteredPosts);
+      setSelectedPosts(filteredPosts);
     } catch (error) {
       setError(error as Error);
     } finally {
@@ -191,7 +196,7 @@ const Home: React.FC = () => {
                   post.userId.profileImage &&
                   post.userId.profileImage.length > 0
                     ? post.userId.profileImage[0]
-                    : 'defaultProfileImg.jpg' // 기본 이미지 경로
+                    : DefaultProfile
                 }
                 communityName={
                   post.communityId ? post.communityId.community : '알 수 없음' // 커뮤니티 이름 체크
