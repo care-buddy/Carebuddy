@@ -5,7 +5,6 @@ import { useRecoilState, useRecoilValue } from 'recoil';
 
 import Button from '@components/common/Button';
 import Input from '@components/common/Input';
-import CheckBox from '@components/common/CheckBox';
 
 import axiosInstance from '@/utils/axiosInstance';
 
@@ -16,8 +15,6 @@ import authState from '@/recoil/atoms/authState';
 import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
-import { useNavigate } from 'react-router-dom';
-import validationAlertState from '@/recoil/atoms/validationAlertState';
 
 interface LoginProps {
   onOpenRegistrationModal: () => void;
@@ -28,7 +25,7 @@ const Login: React.FC<LoginProps> = ({
   onOpenRegistrationModal,
   handleLoginModal,
 }) => {
-  const [keepLogin, setKeepLogin] = useState<boolean>(false);
+  // const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
     email: '',
     password: '',
@@ -54,11 +51,6 @@ const Login: React.FC<LoginProps> = ({
     setShowPassword((prevState) => !prevState);
   };
 
-  // // 체크박스 핸들러
-  // const handleCheckBoxChange = () => {
-  //   setKeepLogin((prevState) => !prevState);
-  // };
-
   // 로그인 핸들러
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
@@ -67,7 +59,6 @@ const Login: React.FC<LoginProps> = ({
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
 
         const { accessToken } = loginResponse.data; // accessToken 추출
-        console.log('Access Token:', accessToken);
 
         // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
@@ -106,8 +97,6 @@ const Login: React.FC<LoginProps> = ({
 
   // 상태가 업데이트되면 자동 로그인 연장 처리
   useEffect(() => {
-    console.log('isAuthenticated 변경됨:', isAuthenticated); // 상태 변경 확인
-
     if (!isAuthenticated) {
       return;
     }
@@ -115,9 +104,7 @@ const Login: React.FC<LoginProps> = ({
   }, [isAuthenticated]); // auth 상태가 변경될 때마다 실행
 
   // 임시
-  useEffect(() => {
-    console.log('현재 authState:', auth); // 현재 authState 확인
-  }, [auth]); // auth 상태가 변경될 때마다 실행
+  useEffect(() => {}, [auth]); // auth 상태가 변경될 때마다 실행
 
   // 페이지가 종료될 때 로그아웃 처리
   useEffect(() => {
@@ -218,11 +205,11 @@ const SignupSection = styled.div`
   justify-content: center;
 `;
 
-const CheckBoxSection = styled.div`
-  padding: 8px 0;
-  display: flex;
-  flex-direction: flex-start;
-`;
+// const CheckBoxSection = styled.div`
+//   padding: 8px 0;
+//   display: flex;
+//   flex-direction: flex-start;
+// `;
 
 // const Hr = styled.hr`
 //   margin: 12px 0 18px 0;

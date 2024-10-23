@@ -143,7 +143,7 @@ const Userpage: React.FC = () => {
     {
       id: '2',
       content: `${userData.nickName}의 반려동물`,
-      component: <PetCardContainer buddyData={userData.buddyId} isMe={false} />,
+      component: <PetCardContainer buddies={userData.buddyId} isMe={false} />,
     },
     {
       id: '3',
