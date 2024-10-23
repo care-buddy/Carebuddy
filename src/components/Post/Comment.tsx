@@ -11,8 +11,13 @@ import personProfile from '@/assets/person.png';
 
 type CommentProps = {
   text: string;
+<<<<<<< HEAD
   profileImg?: string[];
   nickName: string;
+=======
+  profileImg?: string;
+  nickname: string;
+>>>>>>> 8834f5662261d54c5d149b3b1c1cc55f008c3c2c
   date: string;
   onEdit: (comment: string, commentId: string) => void;
   onDelete: (commentId: string) => void;
@@ -51,15 +56,19 @@ const Comment: React.FC<CommentProps> = ({
     }
   };
 
+<<<<<<< HEAD
   const handleNicknameClick = () => {
     navigate(`/userpage/${userId}`);
   };
 
   const imgSrc = profileImg && profileImg.length > 0 ? profileImg[0] : personProfile;
+=======
+  const imgSrc = profileImg || null;
+>>>>>>> 8834f5662261d54c5d149b3b1c1cc55f008c3c2c
 
   return (
     <StyledComment>
-      <ProfileImg src={imgSrc} alt="댓글 프로필 사진" />
+      <ProfileImg src={imgSrc ?? personProfile} alt="댓글 프로필 사진" />
       <Container>
         <Div>
           <Info>
