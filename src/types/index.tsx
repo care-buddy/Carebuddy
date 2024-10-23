@@ -90,8 +90,9 @@ export interface PostData {
   _id: string;
   userId: {
     nickName: string;
-    profileImage: string[];
+    profileImage: string;
     deletedAt: string;
+    _id: string;
   };
   communityId: {
     _id: string;
@@ -113,7 +114,7 @@ export interface CommentData {
   userId: {
     _id: string;
     nickName: string;
-    profileImage?: string[];
+    profileImage?: string;
   };
   text: string;
   deletedAt: string;
