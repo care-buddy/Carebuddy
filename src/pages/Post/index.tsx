@@ -1,8 +1,5 @@
-// 임시 - 남은 작업: 추천 API, 댓글 등록 API(백엔드 작업 완료 이후) / 글과 댓글 작성자가 본인일때만 수정, 삭제버튼 보이도록(recoil 적용 이후) / postCreate모달 수정(글 작성이 아니라 수정일 때는 카테고리 변경 불가능하도록)
-// 리팩토링 가능: 글 관련 API, 댓글 관련 API 커스텀 훅으로 분리
-
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 
@@ -31,11 +28,17 @@ import usePostCreate from '@/hooks/usePostCreate';
 interface FormData {
   title: string;
   content: string;
-  communityId: string;
+  communityId: {
+    _id: string;
+    category: string | number;
+    community: string;
+    deletedAt: string;
+  };
   postImage: string | null;
 }
 
 const Post: React.FC = () => {
+  const navigate = useNavigate();
   const [post, setPost] = useState<PostData | null>(null); // 게시글
   const [comments, setComments] = useState<CommentData[] | null>(null); // 댓글
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
@@ -46,7 +49,7 @@ const Post: React.FC = () => {
   const [, setFormData] = useState<FormData>({
     title: '',
     content: '',
-    communityId: '',
+    communityId: { _id: '', category: '', community: '', deletedAt: '' },
     postImage: null,
   });
 
@@ -54,7 +57,7 @@ const Post: React.FC = () => {
 
   const user = useRecoilValue(userState);
 
-  const [likedUsers, setLikedUsers] = useState([]);
+  const [likedUsers, setLikedUsers] = useState<string[]>(['']);
   const [isLiked, setIsLiked] = useState(false); // 좋아요 여부 상태
 
   const fetchData = async () => {
@@ -99,7 +102,12 @@ const Post: React.FC = () => {
     setFormData({
       title: post?.title || '',
       content: post?.content || '',
-      communityId: post?.communityId?._id || '',
+      communityId: {
+        _id: post?.communityId?._id || '',
+        category: post?.communityId?.category || '',
+        community: post?.communityId?.community || '',
+        deletedAt: post?.communityId?.deletedAt || '',
+      },
       postImage: post?.postImage || null,
     });
   }, [post]);
@@ -229,14 +237,18 @@ const Post: React.FC = () => {
   };
 
   useEffect(() => {
-    setIsLiked(likedUsers.includes(user?._id));
-  }, [likedUsers]);
+    setIsLiked(user?._id ? likedUsers.includes(user._id) : false);
+  }, [likedUsers, user?._id]);
 
   if (isLoading) return <Loading />;
 
   if (error) {
     return <div>Error: {error.message}</div>;
   }
+
+  const handleListButton = () => {
+    navigate(`/community-feed/${post?.communityId._id}`); // 이동할 경로 설정 (예: '/posts')
+  };
 
   return (
     <>
@@ -248,7 +260,7 @@ const Post: React.FC = () => {
         }
       />
       <Container>
-        <PostListButtonContainer>
+        <PostListButtonContainer onClick={handleListButton}>
           <LuChevronLeft />
           <p>글 목록 보기</p>
         </PostListButtonContainer>
@@ -337,6 +349,7 @@ const Container = styled.div`
 const PostListButtonContainer = styled.div`
   display: flex;
   color: var(--color-grey-1);
+  cursor: pointer;
 `;
 
 const TitleContainer = styled.div`

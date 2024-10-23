@@ -15,7 +15,7 @@ export interface IBuddy {
 
 export interface IRecord {
   _id?: string; // 모킹용입니다.
-  buddyId: string; // 버디 수정 후 Record fetch 시 필요
+  buddyId?: string; // 버디 수정 후 Record fetch 시 필요
   doctorName: string | null;
   address: string | null;
   consultationStatus: boolean;
@@ -95,9 +95,9 @@ export interface PostData {
   };
   communityId: {
     _id: string;
-    category: string | number;
-    community: string;
-    deletedAt: string;
+    category?: string | number;
+    community?: string;
+    deletedAt?: string;
   };
   title: string;
   likedUsers: string[];

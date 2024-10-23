@@ -7,7 +7,7 @@ import Input from '@components/common/Input';
 import Button from '@components/common/Button';
 import ImageUploader from '@components/common/ImageUploader';
 
-import { IBuddy } from '@/interfaces';
+import { IBuddy } from '@/types';
 
 import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 

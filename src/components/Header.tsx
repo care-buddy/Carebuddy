@@ -5,13 +5,13 @@ import styled, { keyframes } from 'styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import logo from '@assets/carebuddyLogo.png';
-import { LuBell, LuUser2, LuSearch, LuX } from 'react-icons/lu';
+import { LuUser2, LuSearch, LuX } from 'react-icons/lu';
 
 import Login from '@/components/Login/Login';
 import BasicRegistration from '@/components/Registration/BasicRegistration';
 import Dropdown from '@/components/Dropdown';
 import Button from '@/components/common/Button';
-import Notification from '@/components/Notification';
+
 import SmallModal from '@/components/common/SmallModal';
 
 import axiosInstance from '@/utils/axiosInstance';
@@ -19,7 +19,6 @@ import axiosInstance from '@/utils/axiosInstance';
 import authState from '@/recoil/atoms/authState';
 import userState from '@/recoil/atoms/userState';
 
-import { notifications } from '@/constants/tempData'; // 로그인때문에 내용이 많아져서 다른 곳으로 옮겨두었습니다 ! - 임시
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 import loginModalState from '@/recoil/atoms/loginModalState';
 
@@ -51,13 +50,13 @@ const Header: React.FC = () => {
   };
 
   // 알림 관련 함수 (임시)
-  const toggleNotification = () => {
-    setShowNotification(!showNotification);
-  };
+  // const toggleNotification = () => {
+  //   setShowNotification(!showNotification);
+  // };
 
-  const closeNotification = () => {
-    setShowNotification(false);
-  };
+  // const closeNotification = () => {
+  //   setShowNotification(false);
+  // };
 
   // 드롭다운 메뉴 클릭 시, 드롭다운 메뉴가 사라지도록 하는 함수
   const handleLinkClick = () => {
@@ -239,7 +238,11 @@ const Header: React.FC = () => {
             {registrationModalOpen && (
               <SmallModal
                 onClose={() => handleRegistrationModal(false)}
-                component={<BasicRegistration onClose = {() => handleRegistrationModal(false)} />}
+                component={
+                  <BasicRegistration
+                    onClose={() => handleRegistrationModal(false)}
+                  />
+                }
               />
             )}
           </NotificationIcon>

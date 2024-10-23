@@ -9,9 +9,6 @@ import { LuPlus } from 'react-icons/lu';
 import Modal from '@/components/common/Modal';
 import PetRegister from '@/components/PetRegister/PetRegister';
 import { IBuddy, IBuddyProfile, IProfilesWrapperProps } from '@/types';
-// import MockAdapter from 'axios-mock-adapter';
-// import { tempProfileSrc } from '@constants/tempData';
-// import DefaultPetProfileImg from '@assets/defaultPetProfile.png';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import {
@@ -20,7 +17,6 @@ import {
   useRecoilState_TRANSITION_SUPPORT_UNSTABLE,
 } from 'recoil';
 import selectedIdState from '@/recoil/atoms/selectedIdState';
-// import loadingState from '@/recoil/atoms/loadingState';
 import errorState from '@/recoil/atoms/errorState';
 import validationAlertState from '@/recoil/atoms/validationAlertState';
 import loadingState from '@/recoil/atoms/loadingState';
@@ -83,14 +79,11 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
 
   // 반려동물이 있는 경우에만, 처음 렌더링될 때 처음 버디를 선택된 상태로 설정
   // 병원 기록, 선택된 카드 활성화를 위한 상태
-  // const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useRecoilState(selectedIdState);
 
-  // const [isLoading, setLoading] = useState(false);
   // API 적용 후 recoil 적용
   const [isLoading, setLoading] =
     useRecoilState_TRANSITION_SUPPORT_UNSTABLE(loadingState);
-  // const [, setError] = useState<Error | null>(null);
   // 에러를 recoil로 사용하니 에러 띄운 화면에서 다른 화면 이동 시 에러가 유지되는 듯 함, 에러를 다른 api 호출 시 null로 만들어줘야함.. 에러는 리코일 활용을 안하는게 맞는지?
   const [, setError] = useRecoilState(errorState);
 
@@ -106,7 +99,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
     try {
       const response = await axiosInstance.get(`buddies/${buddyId}`);
 
-      console.log(response.data.message[0]);
       setSelectedBuddy(response.data.message[0]); // 가져온 반려동물 정보 설정, 수정(PUT) 요청 시 여기서 id를 가져올 수 있다
       setPetEditModalOpen(true);
     } catch (error) {
@@ -163,7 +155,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
           setProfiles([...updatedProfiles]);
 
           // 삭제된 카드를 컴포넌트에서 보이지 않게 업데이트
-          await fetchBuddiesData();
+          await fetchBuddiesData?.();
 
           // 프로필 삭제 후 카드 선택 상태를 삭제하지 않은 첫 번째 카드로 지정
           const firstValidBuddy = updatedProfiles.find(
@@ -189,14 +181,13 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
       try {
         // 아직 로그인 로직이 구현되어 있지 않기 때문에, 폼데이터에 id 지정해줘야함
 
-        console.log(formDataToJson(formData));
         const response = await axiosInstance.post(
           'buddies',
           // formDataToJson(formData)
           formData
         );
         handleClosePetModal();
-        await fetchBuddiesData();
+        await fetchBuddiesData?.();
         setSelectedId(response.data.data);
 
         // 추후 슬라이더가 마지막 슬라이드로 이동되는 기능 추가하면 좋을 것 같음: 구현이 너무 오래걸려 추후에 구현하기로
@@ -205,38 +196,38 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
       } finally {
         setLoading(false);
       }
-      // } else setShowAlert(true);
     }
   };
 
-  const formDataToJson = (formData: FormData) => {
-    const obj: { [key: string]: any } = {};
+  // const formDataToJson = (formData: FormData) => {
+  //   const obj: { [key: string]: any } = {};
 
-    for (const [key, value] of formData.entries()) {
-      // FormData.entries()에서 value가 Blob일 경우, 직접 변환하기 어려우므로
-      // 텍스트로 변환할 수 있는 경우를 제외하고는 문자열로 저장합니다.
-      if (value instanceof Blob) {
-        obj[key] = value instanceof File ? value.name : value.toString();
-      } else {
-        obj[key] = value;
-      }
-    }
+  //   for (const [key, value] of formData.entries()) {
+  //     // FormData.entries()에서 value가 Blob일 경우, 직접 변환하기 어려우므로
+  //     // 텍스트로 변환할 수 있는 경우를 제외하고는 문자열로 저장합니다.
+  //     if (value instanceof Blob) {
+  //       obj[key] = value instanceof File ? value.name : value.toString();
+  //     } else {
+  //       obj[key] = value;
+  //     }
+  //   }
 
-    return obj;
-  };
+  //   return obj;
+  // };
 
   const handleEditSubmit = async () => {
     const buddyId = selectedBuddy?._id;
 
-    const printFormData = (formData: FormData) => {
-      // FormData.entries()를 사용하여 모든 항목을 순회합니다.
-      for (const [key, value] of formData.entries()) {
-        console.log(`${key}:`, value);
-      }
-    };
+    // 폼데이터 콘솔 확인용 함수입니다
+    // const printFormData = (formData: FormData) => {
+    //   // FormData.entries()를 사용하여 모든 항목을 순회합니다.
+    //   for (const [key, value] of formData.entries()) {
+    //     console.log(`${key}:`, value);
+    //   }
+    // };
 
     // formData를 사용하여 요청하기 전에 폼 데이터 내용 출력
-    printFormData(formData);
+    // printFormData(formData);
     if (validateForm() && formData) {
       // 로딩 처리 확인
       setLoading(true);
@@ -246,11 +237,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         setLoading(true);
 
         // 이미지 로직 적용 시 완전 바뀌어야 하므로 임시 구현(formData만 전송하도록 바꿔야한다) / formDataToJson 함수 삭제해야함
-        const res = await axiosInstance.put(
-          `buddies/${buddyId}`,
-          // `buddies/${buddyId}`,
-          formData
-        );
+        const res = await axiosInstance.put(`buddies/${buddyId}`, formData);
 
         // 응답으로 수정된 정보가 올 것
         const updatedBuddy = res.data.data;
@@ -268,9 +255,8 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
 
         // 프로필 상태를 업데이트 된 프로필로 변경
         setProfiles(updatedProfiles);
-        fetchBuddiesData();
+        await fetchBuddiesData?.();
         setSelectedId(updatedBuddy._id);
-        console.log(selectedId);
         handleClosePetEditModal();
       } catch (error) {
         console.log(error);
@@ -294,7 +280,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
     // 체중을 제외한 유효성 검사
     if (formData) {
       if (formData.get('name') === '' || formData.get('name') === null) {
-        // setAlertMessage('이름을 입력해주세요.');
         setAlertState({
           showAlert: true,
           alertMessage: '이름을 입력해주세요.',
@@ -303,7 +288,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
       }
       // formData는 문자열로 전송
       if (formData.get('sex') === 'null') {
-        // setAlertMessage('성별을 선택해주세요.');
         setAlertState({
           showAlert: true,
           alertMessage: '성별을 선택해주세요.',
@@ -311,7 +295,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         return false;
       }
       if (formData.get('species') === 'null') {
-        // setAlertMessage('종을 선택해주세요.');
         setAlertState({
           showAlert: true,
           alertMessage: '종을 선택해주세요.',
@@ -319,7 +302,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         return false;
       }
       if (formData.get('kind') === '') {
-        // setAlertMessage('품종을 입력해주세요.');
         setAlertState({
           showAlert: true,
           alertMessage: '품종을 입력해주세요.',
@@ -327,7 +309,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         return false;
       }
       if (formData.get('age') === '') {
-        // setAlertMessage('나이를 입력해주세요.');
         setAlertState({
           showAlert: true,
           alertMessage: '나이를 입력해주세요.',
@@ -335,7 +316,6 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         return false;
       }
       if (formData.get('isNeutered') === 'null') {
-        // setAlertMessage('중성화 여부를 선택해주세요.');
         setAlertState({
           showAlert: true,
           alertMessage: '중성화 여부를 선택해주세요.',

@@ -6,19 +6,16 @@ type CommunityElementProps = {
   name: string;
   introduction: string;
   communityId: string;
-  memberCount?: number;
 };
 
 const CommunityElement: React.FC<CommunityElementProps> = ({
   name,
   introduction,
   communityId,
-  // memberCount,
 }) => (
   <StyledCommunityListSidebar to={`community-feed/${communityId}`}>
     <Name>{name}</Name>
     <Introduction>{introduction}</Introduction>
-    {/* <MemberCount>{memberCount}명의 멤버</MemberCount> */}
   </StyledCommunityListSidebar>
 );
 
@@ -52,8 +49,3 @@ const Introduction = styled.p`
   white-space: pre-wrap;
 `;
 
-const MemberCount = styled.p`
-  color: var(--color-grey-1);
-  font-size: var(--font-size-ft-1);
-  font-weight: var(--font-weight-regular);
-`;
