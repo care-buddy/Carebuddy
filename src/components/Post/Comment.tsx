@@ -11,7 +11,7 @@ import personProfile from '@/assets/person.png';
 type CommentProps = {
   // 닉네임, userId 둘 다 받아오는게 맞는지 모르겠음. recoil 적용 후 수정 - 임시
   text: string;
-  profileImg?: string[];
+  profileImg?: string;
   nickname: string;
   date: string;
   onEdit: (comment: string, commentId: string) => void;
@@ -54,12 +54,11 @@ const Comment: React.FC<CommentProps> = ({
     }
   };
 
-  const imgSrc = (profileImg && profileImg.length > 0) ? profileImg[0] : personProfile;
-
+  const imgSrc = profileImg || null;
 
   return (
     <StyledComment>
-      <ProfileImg src={imgSrc} alt="댓글 프로필 사진" />
+      <ProfileImg src={imgSrc ?? personProfile} alt="댓글 프로필 사진" />
       <Container>
         <Div>
           <Info>

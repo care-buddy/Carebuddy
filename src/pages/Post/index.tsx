@@ -79,6 +79,7 @@ const Post: React.FC = () => {
           (comment: CommentData) => comment.deletedAt === null
         );
         setComments(validComments);
+        console.log(validComments);
       } else {
         setComments([]);
       }
@@ -209,6 +210,7 @@ const Post: React.FC = () => {
         setError(error as Error);
       } finally {
         setLoading(false);
+        navigate(`/community-feed/${post?.communityId._id}`);
       }
     }
   };
@@ -269,12 +271,16 @@ const Post: React.FC = () => {
               likeCount={post?.likedUsers.length}
               commentCount={comments?.length}
             />
-            <ActionButton
-              buttonBorder="border-solid"
-              direction="horizonal"
-              onEdit={() => handleEditClick(true)}
-              onDelete={handlePostDelete}
-            />
+            {post?.userId._id === user?._id ? (
+              <ActionButton
+                buttonBorder="border-solid"
+                direction="horizonal"
+                onEdit={() => handleEditClick(true)}
+                onDelete={handlePostDelete}
+              />
+            ) : (
+              <div />
+            )}
             {isEditModalOpen && (
               <Modal
                 title="글 수정하기"
@@ -293,7 +299,7 @@ const Post: React.FC = () => {
         </TitleContainer>
         <InformationContainer>
           <ProfileImg
-            src={post?.userId?.profileImage?.[0] || DEFAULT_PROFILE}
+            src={post?.userId?.profileImage || DEFAULT_PROFILE}
             alt="프로필 이미지"
           />
           <p>{post?.userId?.nickName || '알수없는 닉네임(임시'}</p>
