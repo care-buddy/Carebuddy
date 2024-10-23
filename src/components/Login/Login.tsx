@@ -17,13 +17,17 @@ import userState from '@/recoil/atoms/userState';
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
 interface LoginProps {
-  onOpenRegistrationModal: () => void;
   handleLoginModal: () => void;
+  onOpenRegistrationModal: () => void;
+  onOpenFindingIdModal: () => void;
+  onOpenFindingPasswordModal: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({
-  onOpenRegistrationModal,
   handleLoginModal,
+  onOpenRegistrationModal,
+  onOpenFindingIdModal,
+  onOpenFindingPasswordModal
 }) => {
   // const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
@@ -157,6 +161,13 @@ const Login: React.FC<LoginProps> = ({
             onChange={handleCheckBoxChange}
           />
         </CheckBoxSection> */}
+      </SignupSection>
+      <LoginContainer>
+        <Button buttonStyle="square-green" onClick={handleLogin}>
+          로그인
+        </Button>
+      </LoginContainer>
+      <ButtonContainer>
         <Button
           buttonStyle="black"
           buttonSize="sm"
@@ -164,18 +175,15 @@ const Login: React.FC<LoginProps> = ({
         >
           회원가입
         </Button>
-      </SignupSection>
-      <LoginContainer>
-        <Button buttonStyle="square-green" onClick={handleLogin}>
-          로그인
+        <ButtonDivider>|</ButtonDivider>
+        <Button buttonStyle="black" buttonSize="sm" onClick={onOpenFindingIdModal}>
+          아이디 찾기
         </Button>
-      </LoginContainer>
-      {/* <Button buttonStyle="black" buttonSize="sm" onClick={handleLogout}>
-        로그아웃
-      </Button> */}
-      <Button buttonStyle="black" buttonSize="sm">
-        아이디/비밀번호 찾기
-      </Button>
+        <ButtonDivider>|</ButtonDivider>
+        <Button buttonStyle="black" buttonSize="sm" onClick={onOpenFindingPasswordModal}>
+          비밀번호 찾기
+        </Button>
+      </ButtonContainer>
     </Container>
   );
 };
@@ -233,11 +241,6 @@ const LoginContainer = styled.div`
   }
 `;
 
-// const KakaoLoginButton = styled.div`
-//   background-color: yellow;
-//   height: 30px;
-// `;
-
 const PasswordContainer = styled.div`
   position: relative;
 
@@ -257,4 +260,15 @@ const IconContainer = styled.div`
     right: 8px;
     color: var(--color-grey-1);
   }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+`;
+
+const ButtonDivider = styled.p`
+  color: var(--color-grey-2);
+  font-weight: var(--font-weight-regular);
+  background-color: transparent;
+  padding: 0 4px;
 `;
