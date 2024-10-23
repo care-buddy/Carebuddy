@@ -20,6 +20,9 @@ import usePostCreate from '@/hooks/usePostCreate';
 import axiosInstance from '@/utils/axiosInstance';
 import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
+import DefaultProfile from '@/assets/person.png';
+
+
 const Home: React.FC = () => {
   // 상태 정의
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달 상태
@@ -193,7 +196,7 @@ const Home: React.FC = () => {
                   post.userId.profileImage &&
                   post.userId.profileImage.length > 0
                     ? post.userId.profileImage[0]
-                    : 'defaultProfileImg.jpg' // 기본 이미지 경로
+                    : DefaultProfile
                 }
                 communityName={
                   post.communityId ? post.communityId.community : '알 수 없음' // 커뮤니티 이름 체크

@@ -96,10 +96,7 @@ const CommunityFeed: React.FC = () => {
         });
 
         navigate('/');
-
-        
       } catch (error) {
-        console.log(error)
         setError(error as Error);
       } finally {
         setLoading(false);
@@ -179,7 +176,7 @@ const CommunityFeed: React.FC = () => {
     if (!posts || posts.length === 0) {
       return <NoPostsFound>게시글이 없습니다.</NoPostsFound>;
     }
-  
+
     return posts.map((post) => (
       <FeedBox
         key={post._id}
@@ -188,7 +185,7 @@ const CommunityFeed: React.FC = () => {
         content={post.content}
         uploadedDate={formatDate(post.createdAt)}
         nickname={post.userId?.nickName || 'Unknown User'}
-        profileSrc={post.userId?.profileImage?.[0] || '/default-profile.png'}
+        profileSrc={post.userId?.profileImage?.[0] || DefaultProfile}
         likeCount={post.likedUsers?.length || 0}
         commentCount={post.commentId?.length || 0}
       />
@@ -207,7 +204,7 @@ const CommunityFeed: React.FC = () => {
           // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시 - 임시(개발용)
           nickname={post.userId?.nickName || 'Unknown User'}
           // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
-          profileSrc={post.userId?.profileImage?.[0] || '/default-profile.png'}
+          profileSrc={post.userId?.profileImage?.[0] || DefaultProfile}
           // likedUsers 배열의 길이를 안전하게 체크
           likeCount={post.likedUsers?.length || 0}
         />
