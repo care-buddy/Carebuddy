@@ -80,11 +80,7 @@ const Post: React.FC = () => {
           (comment: CommentData) => comment.deletedAt === null
         );
         setComments(validComments);
-<<<<<<< HEAD
         console.log('comment', validComments)
-=======
-        console.log(validComments);
->>>>>>> 8834f5662261d54c5d149b3b1c1cc55f008c3c2c
       } else {
         setComments([]);
       }
