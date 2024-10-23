@@ -23,7 +23,12 @@ const PostCreate: React.FC<PostCreateProps> = ({
   const [postInfo, setPostInfo] = useState({
     title: postData?.title ?? '',
     content: postData?.content ?? '',
-    communityId: postData?.communityId ?? '',
+    communityId: postData?.communityId ?? {
+      _id: '',
+      category: '',
+      community: '',
+      deletedAt: '',
+    },
     postImage: postData?.postImage,
   });
 
@@ -116,7 +121,8 @@ const PostCreate: React.FC<PostCreateProps> = ({
     // string으로 append 해줘야한다?
     newFormData.append('title', String(postInfo.title));
     newFormData.append('content', String(postInfo.content));
-    newFormData.append('communityId', String(postInfo.communityId));
+    newFormData.append('communityId', String(postInfo.communityId._id));
+    // newFormData.append('communityId', String(postInfo.communityId));
     // 선택 파일이 있을 때에는 그 파일을 append 해준다
     // 폼데이터에는 null 값을 보낼 수 없으니, 선택된 파일이나 버디이미지가 없는 경우에는 append하지 않습니다: 서버 default 값이 null
     if (selectedImage) {

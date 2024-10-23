@@ -1,6 +1,3 @@
-// 임시 - 남은 작업: 추천 API, 댓글 등록 API(백엔드 작업 완료 이후) / 글과 댓글 작성자가 본인일때만 수정, 삭제버튼 보이도록(recoil 적용 이후) / postCreate모달 수정(글 작성이 아니라 수정일 때는 카테고리 변경 불가능하도록)
-// 리팩토링 가능: 글 관련 API, 댓글 관련 API 커스텀 훅으로 분리
-
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import styled from 'styled-components';
