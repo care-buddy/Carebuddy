@@ -38,13 +38,15 @@ const Home: React.FC = () => {
   const [filteredCommunityOptions, setFilteredCommunityOptions] =
     useState(communityOptions);
 
-  // 전체 게시글 조회 API & 컴포넌트가 마운트 이후 초기 데이터 가져오기
   const fetchData = useCallback(async () => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.get(`/posts`);
-      setPosts(response.data.data);
-      setSelectedPosts(response.data.data);
+      const filteredPosts = response.data.data.filter(
+        (post: PostData) => !post.deletedAt
+      );
+      setPosts(filteredPosts);
+      setSelectedPosts(filteredPosts);
     } catch (error) {
       setError(error as Error);
     } finally {
