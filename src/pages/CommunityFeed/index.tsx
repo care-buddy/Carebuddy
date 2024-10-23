@@ -219,7 +219,7 @@ const CommunityFeed: React.FC = () => {
         category="커뮤니티"
         title={
           posts && posts.length > 0
-            ? posts[0].communityId.community
+            ? posts[0].communityId.community 
             : '커뮤니티 제목을 불러오는 중...'
         }
         communityCategory={

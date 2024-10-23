@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useRecoilValue } from 'recoil';
 
@@ -38,6 +38,7 @@ interface FormData {
 }
 
 const Post: React.FC = () => {
+  const navigate = useNavigate();
   const [post, setPost] = useState<PostData | null>(null); // 게시글
   const [comments, setComments] = useState<CommentData[] | null>(null); // 댓글
   const [isEditModalOpen, setIsEditModalOpen] = useState(false); // 글 수정 모달
@@ -236,12 +237,16 @@ const Post: React.FC = () => {
   useEffect(() => {
     setIsLiked(user?._id ? likedUsers.includes(user._id) : false);
   }, [likedUsers, user?._id]);
-  
+
   if (isLoading) return <Loading />;
 
   if (error) {
     return <div>Error: {error.message}</div>;
   }
+
+  const handleListButton = () => {
+    navigate(`/community-feed/${post?.communityId._id}`); // 이동할 경로 설정 (예: '/posts')
+  };
 
   return (
     <>
@@ -253,7 +258,7 @@ const Post: React.FC = () => {
         }
       />
       <Container>
-        <PostListButtonContainer>
+        <PostListButtonContainer onClick={handleListButton}>
           <LuChevronLeft />
           <p>글 목록 보기</p>
         </PostListButtonContainer>
@@ -342,6 +347,7 @@ const Container = styled.div`
 const PostListButtonContainer = styled.div`
   display: flex;
   color: var(--color-grey-1);
+  cursor: pointer;
 `;
 
 const TitleContainer = styled.div`
