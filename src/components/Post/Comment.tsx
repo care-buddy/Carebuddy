@@ -28,7 +28,7 @@ const Comment: React.FC<CommentProps> = ({
   onEdit,
   onDelete,
   commentId,
-  userId, // Destructure userId
+  userId,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingComment, setEditingComment] = useState<string | null>(null);
@@ -51,7 +51,6 @@ const Comment: React.FC<CommentProps> = ({
     }
   };
 
-  // Navigate to user page on nickname click
   const handleNicknameClick = () => {
     navigate(`/userpage/${userId}`);
   };

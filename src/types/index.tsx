@@ -89,6 +89,7 @@ export interface CommunityData {
 export interface PostData {
   _id: string;
   userId: {
+    _id: string;
     nickName: string;
     profileImage: string[];
     deletedAt: string;

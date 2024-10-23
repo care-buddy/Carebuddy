@@ -250,6 +250,10 @@ const Post: React.FC = () => {
     navigate(`/community-feed/${post?.communityId._id}`); // 이동할 경로 설정 (예: '/posts')
   };
 
+  const handleNicknameClick = () => {
+    navigate(`/userpage/${post?.userId._id}`);
+  };
+
   return (
     <>
       <TopBar
@@ -298,7 +302,9 @@ const Post: React.FC = () => {
             src={post?.userId?.profileImage?.[0] || DEFAULT_PROFILE}
             alt="프로필 이미지"
           />
-          <p>{post?.userId?.nickName || '알수없는 닉네임(임시'}</p>
+          <Nickname onClick={handleNicknameClick}>
+            {post?.userId?.nickName || '알수없는 닉네임(임시'}
+          </Nickname>
           <p>|</p>
           {post && <p>{formatDateIncludeTime(post.createdAt)}</p>}
         </InformationContainer>
@@ -430,3 +436,7 @@ const CommentContainer = styled.div`
 const Pre = styled.pre`
   white-space: pre-wrap;
 `;
+
+const Nickname = styled.p`
+  cursor: pointer;
+`
