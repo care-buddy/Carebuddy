@@ -203,7 +203,7 @@ const CommunityFeed: React.FC = () => {
         postId={post._id}
         title={post.title}
         content={post.content}
-        uploadedDate={formatDate(String(post.createdAt))}
+        uploadedDate={formatDate(post.createdAt)}
         nickname={post.userId?.nickName || 'Unknown User'}
         profileSrc={
           post.userId && post.userId.profileImage
