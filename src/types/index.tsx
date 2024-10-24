@@ -89,9 +89,11 @@ export interface CommunityData {
 export interface PostData {
   _id: string;
   userId: {
+    _id: string;
     nickName: string;
-    profileImage: string[];
+    profileImage: string;
     deletedAt: string;
+    _id: string;
   };
   communityId: {
     _id: string;
@@ -104,7 +106,7 @@ export interface PostData {
   content: string;
   deletedAt: string;
   postImage: string;
-  createdAt: string;
+  createdAt: Date;
   commentId: CommentData[];
 }
 
@@ -113,10 +115,14 @@ export interface CommentData {
   userId: {
     _id: string;
     nickName: string;
-    profileImage?: string[];
+    profileImage?: string;
   };
   text: string;
   deletedAt: string;
   _id: string;
   createdAt: string;
+}
+
+export interface ICreatedAt {
+  createdAt: Date;
 }

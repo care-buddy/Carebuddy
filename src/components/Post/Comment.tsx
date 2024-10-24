@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom'; // Import the hook
 
 import LinkButton from '@/components/common/LinkButton';
 import ActionButton from '@/components/common/ActionButton';
@@ -9,61 +10,60 @@ import useDebounce from '@hooks/useDebounce';
 import personProfile from '@/assets/person.png';
 
 type CommentProps = {
-  // 닉네임, userId 둘 다 받아오는게 맞는지 모르겠음. recoil 적용 후 수정 - 임시
   text: string;
-  profileImg?: string[];
-  nickname: string;
+  profileImg?: string;
+  nickName: string;
   date: string;
   onEdit: (comment: string, commentId: string) => void;
-  onDelete: (comment: string) => void;
+  onDelete: (commentId: string) => void;
   commentId: string;
-  // userId: string;
+  userId: string;
 };
 
 const Comment: React.FC<CommentProps> = ({
   text,
   profileImg,
-  nickname,
+  nickName,
   date,
   onEdit,
   onDelete,
   commentId,
-  // userId,
+  userId,
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingComment, setEditingComment] = useState<string | null>(null);
 
-  // 디바운싱 사용하여 작성중인 코멘트 업데이트
-
   const debouncedSetEditingComment = useDebounce(300, setEditingComment);
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const handleUpdateComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     debouncedSetEditingComment(e.target.value);
   };
 
-  // 댓글 수정 버튼 클릭
   const handleButtonClick = () => {
     setIsEditing((prevState) => !prevState);
     if (editingComment) onEdit(editingComment, commentId);
   };
 
-  // 댓글 삭제 버튼 클릭
   const handleCommentDelete = () => {
     if (confirm('댓글을 삭제하시겠습니까?')) {
       onDelete(commentId);
     }
   };
 
-  const imgSrc = (profileImg && profileImg.length > 0) ? profileImg[0] : personProfile;
+  const handleNicknameClick = () => {
+    navigate(`/userpage/${userId}`);
+  };
 
+  const imgSrc = profileImg && profileImg.length > 0 ? profileImg[0] : personProfile;
 
   return (
     <StyledComment>
-      <ProfileImg src={imgSrc} alt="댓글 프로필 사진" />
+      <ProfileImg src={imgSrc ?? personProfile} alt="댓글 프로필 사진" />
       <Container>
         <Div>
           <Info>
-            <p>{nickname}</p>
+            <Nickname onClick={handleNicknameClick}>{nickName}</Nickname>
             <UploadedDate>{date}</UploadedDate>
           </Info>
           <ActionButton
@@ -147,10 +147,11 @@ const ProfileImg = styled.img`
 const Info = styled.div`
   display: flex;
   align-items: center;
+`;
 
-  p {
-    margin-right: 5px;
-  }
+const Nickname = styled.p`
+  margin-right: 5px;
+  cursor: pointer;
 `;
 
 const Div = styled.div`
