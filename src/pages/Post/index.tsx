@@ -24,6 +24,7 @@ import type { CommentData, PostData } from '@/types';
 
 import DEFAULT_PROFILE from '@/assets/person.png';
 import usePostCreate from '@/hooks/usePostCreate';
+import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
 
 interface FormData {
   title: string;
@@ -57,7 +58,7 @@ const Post: React.FC = () => {
 
   const user = useRecoilValue(userState);
 
-  const [likedUsers, setLikedUsers] = useState<string[]>(['']);
+  const [likedUsers, setLikedUsers] = useState<string[]>([]);
   const [isLiked, setIsLiked] = useState(false); // 좋아요 여부 상태
 
   const fetchData = async () => {
@@ -71,16 +72,18 @@ const Post: React.FC = () => {
       post.createdAt = formatDateIncludeTime(post.createdAt);
 
       setPost(post);
-      console.log('post', post)
+
       setLikedUsers(post.likedUsers);
 
+      const commentData = post.commentId;
       // 댓글
-      if (Array.isArray(post.commentId)) {
-        const validComments = post.commentId.filter(
+      if (Array.isArray(commentData)) {
+        const sortedPosts: CommentData[] = sortedByCreatedAt(commentData);
+        const validComments = sortedPosts.filter(
           (comment: CommentData) => comment.deletedAt === null
         );
+
         setComments(validComments);
-        console.log('comment', validComments)
       } else {
         setComments([]);
       }
@@ -127,8 +130,7 @@ const Post: React.FC = () => {
           userId: user?._id,
           text: comment,
         });
-        const newComment = response.data;
-        console.log('실시간comment', newComment)
+        const newComment = response.data.data;
 
         setComments((prevComments) =>
           prevComments ? [...prevComments, newComment] : [newComment]
@@ -228,16 +230,21 @@ const Post: React.FC = () => {
         userId: user?._id,
       });
 
-      setLikedUsers(response.data.message);
+      setLikedUsers(response.data.data);
     } catch (error) {
       setError(error as Error);
     } finally {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    setComments(comments);
+  }, [comments]);
 
   useEffect(() => {
-    setIsLiked(user?._id ? likedUsers.includes(user._id) : false);
+    setIsLiked(
+      user?._id && likedUsers.length > 0 ? likedUsers.includes(user._id) : false
+    );
   }, [likedUsers, user?._id]);
 
   if (isLoading) return <Loading />;
@@ -272,7 +279,7 @@ const Post: React.FC = () => {
           <p>{post?.title}</p>
           <PostOption>
             <LikeAndCommentCount
-              likeCount={post?.likedUsers.length}
+              likeCount={likedUsers.length}
               commentCount={comments?.length}
             />
             {post?.userId._id === user?._id ? (
@@ -332,6 +339,7 @@ const Post: React.FC = () => {
           />
           {comments?.map((comment) => (
             <Comment
+              userId={comment.userId?._id}
               key={comment._id}
               commentId={comment._id}
               text={comment.text}
@@ -443,4 +451,4 @@ const Pre = styled.pre`
 
 const Nickname = styled.p`
   cursor: pointer;
-`
+`;

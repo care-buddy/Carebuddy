@@ -93,7 +93,6 @@ export interface PostData {
     nickName: string;
     profileImage: string;
     deletedAt: string;
-    _id: string;
   };
   communityId: {
     _id: string;
