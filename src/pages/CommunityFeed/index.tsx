@@ -35,6 +35,7 @@ import loginModalState from '@/recoil/atoms/loginModalState';
 import { PostData, User } from '@/types';
 
 import userState from '@/recoil/atoms/userState';
+import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
 
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
@@ -121,7 +122,9 @@ const CommunityFeed: React.FC = () => {
           `/posts/${communityId}/community`
         );
 
-        const filteredPosts = response.data.data.filter(
+        const postData: PostData[] = response.data.data;
+        const sortedPosts: PostData[] = sortedByCreatedAt(postData);
+        const filteredPosts = sortedPosts.filter(
           (post: PostData) => !post.deletedAt
         );
         setPosts(filteredPosts);
@@ -186,9 +189,13 @@ const CommunityFeed: React.FC = () => {
         postId={post._id}
         title={post.title}
         content={post.content}
-        uploadedDate={formatDate(post.createdAt)}
+        uploadedDate={formatDate(String(post.createdAt))}
         nickname={post.userId?.nickName || 'Unknown User'}
-        profileSrc={post.userId?.profileImage?.[0] || DefaultProfile}
+        profileSrc={
+          post.userId && post.userId.profileImage
+            ? post.userId.profileImage
+            : DefaultProfile
+        }
         likeCount={post.likedUsers?.length || 0}
         commentCount={post.commentId?.length || 0}
       />
@@ -203,7 +210,7 @@ const CommunityFeed: React.FC = () => {
           postId={post._id}
           title={post.title}
           content={post.content}
-          uploadedDate={formatDate(post.createdAt)}
+          uploadedDate={formatDate(String(post.createdAt))}
           // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시 - 임시(개발용)
           nickname={post.userId?.nickName || 'Unknown User'}
           // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
@@ -249,7 +256,7 @@ const CommunityFeed: React.FC = () => {
                 value="등록"
                 component={
                   <PostCreate
-                    formData={formData}
+                    postData={formData}
                     onFormDataChange={handleFormDataChange}
                   />
                 }

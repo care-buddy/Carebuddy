@@ -6,7 +6,7 @@ import 'swiper/css/navigation';
 import Button from '@/components/common/Button';
 import Modal from '@/components/common/Modal';
 import TopBar from '@/components/common/TopBar';
-import { IRecord } from '@/types';
+import { ICreatedAt, IRecord } from '@/types';
 import Loading from '@/components/common/Loading';
 import ValidationAlert from '@/components/common/ValidationAlert';
 import { LuPencilLine } from 'react-icons/lu';
@@ -116,9 +116,6 @@ const ProfilesTitle = styled.div`
   font-weight: var(--font-weight-bold);
   margin: 20px 0 30px 0;
 `;
-interface ICreatedAt {
-  createdAt: Date;
-}
 
 const Diary: React.FC = () => {
   // 모달 관련 상태 관리

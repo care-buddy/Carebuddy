@@ -21,6 +21,7 @@ import axiosInstance from '@/utils/axiosInstance';
 import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
 import DefaultProfile from '@/assets/person.png';
+import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
 
 const Home: React.FC = () => {
   // 상태 정의
@@ -44,9 +45,12 @@ const Home: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await axiosInstance.get(`/posts`);
-      const filteredPosts = response.data.data.filter(
+      const postData: PostData[] = response.data.data;
+      const sortedPosts: PostData[] = sortedByCreatedAt(postData);
+      const filteredPosts = sortedPosts.filter(
         (post: PostData) => !post.deletedAt
       );
+
       setPosts(filteredPosts);
       setSelectedPosts(filteredPosts);
     } catch (error) {
@@ -188,7 +192,7 @@ const Home: React.FC = () => {
                 postId={post._id}
                 title={post.title}
                 content={post.content}
-                uploadedDate={formatDate(post.createdAt)}
+                uploadedDate={formatDate(String(post.createdAt))}
                 nickname={post.userId ? post.userId.nickName : '알 수 없음'} // null 체크 추가
                 profileSrc={
                   post.userId && post.userId.profileImage
