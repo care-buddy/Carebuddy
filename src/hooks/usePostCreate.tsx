@@ -31,7 +31,7 @@ const usePostCreate = (onSuccess: () => void) => {
     try {
       const response = await axiosInstance.post('posts', formData); 
       alert('게시글 작성 완료');
-      navigate(`post/${response.data.data}`)
+      navigate(`/post/${response.data.data}`)
       onSuccess(); // 임시 - 추가 실행할 로직(변수로 받을 것)
     } catch (error) {
       console.error('게시물 생성 오류', error);
