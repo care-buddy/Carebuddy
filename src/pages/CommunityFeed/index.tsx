@@ -118,11 +118,17 @@ const CommunityFeed: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true); // 로딩 상태 시작
         const response = await axiosInstance.get(
           `/posts/${communityId}/community`
         );
 
         const postData: PostData[] = response.data.data;
+        if (!Array.isArray(postData)) {
+          setPosts([]); // 데이터가 배열이 아니면 빈 배열로 설정
+          return;
+        }
+
         const sortedPosts: PostData[] = sortedByCreatedAt(postData);
         const filteredPosts = sortedPosts.filter(
           (post: PostData) => !post.deletedAt
@@ -130,12 +136,13 @@ const CommunityFeed: React.FC = () => {
         setPosts(filteredPosts);
       } catch (error) {
         setError(error as Error);
+        setPosts([]); // 에러 발생 시 빈 배열로 설정
       } finally {
-        setLoading(false);
+        setLoading(false); // 로딩 상태 종료
       }
     };
     fetchData();
-  }, []);
+  }, [communityId]);
 
   // 검색 로직
   // 검색 상태 핸들러
@@ -179,7 +186,7 @@ const CommunityFeed: React.FC = () => {
   }
 
   const renderAllPosts = () => {
-    if (!posts || posts.length === 0) {
+    if (!posts || !Array.isArray(posts) || posts.length === 0) {
       return <NoPostsFound>게시글이 없습니다.</NoPostsFound>;
     }
 
