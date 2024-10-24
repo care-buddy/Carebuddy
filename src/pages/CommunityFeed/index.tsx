@@ -50,7 +50,7 @@ const CommunityFeed: React.FC = () => {
 
   const [communityInfo, setCommunityInfo] = useState({
     community: '',
-    category: ''
+    category: '',
   });
 
   const [recommendedCommunities, setRecommendedCommunities] = useState<
@@ -230,7 +230,8 @@ const CommunityFeed: React.FC = () => {
             post.userId && post.userId.profileImage
               ? post.userId.profileImage
               : DefaultProfile
-          }          likeCount={post.likedUsers?.length || 0}
+          }
+          likeCount={post.likedUsers?.length || 0}
         />
       ));
     }
@@ -242,7 +243,9 @@ const CommunityFeed: React.FC = () => {
       <TopBar
         category="커뮤니티"
         title={communityInfo?.community}
-        communityCategory={communityInfo.category === 0 ? '강아지' : '고양이'}
+        communityCategory={
+          Number(communityInfo.category) === 0 ? '강아지' : '고양이'
+        }
       />
       <SearchContainer>
         <Search
@@ -262,6 +265,9 @@ const CommunityFeed: React.FC = () => {
                 value="등록"
                 component={
                   <PostCreate
+                    categoryForEdit={Number(communityInfo.category)}
+                    communityIdForEdit={communityId}
+                    communityLabelForEdit={communityInfo?.community}
                     postData={formData}
                     onFormDataChange={handleFormDataChange}
                   />

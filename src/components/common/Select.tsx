@@ -54,7 +54,7 @@ const Select: React.FC<SelectProps> = ({
   onChange,
   selectStyle = 'square',
   selectSize = 'md',
-  disabled = true,
+  disabled = false,
   ...props
 }) => (
   <StyledSelect

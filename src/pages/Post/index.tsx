@@ -292,7 +292,7 @@ const Post: React.FC = () => {
                 component={
                   <PostCreate
                     categoryForEdit={Number(post?.communityId?.category)}
-                    communityForEdit={post?.communityId?.community}
+                    communityLabelForEdit={post?.communityId?.community}
                     postData={post}
                     onFormDataChange={handleFormDataChange}
                   />
