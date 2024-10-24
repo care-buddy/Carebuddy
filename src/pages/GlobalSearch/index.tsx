@@ -30,7 +30,8 @@ const GlobalSearch: React.FC = () => {
 
   const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
     () => {
-      console.log('이후 실행 로직 자리');
+      setIsWriteModalOpen(false); 
+      // 작성된 글로 이동 - 임시. 지연님 로직 보고 적용할 것 
     }
   );
 

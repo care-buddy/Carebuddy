@@ -71,7 +71,7 @@ const Post: React.FC = () => {
       post.createdAt = formatDateIncludeTime(post.createdAt);
 
       setPost(post);
-      console.log('post', post)
+      console.log('post', post);
       setLikedUsers(post.likedUsers);
 
       // 댓글
@@ -80,7 +80,7 @@ const Post: React.FC = () => {
           (comment: CommentData) => comment.deletedAt === null
         );
         setComments(validComments);
-        console.log('comment', validComments)
+        console.log('comment', validComments);
       } else {
         setComments([]);
       }
@@ -128,7 +128,7 @@ const Post: React.FC = () => {
           text: comment,
         });
         const newComment = response.data;
-        console.log('실시간comment', newComment)
+        console.log('실시간comment', newComment);
 
         setComments((prevComments) =>
           prevComments ? [...prevComments, newComment] : [newComment]
@@ -291,6 +291,8 @@ const Post: React.FC = () => {
                 value="수정"
                 component={
                   <PostCreate
+                    categoryForEdit={Number(post?.communityId?.category)}
+                    communityForEdit={post?.communityId?.community}
                     postData={post}
                     onFormDataChange={handleFormDataChange}
                   />
@@ -443,4 +445,4 @@ const Pre = styled.pre`
 
 const Nickname = styled.p`
   cursor: pointer;
-`
+`;

@@ -43,8 +43,9 @@ interface SelectProps extends StyledSelectProps {
   options:
     | { value: string | number; label: string }[] // 카테고리용
     | { value: string | number; label: string; category: number }[]; // 커뮤니티용
-  value?: string;
+  value?: string | number;
   onChange?: (event: React.ChangeEvent<HTMLSelectElement>) => void;
+  disabled?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
@@ -53,6 +54,7 @@ const Select: React.FC<SelectProps> = ({
   onChange,
   selectStyle = 'square',
   selectSize = 'md',
+  disabled = true,
   ...props
 }) => (
   <StyledSelect
@@ -61,6 +63,7 @@ const Select: React.FC<SelectProps> = ({
     value={value}
     onChange={onChange}
     {...props}
+    disabled={disabled}
   >
     {options.map((option) => (
       <option key={option.value} value={option.value}>

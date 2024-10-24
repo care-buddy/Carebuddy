@@ -224,13 +224,13 @@ const CommunityFeed: React.FC = () => {
           postId={post._id}
           title={post.title}
           content={post.content}
-          uploadedDate={formatDate(String(post.createdAt))}
-          // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시 - 임시(개발용)
+          uploadedDate={formatDate(post.createdAt)}
           nickname={post.userId?.nickName || 'Unknown User'}
-          // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
-          profileSrc={post.userId?.profileImage?.[0] || DefaultProfile}
-          // likedUsers 배열의 길이를 안전하게 체크
-          likeCount={post.likedUsers?.length || 0}
+          profileSrc={
+            post.userId && post.userId.profileImage
+              ? post.userId.profileImage
+              : DefaultProfile
+          }          likeCount={post.likedUsers?.length || 0}
         />
       ));
     }
