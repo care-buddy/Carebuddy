@@ -48,6 +48,11 @@ const CommunityFeed: React.FC = () => {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [communityInfo, setCommunityInfo] = useState({
+    community: '',
+    category: ''
+  });
+
   const [recommendedCommunities, setRecommendedCommunities] = useState<
     CommunityData[] | null
   >(null);
@@ -123,11 +128,13 @@ const CommunityFeed: React.FC = () => {
           `/posts/${communityId}/community`
         );
 
-        const postData: PostData[] = response.data.data;
+        const postData: PostData[] = response.data.data.posts;
         if (!Array.isArray(postData)) {
           setPosts([]); // 데이터가 배열이 아니면 빈 배열로 설정
           return;
         }
+
+        setCommunityInfo(response.data.data.community);
 
         const sortedPosts: PostData[] = sortedByCreatedAt(postData);
         const filteredPosts = sortedPosts.filter(
@@ -234,16 +241,8 @@ const CommunityFeed: React.FC = () => {
     <>
       <TopBar
         category="커뮤니티"
-        title={
-          posts && posts.length > 0
-            ? posts[0].communityId.community
-            : '커뮤니티 제목을 불러오는 중...'
-        }
-        communityCategory={
-          posts && posts.length > 0
-            ? posts[0].communityId.category
-            : '카테고리를 불러오는 중...'
-        }
+        title={communityInfo?.community}
+        communityCategory={communityInfo.category === 0 ? '강아지' : '고양이'}
       />
       <SearchContainer>
         <Search
