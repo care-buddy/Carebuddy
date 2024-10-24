@@ -61,6 +61,7 @@ const Login: React.FC<LoginProps> = ({
       try {
         // 로그인 API 호출
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
+        console.log('로그인응답', loginResponse)
 
         const { accessToken } = loginResponse.data; // accessToken 추출
 
@@ -79,8 +80,7 @@ const Login: React.FC<LoginProps> = ({
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
       } catch (error) {
-        // 에러 처리
-        console.error('로그인 중 에러:', error);
+        alert('아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.')
       }
     } else {
       alert('아이디와 비밀번호를 입력해주세요');
