@@ -4,6 +4,9 @@ import Button from '@/components/common/Button';
 import imgSrc from '@/assets/AlertIcon.png';
 import SmallModal from '@/components/common/SmallModal';
 import UserTrue from '@/pages/Mypage/UserTrue/index';
+import axiosInstance from '@/utils/axiosInstance'; // axios 인스턴스 추가
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import userState from '@/recoil/atoms/userState'; // 사용자 상태
 
 const Container = styled.div`
   display: flex;
@@ -43,6 +46,8 @@ const WithdrawButton = styled.a`
 
 const UserAsk: React.FC<{ onConfirm: () => void, onCancel: () => void }> = ({ onConfirm, onCancel }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const user = useRecoilValue(userState); // 현재 로그인된 사용자 정보
+  const setUserState = useSetRecoilState(userState); // 사용자 상태 업데이트
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -50,6 +55,20 @@ const UserAsk: React.FC<{ onConfirm: () => void, onCancel: () => void }> = ({ on
 
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  // 유저 탈퇴 처리 함수
+  const handleWithdraw = async () => {
+    try {
+      if (user?._id) {
+        // 현재 로그인된 사용자의 id를 이용해 DELETE 요청
+        await axiosInstance.delete(`/me`);
+        setUserState(null); // 사용자 상태 초기화 (로그아웃 효과)
+        onConfirm(); // 추가 작업 실행 (예: 페이지 이동, 알림 등)
+      }
+    } catch (error) {
+      console.error("유저 삭제 중 오류 발생:", error);
+    }
   };
 
   return (
@@ -72,7 +91,7 @@ const UserAsk: React.FC<{ onConfirm: () => void, onCancel: () => void }> = ({ on
         <WithdrawButton onClick={handleOpenModal}>탈퇴하기</WithdrawButton>
         {isModalOpen && (
           <SmallModal
-            component={<UserTrue onConfirm={onConfirm} />}
+            component={<UserTrue onConfirm={handleWithdraw} />} // 탈퇴 API 호출
             onClose={handleCloseModal}
           />
         )}

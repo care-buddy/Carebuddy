@@ -12,7 +12,7 @@ import personProfile from '@/assets/person.png';
 type CommentProps = {
   text: string;
   profileImg?: string;
-  nickName: string;
+  nickName?: string;
   date: string;
   onEdit: (comment: string, commentId: string) => void;
   onDelete: (commentId: string) => void;
@@ -34,7 +34,7 @@ const Comment: React.FC<CommentProps> = ({
   const [editingComment, setEditingComment] = useState<string | null>(null);
 
   const debouncedSetEditingComment = useDebounce(300, setEditingComment);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleUpdateComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     debouncedSetEditingComment(e.target.value);
