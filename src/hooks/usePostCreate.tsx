@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import axiosInstance from '@/utils/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 const usePostCreate = (onSuccess: () => void) => {
   const [formData, setFormData] = useState<FormData | null>(null);
+  const navigate = useNavigate();
 
   // 폼데이터 내용물 확인용 함수입니다
   // const formDataToJson = (formData: FormData) => {
@@ -27,9 +29,9 @@ const usePostCreate = (onSuccess: () => void) => {
 
   const handlePostSubmit = async () => {
     try {
-      await axiosInstance.post('posts', formData); // 임시. 추후 백엔드에서 엔드포인트 변경 시 수정
-      // console.log('게시물 생성됨:', response.data);
+      const response = await axiosInstance.post('posts', formData); 
       alert('게시글 작성 완료');
+      navigate(`post/${response.data.data}`)
       onSuccess(); // 임시 - 추가 실행할 로직(변수로 받을 것)
     } catch (error) {
       console.error('게시물 생성 오류', error);
@@ -38,7 +40,7 @@ const usePostCreate = (onSuccess: () => void) => {
 
   const handleEditPostSubmit = async (id: string | undefined) => {
     try {
-      await axiosInstance.put(`posts/${id}`, formData); // 임시. 추후 백엔드에서 엔드포인트 변경 시 수정
+      await axiosInstance.put(`posts/${id}`, formData); 
 
       alert('게시글 수정 완료');
       onSuccess(); // 임시 - 추가 실행할 로직(변수로 받을 것)
