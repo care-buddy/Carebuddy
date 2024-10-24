@@ -310,7 +310,7 @@ const Post: React.FC = () => {
             {post?.userId?.nickName || '알수없는 닉네임(임시)'}
           </Nickname>
           <p>|</p>
-          {post && <p>{formatDateIncludeTime(post.createdAt)}</p>}
+          {post && <p>{formatDateIncludeTime(String(post.createdAt))}</p>}
         </InformationContainer>
         {/* 이미지 */}
         <ContentContainer>
