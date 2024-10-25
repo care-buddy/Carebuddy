@@ -147,7 +147,7 @@ const Header: React.FC = () => {
     { to: '/community', label: '전체 커뮤니티' },
     ...(user?.communityId?.map((community: CommunityData) => ({
       to: `/community-feed/${community._id}`,
-      label: community.community,
+      label: `${community.community} ${community.category ? '고양이' : '강아지'}`,
     })) || []),
   ];
 
