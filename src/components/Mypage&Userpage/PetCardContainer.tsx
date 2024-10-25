@@ -13,8 +13,12 @@ const PetCardContainer: React.FC<IProfilesWrapperProps> = ({
   isMe,
 }) => (
   <Container>
-    {/* <div>반려동물 카드</div> */}
-    <PetProfiles buddies={buddies} isMe={isMe} />
+    {buddies &&
+    buddies.filter((buddy) => buddy.deletedAt === null).length > 0 ? (
+      <PetProfiles buddies={buddies} isMe={isMe} />
+    ) : (
+      <>등록된 반려동물 프로필이 없습니다.</>
+    )}
   </Container>
 );
 
