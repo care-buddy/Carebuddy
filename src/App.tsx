@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';

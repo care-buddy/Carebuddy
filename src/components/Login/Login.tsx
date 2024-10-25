@@ -91,31 +91,6 @@ const Login: React.FC<LoginProps> = ({
     }
   };
 
-   // 로그아웃
-  const handleLogout = async () => {
-    const deleteCookie = (name: string) => {
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax;`;
-    };
-
-    try {
-      await axiosInstance.delete('auth/logout', {
-        data: { email: user?.email },
-      });
-      navigate('/');
-
-      deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
-
-      setAuth({
-        accessToken: null,
-      });
-
-      setUser(null);
-    } catch (error) {
-      console.error(error); // 임시. 나중에 변경
-    }
-  };
-
-
   // 상태가 업데이트되면 자동 로그인 연장 처리
   useEffect(() => {
     if (!isAuthenticated) {

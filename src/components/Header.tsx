@@ -1,27 +1,22 @@
-import { Link, NavLink, useNavigate } from 'react-router-dom';
-
 import React, { useEffect, useState } from 'react';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import styled, { keyframes } from 'styled-components';
 import { useRecoilState, useRecoilValue } from 'recoil';
-
-import logo from '@assets/carebuddyLogo.png';
 import { LuUser2, LuSearch, LuX } from 'react-icons/lu';
 
-import Login from '@/components/Login/Login';
-import BasicRegistration from '@/components/Registration/BasicRegistration';
-import Dropdown from '@/components/Dropdown';
+import logo from '@assets/carebuddyLogo.png';
+
 import Button from '@/components/common/Button';
-
+import Dropdown from '@/components/Dropdown';
+import Login from '@/components/Login/Login';
 import SmallModal from '@/components/common/SmallModal';
+import BasicRegistration from '@/components/Registration/BasicRegistration';
 
-import authState from '@/recoil/atoms/authState';
 import userState from '@/recoil/atoms/userState';
-
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 import loginModalState from '@/recoil/atoms/loginModalState';
 
 import { CommunityData } from '@/types';
-
 import useLogout from '@/hooks/useLogout';
 
 const Header: React.FC = () => {
@@ -31,8 +26,7 @@ const Header: React.FC = () => {
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
-  const [, setAuth] = useRecoilState(authState);
-  const [user, setUser] = useRecoilState(userState);
+  const user = useRecoilValue(userState);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const logout = useLogout();
 
@@ -95,8 +89,6 @@ const Header: React.FC = () => {
       setLoginModalOpen(false);
     }
   }, []);
-
- 
 
   // 임시
   const InfoMenuItems = [
@@ -187,8 +179,8 @@ const Header: React.FC = () => {
               <Button
                 buttonStyle="grey"
                 buttonSize="sm"
-                onClick={logout.handleLogout} 
-                >
+                onClick={logout.handleLogout}
+              >
                 로그아웃
               </Button>
             ) : (
