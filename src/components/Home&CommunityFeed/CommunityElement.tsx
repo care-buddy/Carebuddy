@@ -13,7 +13,7 @@ const CommunityElement: React.FC<CommunityElementProps> = ({
   introduction,
   communityId,
 }) => (
-  <StyledCommunityListSidebar to={`community-feed/${communityId}`}>
+  <StyledCommunityListSidebar to={`/community-feed/${communityId}`}>
     <Name>{name}</Name>
     <Introduction>{introduction}</Introduction>
   </StyledCommunityListSidebar>
