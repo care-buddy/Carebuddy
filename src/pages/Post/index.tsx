@@ -131,7 +131,8 @@ const Post: React.FC = () => {
           userId: user?._id,
           text: comment,
         });
-        const newComment = response.data.data;
+        const newComment = response.data;
+        console.log('새 comment 데이터', newComment)
 
         setComments((prevComments) =>
           prevComments ? [...prevComments, newComment] : [newComment]
@@ -355,6 +356,7 @@ const Post: React.FC = () => {
               profileImg={comment.userId?.profileImage}
               onEdit={handleCommentEdit}
               onDelete={handleCommentDelete}
+              userId={comment.userId?._id}
             />
           ))}
         </CommentContainer>
