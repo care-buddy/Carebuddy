@@ -52,7 +52,7 @@ interface DropdownProps {
 const Dropdown: React.FC<DropdownProps> = ({ subMenuItems, onLinkClick }) => (
   <DropdownMenu>
     {subMenuItems.map((item, index) =>
-      index === 0 ? ( // '전체 커뮤니티'
+      index === 0 || item.label.slice(-2) === '검색' ? ( // '전체 커뮤니티'
         <DropdownItem key={item.to} to={item.to} onClick={onLinkClick}>
           {item.label}
         </DropdownItem>

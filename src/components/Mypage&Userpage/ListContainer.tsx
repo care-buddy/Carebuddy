@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import React from 'react';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { PostData } from '@/types';
+import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
 
 const Container = styled.div`
   margin: 30px 0;
@@ -58,8 +59,9 @@ const ListContainer: React.FC<ListContainerProps> = ({
     return <div>Loading...</div>;
   }
 
+  const sortedPosts: PostData[] = sortedByCreatedAt(postIds ?? []); // postIds undefined 처리
   const nonDeletedPosts =
-    postIds && postIds.filter((post) => post.deletedAt === null);
+    sortedPosts && sortedPosts.filter((post) => post.deletedAt === null);
 
   return (
     <Container>
@@ -73,7 +75,7 @@ const ListContainer: React.FC<ListContainerProps> = ({
           // .filter((post) => post.deletedAt === null)
           .map((post) => (
             <DataContainer key={post._id}>
-              <GroupContent>
+              <GroupContent onClick={() => handlePostClick(post._id)}>
                 [
                 {post.communityId.category === 0
                   ? '강아지'
@@ -86,7 +88,7 @@ const ListContainer: React.FC<ListContainerProps> = ({
                 {post.title}
               </ContentList>{' '}
               {/* Add onClick */}
-              <ContentList>
+              <ContentList onClick={() => handlePostClick(post._id)}>
                 {new Date(post.createdAt).toLocaleDateString()}
               </ContentList>
             </DataContainer>
