@@ -1,4 +1,3 @@
-import errorState from '@/recoil/atoms/errorState';
 import loadingState from '@/recoil/atoms/loadingState';
 import axiosInstance from '@/utils/axiosInstance';
 import { useEffect, useState } from 'react';
@@ -14,7 +13,7 @@ interface DataItem {
 const useFetchInfoSearch = (allEndpoint: string, searchEndpoint: string) => {
   const [data, setData] = useState<DataItem[]>([]);
   const [isLoading, setLoading] = useRecoilState(loadingState);
-  const [isError, setError] = useRecoilState(errorState);
+  const [isError, setError] = useState<Error | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
 

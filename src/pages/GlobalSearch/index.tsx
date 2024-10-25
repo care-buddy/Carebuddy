@@ -28,12 +28,10 @@ const GlobalSearch: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams(''); // 쿼리스트링 값(검색 값)
   const params = new URLSearchParams(searchParams); // 현재 쿼리 파라미터
 
-  const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
-    () => {
-      setIsWriteModalOpen(false); 
-      // 작성된 글로 이동 - 임시. 지연님 로직 보고 적용할 것 
-    }
-  );
+  const { handleFormDataChange, handlePostSubmit } = usePostCreate(() => {
+    setIsWriteModalOpen(false);
+    // 작성된 글로 이동 - 임시. 지연님 로직 보고 적용할 것
+  });
 
   // 글 작성 모달 닫기
   const handleCloseWriteModal = () => {
@@ -162,7 +160,7 @@ const GlobalSearch: React.FC = () => {
                 value="등록"
                 component={
                   <PostCreate
-                    formData={formData}
+                    postData={null}
                     onFormDataChange={handleFormDataChange}
                   />
                 }
