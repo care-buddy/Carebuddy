@@ -356,7 +356,7 @@ const Post: React.FC = () => {
               profileImg={comment.userId?.profileImage}
               onEdit={handleCommentEdit}
               onDelete={handleCommentDelete}
-              userId={comment.userId?._id}
+            // userId={comment.userId?._id}
             />
           ))}
         </CommentContainer>

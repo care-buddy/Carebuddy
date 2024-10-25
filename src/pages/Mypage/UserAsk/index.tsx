@@ -1,21 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import userState from '@/recoil/atoms/userState'; // 사용자 상태
+import authState from '@/recoil/atoms/authState';
+import axiosInstance from '@/utils/axiosInstance';
+
+import { User } from '@/types';
 
 import Button from '@/components/common/Button';
 import imgSrc from '@/assets/AlertIcon.png';
-import SmallModal from '@/components/common/SmallModal';
-import UserTrue from '@/pages/Mypage/UserTrue/index';
 
-import axiosInstance from '@/utils/axiosInstance'; // axios 인스턴스 추가
-import { useNavigate } from 'react-router-dom';
-
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import userState from '@/recoil/atoms/userState'; // 사용자 상태
-import useUpdateMe from '@/hooks/useUpdateMe';
-import { User } from '@/types';
-import authState from '@/recoil/atoms/authState';
-
-const UserAsk: React.FC<{ onConfirm: () => void, onCancel: () => void }> = ({ onConfirm, onCancel }) => {
+const UserAsk: React.FC<{ onCancel: () => void }> = ({ onCancel }) => {
   // const [isModalOpen, setIsModalOpen] = useState(false);
   const user: User | null = useRecoilValue(userState);
   const setUserState = useSetRecoilState(userState); // 사용자 상태 업데이트

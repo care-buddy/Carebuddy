@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useRecoilState } from 'recoil';
+import axiosInstance from '@/utils/axiosInstance';
+import userState, { UserState } from '@/recoil/atoms/userState';
+
 // 컴포넌트
 import ListContainer from '@/components/Mypage&Userpage/ListContainer';
 import PetCardContainer from '@/components/Mypage&Userpage/PetCardContainer';
@@ -10,9 +14,6 @@ import SmallModal from '@/components/common/SmallModal';
 import UserAsk from '@/pages/Mypage/UserAsk';
 import TopBar from '@/components/common/TopBar';
 
-import axiosInstance from '@/utils/axiosInstance';
-import { useRecoilState } from 'recoil';
-import userState, { UserState } from '@/recoil/atoms/userState';
 import { Menu } from '@/components/Mypage&Userpage/containerComponents';
 
 const Container = styled.div`
@@ -78,9 +79,9 @@ const Mypage: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleConfirmWithdraw = () => {
-    setIsModalOpen(false);
-  };
+  // const handleConfirmWithdraw = () => {
+  //   setIsModalOpen(false);
+  // };
 
   const contentItems = [
     {
@@ -131,7 +132,7 @@ const Mypage: React.FC = () => {
         <SmallModal
           component={
             <UserAsk
-              onConfirm={handleConfirmWithdraw}
+              // onConfirm={handleConfirmWithdraw}
               onCancel={handleCloseModal}
             />
           }
