@@ -7,6 +7,7 @@ import UserTrue from '@/pages/Mypage/UserTrue/index';
 import axiosInstance from '@/utils/axiosInstance'; // axios 인스턴스 추가
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import userState from '@/recoil/atoms/userState'; // 사용자 상태
+import { useNavigate } from 'react-router-dom';
 
 const Container = styled.div`
   display: flex;
@@ -45,31 +46,39 @@ const WithdrawButton = styled.a`
 `;
 
 const UserAsk: React.FC<{ onConfirm: () => void, onCancel: () => void }> = ({ onConfirm, onCancel }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  // const [isModalOpen, setIsModalOpen] = useState(false);
   const user = useRecoilValue(userState); // 현재 로그인된 사용자 정보
   const setUserState = useSetRecoilState(userState); // 사용자 상태 업데이트
+  const navigate = useNavigate(); // navigate 훅 사용
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+  // const handleOpenModal = () => {
+  //   setIsModalOpen(true);
+  // };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
-  };
+  // const handleCloseModal = () => {
+  //   setIsModalOpen(false);
+  // };
 
-  // 유저 탈퇴 처리 함수
   const handleWithdraw = async () => {
     try {
-      if (user?._id) {
-        // 현재 로그인된 사용자의 id를 이용해 DELETE 요청
-        await axiosInstance.delete(`/me`);
-        setUserState(null); // 사용자 상태 초기화 (로그아웃 효과)
-        onConfirm(); // 추가 작업 실행 (예: 페이지 이동, 알림 등)
+      // 1. me API에 DELETE 요청을 보낸다.
+      const deleteResponse = await axiosInstance.delete(`/me`);
+
+      if (deleteResponse.status === 200) {
+        console.log("회원탈퇴 성공: ", deleteResponse.data);
+
+        // 2. 사용자 상태를 초기화
+        setUserState(null); // 사용자 상태 초기화
+        alert("회원탈퇴가 완료되었습니다."); // 사용자에게 알림
+
+        // 3. 메인 페이지로 이동
+        navigate('/'); // 메인 페이지로 리다이렉트
       }
     } catch (error) {
-      console.error("유저 삭제 중 오류 발생:", error);
+      console.error("회원탈퇴 중 오류 발생:", error);
     }
   };
+
 
   return (
     <Container>
@@ -88,13 +97,13 @@ const UserAsk: React.FC<{ onConfirm: () => void, onCancel: () => void }> = ({ on
         >
           계속 회원을 유지할래요
         </Button>
-        <WithdrawButton onClick={handleOpenModal}>탈퇴하기</WithdrawButton>
-        {isModalOpen && (
+        <WithdrawButton onClick={handleWithdraw}>탈퇴하기</WithdrawButton>
+        {/* {isModalOpen && (
           <SmallModal
-            component={<UserTrue onConfirm={handleWithdraw} />} // 탈퇴 API 호출
+            component={<UserTrue onConfirm={onConfirm} />}
             onClose={handleCloseModal}
           />
-        )}
+        )} */}
       </ButtonContainer>
     </Container>
   );
