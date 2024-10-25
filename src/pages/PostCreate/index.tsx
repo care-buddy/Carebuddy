@@ -47,7 +47,7 @@ const PostCreate: React.FC<PostCreateProps> = ({
   let categoryOptions;
   let communityOptions;
 
-  if (categoryForEdit !== undefined ) {
+  if (categoryForEdit !== undefined) {
     // 게시글 수정 모드일 때는 주어진 카테고리와 커뮤니티 값만 설정
     categoryOptions = [
       {
@@ -58,14 +58,14 @@ const PostCreate: React.FC<PostCreateProps> = ({
 
     communityOptions = [
       {
-        value: communityIdForEdit,
-        label: communityLabelForEdit,
+        value: communityIdForEdit ?? '',
+        label: communityLabelForEdit ?? '',
         category: categoryForEdit,
       },
     ];
   } else {
     // 새로운 게시글 작성 시 기본 옵션을 설정
-    const options = generateOptions; 
+    const options = generateOptions;
     categoryOptions = options.categoryOptions;
     communityOptions = options.communityOptions;
   }
@@ -206,7 +206,10 @@ const PostCreate: React.FC<PostCreateProps> = ({
           options={filteredCommunityOptions}
           value={community}
           onChange={handleCommunityOptions}
-          disabled={communityLabelForEdit !== undefined && communityLabelForEdit !== null}
+          disabled={
+            communityLabelForEdit !== undefined &&
+            communityLabelForEdit !== null
+          }
         />
       </SelectWrapper>
       <InputWrapper>
