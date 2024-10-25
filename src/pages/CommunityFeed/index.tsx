@@ -62,11 +62,9 @@ const CommunityFeed: React.FC = () => {
   const navigate = useNavigate();
   const updateMe = useUpdateMe();
 
-  const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
-    () => {
-      // console.log('이후 실행 로직 자리');
-    }
-  );
+  const { handleFormDataChange, handlePostSubmit } = usePostCreate(() => {
+    // console.log('이후 실행 로직 자리');
+  });
 
   // 추천 그룹 사이드바용 API(전체 그룹 조회)
   useEffect(() => {
@@ -265,7 +263,7 @@ const CommunityFeed: React.FC = () => {
                     categoryForEdit={Number(communityInfo.category)}
                     communityIdForEdit={communityId}
                     communityLabelForEdit={communityInfo?.community}
-                    postData={formData}
+                    postData={null}
                     onFormDataChange={handleFormDataChange}
                   />
                 }

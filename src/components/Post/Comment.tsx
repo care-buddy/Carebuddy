@@ -14,7 +14,7 @@ import userState from '@/recoil/atoms/userState';
 type CommentProps = {
   text: string;
   profileImg?: string;
-  nickName: string;
+  nickName?: string;
   date: string;
   onEdit: (comment: string, commentId: string) => void;
   onDelete: (commentId: string) => void;
@@ -37,7 +37,7 @@ const Comment: React.FC<CommentProps> = ({
   const user = useRecoilValue(userState);
 
   const debouncedSetEditingComment = useDebounce(300, setEditingComment);
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleUpdateComment = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     debouncedSetEditingComment(e.target.value);
@@ -58,8 +58,7 @@ const Comment: React.FC<CommentProps> = ({
     navigate(`/userpage/${userId}`);
   };
 
-  const imgSrc =
-    profileImg && profileImg.length > 0 ? profileImg[0] : personProfile;
+  const imgSrc = profileImg || personProfile;
 
   return (
     <StyledComment>
