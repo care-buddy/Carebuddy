@@ -9,6 +9,8 @@ import { LuUser2, LuSearch, LuX } from 'react-icons/lu';
 
 import Login from '@/components/Login/Login';
 import BasicRegistration from '@/components/Registration/BasicRegistration';
+import FindingId from '@/components/Login/FindingId';
+import FindingPassword from '@/components/Login/FindingPassword';
 import Dropdown from '@/components/Dropdown';
 import Button from '@/components/common/Button';
 
@@ -26,10 +28,12 @@ import { CommunityData } from '@/types';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [showNotification, setShowNotification] = useState(false);
-  // const [loginModalOpen, setLoginModalOpen] = useState(false);
+  // const [showNotification, setShowNotification] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
+  const [findingIdModalOpen, setFindingIdModalOpen] = useState(false);
+  const [findingPasswordModalOpen, setFindingPasswordModalOpen] =
+    useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
   const [, setAuth] = useRecoilState(authState);
@@ -46,6 +50,18 @@ const Header: React.FC = () => {
   // 회원가입 모달 조작 함수
   const handleRegistrationModal = (isOpen: boolean) => {
     setRegistrationModalOpen(isOpen);
+    setLoginModalOpen(false);
+  };
+
+  // 아이디 찾기 모달 조작 함수
+  const handleFindingIdModal = (isOpen: boolean) => {
+    setFindingIdModalOpen(isOpen);
+    setLoginModalOpen(false);
+  };
+
+  // 비밀번호 찾기 모달 조작 함수
+  const handleFindingPasswordModal = (isOpen: boolean) => {
+    setFindingPasswordModalOpen(isOpen);
     setLoginModalOpen(false);
   };
 
@@ -131,7 +147,7 @@ const Header: React.FC = () => {
     { to: '/community', label: '전체 커뮤니티' },
     ...(user?.communityId?.map((community: CommunityData) => ({
       to: `/community-feed/${community._id}`,
-      label: community.community,
+      label: `${community.community} ${community.category ? '고양이' : '강아지'}`,
     })) || []),
   ];
 
@@ -227,10 +243,14 @@ const Header: React.FC = () => {
                 onClose={() => handleLoginModal(false)}
                 component={
                   <Login
+                    handleLoginModal={() => handleLoginModal(false)}
                     onOpenRegistrationModal={() =>
                       handleRegistrationModal(true)
                     }
-                    handleLoginModal={() => handleLoginModal(false)}
+                    onOpenFindingIdModal={() => handleFindingIdModal(true)}
+                    onOpenFindingPasswordModal={() =>
+                      handleFindingPasswordModal(true)
+                    }
                   />
                 }
               />
@@ -240,6 +260,28 @@ const Header: React.FC = () => {
                 onClose={() => handleRegistrationModal(false)}
                 component={
                   <BasicRegistration
+                    onClose={() => handleRegistrationModal(false)}
+                  />
+                }
+              />
+            )}
+            {/* 아이디 찾기 */}
+            {findingIdModalOpen && (
+              <SmallModal
+                onClose={() => handleFindingIdModal(false)}
+                component={
+                  <FindingId
+                    onClose={() => handleRegistrationModal(false)}
+                  />
+                }
+              />
+            )}
+            {/* 비밀번호 찾기 */}
+            {findingPasswordModalOpen && (
+              <SmallModal
+                onClose={() => handleFindingPasswordModal(false)}
+                component={
+                  <FindingPassword
                     onClose={() => handleRegistrationModal(false)}
                   />
                 }

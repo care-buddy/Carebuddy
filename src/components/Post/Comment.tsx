@@ -8,6 +8,8 @@ import ActionButton from '@/components/common/ActionButton';
 import useDebounce from '@hooks/useDebounce';
 
 import personProfile from '@/assets/person.png';
+import { useRecoilValue } from 'recoil';
+import userState from '@/recoil/atoms/userState';
 
 type CommentProps = {
   text: string;
@@ -32,6 +34,7 @@ const Comment: React.FC<CommentProps> = ({
 }) => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [editingComment, setEditingComment] = useState<string | null>(null);
+  const user = useRecoilValue(userState);
 
   const debouncedSetEditingComment = useDebounce(300, setEditingComment);
   const navigate = useNavigate();
@@ -55,7 +58,8 @@ const Comment: React.FC<CommentProps> = ({
     navigate(`/userpage/${userId}`);
   };
 
-  const imgSrc = profileImg && profileImg.length > 0 ? profileImg[0] : personProfile;
+  const imgSrc =
+    profileImg && profileImg.length > 0 ? profileImg[0] : personProfile;
 
   return (
     <StyledComment>
@@ -66,13 +70,18 @@ const Comment: React.FC<CommentProps> = ({
             <Nickname onClick={handleNicknameClick}>{nickName}</Nickname>
             <UploadedDate>{date}</UploadedDate>
           </Info>
-          <ActionButton
-            buttonBorder="border-none"
-            buttonSize="sm"
-            direction="horizonal"
-            onEdit={handleButtonClick}
-            onDelete={handleCommentDelete}
-          />
+
+          {userId === user?._id ? (
+            <ActionButton
+              buttonBorder="border-none"
+              buttonSize="sm"
+              direction="horizonal"
+              onEdit={handleButtonClick}
+              onDelete={handleCommentDelete}
+            />
+          ) : (
+            <div />
+          )}
         </Div>
         {!isEditing && <Content>{text}</Content>}
         {isEditing && (

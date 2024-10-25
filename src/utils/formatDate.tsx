@@ -1,5 +1,5 @@
 // 날짜 formatting 함수
-const formatDate = (rowDate: string) => {
+const formatDate = (rowDate: Date) => {
   const date = new Date(rowDate);
 
   // 날짜 객체 유효성 검사

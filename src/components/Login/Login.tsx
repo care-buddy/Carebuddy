@@ -17,13 +17,17 @@ import userState from '@/recoil/atoms/userState';
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
 interface LoginProps {
-  onOpenRegistrationModal: () => void;
   handleLoginModal: () => void;
+  onOpenRegistrationModal: () => void;
+  onOpenFindingIdModal: () => void;
+  onOpenFindingPasswordModal: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({
-  onOpenRegistrationModal,
   handleLoginModal,
+  onOpenRegistrationModal,
+  onOpenFindingIdModal,
+  onOpenFindingPasswordModal
 }) => {
   // const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
@@ -57,6 +61,7 @@ const Login: React.FC<LoginProps> = ({
       try {
         // 로그인 API 호출
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
+        console.log('로그인응답', loginResponse)
 
         const { accessToken } = loginResponse.data; // accessToken 추출
 
@@ -75,8 +80,7 @@ const Login: React.FC<LoginProps> = ({
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
       } catch (error) {
-        // 에러 처리
-        console.error('로그인 중 에러:', error);
+        alert('아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.')
       }
     } else {
       alert('아이디와 비밀번호를 입력해주세요');
@@ -157,6 +161,13 @@ const Login: React.FC<LoginProps> = ({
             onChange={handleCheckBoxChange}
           />
         </CheckBoxSection> */}
+      </SignupSection>
+      <LoginContainer>
+        <Button buttonStyle="square-green" onClick={handleLogin}>
+          로그인
+        </Button>
+      </LoginContainer>
+      <ButtonContainer>
         <Button
           buttonStyle="black"
           buttonSize="sm"
@@ -164,18 +175,15 @@ const Login: React.FC<LoginProps> = ({
         >
           회원가입
         </Button>
-      </SignupSection>
-      <LoginContainer>
-        <Button buttonStyle="square-green" onClick={handleLogin}>
-          로그인
+        <ButtonDivider>|</ButtonDivider>
+        <Button buttonStyle="black" buttonSize="sm" onClick={onOpenFindingIdModal}>
+          아이디 찾기
         </Button>
-      </LoginContainer>
-      {/* <Button buttonStyle="black" buttonSize="sm" onClick={handleLogout}>
-        로그아웃
-      </Button> */}
-      <Button buttonStyle="black" buttonSize="sm">
-        아이디/비밀번호 찾기
-      </Button>
+        <ButtonDivider>|</ButtonDivider>
+        <Button buttonStyle="black" buttonSize="sm" onClick={onOpenFindingPasswordModal}>
+          비밀번호 찾기
+        </Button>
+      </ButtonContainer>
     </Container>
   );
 };
@@ -233,11 +241,6 @@ const LoginContainer = styled.div`
   }
 `;
 
-// const KakaoLoginButton = styled.div`
-//   background-color: yellow;
-//   height: 30px;
-// `;
-
 const PasswordContainer = styled.div`
   position: relative;
 
@@ -257,4 +260,15 @@ const IconContainer = styled.div`
     right: 8px;
     color: var(--color-grey-1);
   }
+`;
+
+const ButtonContainer = styled.div`
+  display: flex;
+`;
+
+const ButtonDivider = styled.p`
+  color: var(--color-grey-2);
+  font-weight: var(--font-weight-regular);
+  background-color: transparent;
+  padding: 0 4px;
 `;

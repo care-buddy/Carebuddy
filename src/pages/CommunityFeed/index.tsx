@@ -48,6 +48,11 @@ const CommunityFeed: React.FC = () => {
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const [communityInfo, setCommunityInfo] = useState({
+    community: '',
+    category: '',
+  });
+
   const [recommendedCommunities, setRecommendedCommunities] = useState<
     CommunityData[] | null
   >(null);
@@ -118,11 +123,19 @@ const CommunityFeed: React.FC = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setLoading(true); // 로딩 상태 시작
         const response = await axiosInstance.get(
           `/posts/${communityId}/community`
         );
 
-        const postData: PostData[] = response.data.data;
+        const postData: PostData[] = response.data.data.posts;
+        if (!Array.isArray(postData)) {
+          setPosts([]); // 데이터가 배열이 아니면 빈 배열로 설정
+          return;
+        }
+
+        setCommunityInfo(response.data.data.community);
+
         const sortedPosts: PostData[] = sortedByCreatedAt(postData);
         const filteredPosts = sortedPosts.filter(
           (post: PostData) => !post.deletedAt
@@ -130,12 +143,13 @@ const CommunityFeed: React.FC = () => {
         setPosts(filteredPosts);
       } catch (error) {
         setError(error as Error);
+        setPosts([]); // 에러 발생 시 빈 배열로 설정
       } finally {
-        setLoading(false);
+        setLoading(false); // 로딩 상태 종료
       }
     };
     fetchData();
-  }, []);
+  }, [communityId]);
 
   // 검색 로직
   // 검색 상태 핸들러
@@ -179,7 +193,7 @@ const CommunityFeed: React.FC = () => {
   }
 
   const renderAllPosts = () => {
-    if (!posts || posts.length === 0) {
+    if (!posts || !Array.isArray(posts) || posts.length === 0) {
       return <NoPostsFound>게시글이 없습니다.</NoPostsFound>;
     }
 
@@ -189,7 +203,7 @@ const CommunityFeed: React.FC = () => {
         postId={post._id}
         title={post.title}
         content={post.content}
-        uploadedDate={formatDate(String(post.createdAt))}
+        uploadedDate={formatDate(post.createdAt)}
         nickname={post.userId?.nickName || 'Unknown User'}
         profileSrc={
           post.userId && post.userId.profileImage
@@ -210,12 +224,13 @@ const CommunityFeed: React.FC = () => {
           postId={post._id}
           title={post.title}
           content={post.content}
-          uploadedDate={formatDate(String(post.createdAt))}
-          // userId가 null이 아닌지 확인하고, nickName이 없을 경우 'Unknown User'를 표시 - 임시(개발용)
+          uploadedDate={formatDate(post.createdAt)}
           nickname={post.userId?.nickName || 'Unknown User'}
-          // profileImage가 배열일 경우 첫 번째 이미지 사용, 없으면 기본 이미지 사용
-          profileSrc={post.userId?.profileImage?.[0] || DefaultProfile}
-          // likedUsers 배열의 길이를 안전하게 체크
+          profileSrc={
+            post.userId && post.userId.profileImage
+              ? post.userId.profileImage
+              : DefaultProfile
+          }
           likeCount={post.likedUsers?.length || 0}
         />
       ));
@@ -227,15 +242,9 @@ const CommunityFeed: React.FC = () => {
     <>
       <TopBar
         category="커뮤니티"
-        title={
-          posts && posts.length > 0
-            ? posts[0].communityId.community
-            : '커뮤니티 제목을 불러오는 중...'
-        }
+        title={communityInfo?.community}
         communityCategory={
-          posts && posts.length > 0
-            ? posts[0].communityId.category
-            : '카테고리를 불러오는 중...'
+          Number(communityInfo.category) === 0 ? '강아지' : '고양이'
         }
       />
       <SearchContainer>
@@ -256,6 +265,9 @@ const CommunityFeed: React.FC = () => {
                 value="등록"
                 component={
                   <PostCreate
+                    categoryForEdit={Number(communityInfo.category)}
+                    communityIdForEdit={communityId}
+                    communityLabelForEdit={communityInfo?.community}
                     postData={formData}
                     onFormDataChange={handleFormDataChange}
                   />
