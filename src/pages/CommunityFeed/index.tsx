@@ -1,6 +1,3 @@
-// 임시 - 남은 작업: , 그룹 멤버 조회 API(백엔드 완료 이후 작업) / 첫 화면 페이지네이션(커뮤니티별 게시글 조회 API 붙이고 작업)
-// 리팩토링할 수도 있는 부분: filteredPosts를 제거하고 필터링된 데이터를 바로 렌더링하는 방식 고려 가능. useMemo 사용해서 메모이제이션, posts 부분과 filterefPosts 함수로 만들어서 동적렌더링, 검색로직 커스텀 훅으로 분리
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
 import { useRecoilValue, useRecoilState } from 'recoil';
