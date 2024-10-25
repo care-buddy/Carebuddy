@@ -33,13 +33,14 @@ const getCategoryOptions = (communityIds: CommunityData[]) => {
     }
   });
 
-  // 기본값으로 강아지와 고양이에 대한 옵션 추가
   if (!categoriesSet.has(CATEGORY.dog)) {
     options.unshift({ value: CATEGORY.dog, label: '강아지' }); // 강아지 기본값 추가
   }
   if (!categoriesSet.has(CATEGORY.cat)) {
     options.unshift({ value: CATEGORY.cat, label: '고양이' }); // 고양이 기본값 추가
   }
+
+  options.sort((a, b) => a.value - b.value);
 
   return [{ value: -1, label: '종' }, ...options]; // 기본 카테고리 값으로 -1 사용
 };

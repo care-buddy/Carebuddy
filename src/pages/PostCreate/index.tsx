@@ -1,5 +1,3 @@
-// 게시글 수정의 경우에는 카테고리 변경 불가능하도록 수정 !
-
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import Select from '@/components/common/Select';
@@ -10,11 +8,17 @@ import { PostData } from '@/types';
 import useGenerateOptions from '@/hooks/useGenerateOptions';
 
 interface PostCreateProps {
+  categoryForEdit?: number;
+  communityIdForEdit?: string;
+  communityLabelForEdit?: string;
   postData: PostData | null;
   onFormDataChange: (FormData: FormData) => void;
 }
 
 const PostCreate: React.FC<PostCreateProps> = ({
+  categoryForEdit,
+  communityIdForEdit,
+  communityLabelForEdit,
   postData,
   onFormDataChange,
 }) => {
@@ -31,11 +35,40 @@ const PostCreate: React.FC<PostCreateProps> = ({
     },
     postImage: postData?.postImage,
   });
+  const generateOptions = useGenerateOptions();
 
-  const [category, setCategory] = useState<number | string>(-1); // 선택된 카테고리
-  const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
+  const [category, setCategory] = useState<number | string>(
+    categoryForEdit ?? -1
+  );
+  const [community, setCommunity] = useState<string>(
+    communityIdForEdit ?? 'community'
+  );
 
-  const { categoryOptions, communityOptions } = useGenerateOptions();
+  let categoryOptions;
+  let communityOptions;
+
+  if (categoryForEdit !== undefined ) {
+    // 게시글 수정 모드일 때는 주어진 카테고리와 커뮤니티 값만 설정
+    categoryOptions = [
+      {
+        value: categoryForEdit,
+        label: categoryForEdit === 0 ? '강아지' : '고양이',
+      },
+    ];
+
+    communityOptions = [
+      {
+        value: communityIdForEdit,
+        label: communityLabelForEdit,
+        category: categoryForEdit,
+      },
+    ];
+  } else {
+    // 새로운 게시글 작성 시 기본 옵션을 설정
+    const options = generateOptions; 
+    categoryOptions = options.categoryOptions;
+    communityOptions = options.communityOptions;
+  }
 
   const [filteredCommunityOptions, setFilteredCommunityOptions] =
     useState(communityOptions);
@@ -164,13 +197,16 @@ const PostCreate: React.FC<PostCreateProps> = ({
           selectSize="sm"
           options={categoryOptions}
           onChange={handleCategoryOptions}
+          value={category}
+          disabled={categoryForEdit !== undefined && categoryForEdit !== null}
         />
         <Select
           selectStyle="square"
           selectSize="bg"
           options={filteredCommunityOptions}
-          value={postInfo?.communityId._id || ''}
+          value={community}
           onChange={handleCommunityOptions}
+          disabled={communityLabelForEdit !== undefined && communityLabelForEdit !== null}
         />
       </SelectWrapper>
       <InputWrapper>
@@ -192,7 +228,6 @@ const PostCreate: React.FC<PostCreateProps> = ({
       </TextAreaWrapper>
       <ImageUploadWrapper>
         <ImageUploadLabel htmlFor="postImage">사진 첨부</ImageUploadLabel>
-
         <input
           type="file"
           accept="image/png, image/jpeg"
@@ -204,7 +239,6 @@ const PostCreate: React.FC<PostCreateProps> = ({
         <ImagePreview>
           {imageSrc ? <PreviewImage src={imageSrc} alt="이미지" /> : <div />}
         </ImagePreview>
-
         {/* {imageFiles.map((file) => (
           <ImagePreview key={file.name}>
             <PreviewImage src={URL.createObjectURL(file)} alt="미리보기" />

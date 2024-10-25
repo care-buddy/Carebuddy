@@ -1,6 +1,3 @@
-// 임시 - 남은 작업: 게시글 전체 조회 API(백엔드 완료 이후 작업)
-// 리팩토링할 부분: 검색로직 커스텀 훅으로 분리, JSX코드 동적렌더링하도록 변경
-
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import styled from 'styled-components';
@@ -18,7 +15,9 @@ import axiosInstance from '@/utils/axiosInstance';
 
 import usePostCreate from '@/hooks/usePostCreate';
 
-import type { PostData } from '@constants/tempInterface';
+import DefaultProfile from '@/assets/person.png';
+
+import { PostData } from '@/types';
 
 const GlobalSearch: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성 모달
@@ -31,7 +30,8 @@ const GlobalSearch: React.FC = () => {
 
   const { formData, handleFormDataChange, handlePostSubmit } = usePostCreate(
     () => {
-      console.log('이후 실행 로직 자리');
+      setIsWriteModalOpen(false); 
+      // 작성된 글로 이동 - 임시. 지연님 로직 보고 적용할 것 
     }
   );
 
@@ -40,21 +40,21 @@ const GlobalSearch: React.FC = () => {
     setIsWriteModalOpen(false);
   };
 
-  // 전체 게시글 조회 API(백엔드 코드 완성 이후 로 변경)
+  // 전체 게시글 조회 API
   useEffect(() => {
     const fetchData = async () => {
       // 게시글 목록
       try {
-        const response = await axiosInstance.get(`post`);
+        const response = await axiosInstance.get(`/posts`);
 
         // 등록일 formatting
-        const formattedPosts = response.data.map((post: PostData) => ({
+        const formattedPosts = response.data.data.map((post: PostData) => ({
           ...post,
           createdAt: formatDate(post.createdAt),
         }));
         setPosts(formattedPosts);
       } catch (error) {
-        // console.error('게시글 목록 조회 실패', error); // 임시
+        console.error('게시글 목록 조회 실패', error);
       }
     };
     fetchData();
@@ -92,20 +92,23 @@ const GlobalSearch: React.FC = () => {
     setFilteredPosts(filteredPost);
   }, [searchTerm, posts]);
 
-  // 복잡한 JSX코드 변수에 넣어 정리
   const renderAllPosts = () =>
     posts?.map((post) => (
       <FeedBox
         key={post._id}
         postId={post._id}
-        title={post.title}
-        content={post.content}
+        title={post.title || '제목 없음'}
+        content={post.content || '내용 없음'}
         uploadedDate={formatDate(post.createdAt)}
-        nickname={post.userId.nickName}
-        profileSrc={post.userId.profileImage[0]}
-        communityName={post.communityId.community}
+        nickname={post.userId?.nickName || '익명 사용자'}
+        profileSrc={
+          post.userId && post.userId.profileImage
+            ? post.userId.profileImage
+            : DefaultProfile
+        }
+        communityName={post.communityId?.community || '커뮤니티 없음'}
         communityCategory={
-          post.communityId.category === 0 ? '강아지' : '고양이'
+          post.communityId?.category === 0 ? '강아지' : '고양이'
         }
       />
     ));
@@ -116,14 +119,18 @@ const GlobalSearch: React.FC = () => {
         <FeedBox
           key={post._id}
           postId={post._id}
-          title={post.title}
-          content={post.content}
+          title={post.title || '제목 없음'}
+          content={post.content || '내용 없음'}
           uploadedDate={formatDate(post.createdAt)}
-          nickname={post.userId.nickName}
-          profileSrc={post.userId.profileImage[0]}
-          communityName={post.communityId.community}
+          nickname={post.userId?.nickName || '익명 사용자'}
+          profileSrc={
+            post.userId && post.userId.profileImage
+              ? post.userId.profileImage
+              : DefaultProfile
+          }
+          communityName={post.communityId?.community || '커뮤니티 없음'}
           communityCategory={
-            post.communityId.category === 0 ? '강아지' : '고양이'
+            post.communityId?.category === 0 ? '강아지' : '고양이'
           }
         />
       ));

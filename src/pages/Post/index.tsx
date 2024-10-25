@@ -77,6 +77,7 @@ const Post: React.FC = () => {
 
       const commentData = post.commentId;
       // 댓글
+
       if (Array.isArray(commentData)) {
         const sortedPosts: CommentData[] = sortedByCreatedAt(commentData);
         const validComments = sortedPosts.filter(
@@ -135,6 +136,8 @@ const Post: React.FC = () => {
         setComments((prevComments) =>
           prevComments ? [...prevComments, newComment] : [newComment]
         );
+
+        fetchData();
       } else {
         alert('댓글 내용을 입력해주세요.');
       }
@@ -231,12 +234,14 @@ const Post: React.FC = () => {
       });
 
       setLikedUsers(response.data.data);
+      setLikedUsers(response.data.data);
     } catch (error) {
       setError(error as Error);
     } finally {
       setLoading(false);
     }
   };
+
   useEffect(() => {
     setComments(comments);
   }, [comments]);
@@ -298,6 +303,8 @@ const Post: React.FC = () => {
                 value="수정"
                 component={
                   <PostCreate
+                    categoryForEdit={Number(post?.communityId?.category)}
+                    communityLabelForEdit={post?.communityId?.community}
                     postData={post}
                     onFormDataChange={handleFormDataChange}
                   />
@@ -343,7 +350,7 @@ const Post: React.FC = () => {
               key={comment._id}
               commentId={comment._id}
               text={comment.text}
-              nickName={comment.userId?.nickName}
+              nickName={comment.userId.nickName}
               date={formatDateIncludeTime(comment.createdAt)}
               profileImg={comment.userId?.profileImage}
               onEdit={handleCommentEdit}
