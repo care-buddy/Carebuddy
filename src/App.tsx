@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { createGlobalStyle } from 'styled-components';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
@@ -21,8 +22,6 @@ import {
 
 import useLogin from './hooks/useLogin'; // 로그인 관련 훅
 import isAuthenticatedState from './recoil/selectors/authSelector'; // 인증 상태를 확인하는 Recoil selector
-import authState from './recoil/atoms/authState'; // 인증 상태 관리 atom
-import userState from './recoil/atoms/userState';
 
 const router = createBrowserRouter([
   {
@@ -79,15 +78,10 @@ export default App;
 const AppContent: React.FC = () => {
   const { handleSilentRefresh } = useLogin();
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
-  const userStateValue = useRecoilValue(userState); 
 
   // 페이지 리로드(새로고침)시 로그인 연장
   useEffect(() => {
     handleSilentRefresh(isAuthenticated);
-    console.log('페이지 리로드 시 로그인 연장')
-    console.log('userState', userState);
-    console.log('userStateValue', userStateValue);
-    console.log('로그인상태', authState);
   }, []);
 
   return (

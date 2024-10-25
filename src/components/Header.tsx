@@ -9,14 +9,10 @@ import { LuUser2, LuSearch, LuX } from 'react-icons/lu';
 
 import Login from '@/components/Login/Login';
 import BasicRegistration from '@/components/Registration/BasicRegistration';
-import FindingId from '@/components/Login/FindingId';
-import FindingPassword from '@/components/Login/FindingPassword';
 import Dropdown from '@/components/Dropdown';
 import Button from '@/components/common/Button';
 
 import SmallModal from '@/components/common/SmallModal';
-
-import axiosInstance from '@/utils/axiosInstance';
 
 import authState from '@/recoil/atoms/authState';
 import userState from '@/recoil/atoms/userState';
@@ -26,19 +22,19 @@ import loginModalState from '@/recoil/atoms/loginModalState';
 
 import { CommunityData } from '@/types';
 
+import useLogout from '@/hooks/useLogout';
+
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
   // const [showNotification, setShowNotification] = useState(false);
   const [loginModalOpen, setLoginModalOpen] = useRecoilState(loginModalState);
   const [registrationModalOpen, setRegistrationModalOpen] = useState(false);
-  const [findingIdModalOpen, setFindingIdModalOpen] = useState(false);
-  const [findingPasswordModalOpen, setFindingPasswordModalOpen] =
-    useState(false);
   const [searchTerm, setSearchTerm] = useState<string>(''); // 검색어
   const [isSearching, setIsSearching] = useState<boolean>(false); // 검색중인 상태
   const [, setAuth] = useRecoilState(authState);
   const [user, setUser] = useRecoilState(userState);
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
+  const logout = useLogout();
 
   const navigate = useNavigate();
 
@@ -50,18 +46,6 @@ const Header: React.FC = () => {
   // 회원가입 모달 조작 함수
   const handleRegistrationModal = (isOpen: boolean) => {
     setRegistrationModalOpen(isOpen);
-    setLoginModalOpen(false);
-  };
-
-  // 아이디 찾기 모달 조작 함수
-  const handleFindingIdModal = (isOpen: boolean) => {
-    setFindingIdModalOpen(isOpen);
-    setLoginModalOpen(false);
-  };
-
-  // 비밀번호 찾기 모달 조작 함수
-  const handleFindingPasswordModal = (isOpen: boolean) => {
-    setFindingPasswordModalOpen(isOpen);
     setLoginModalOpen(false);
   };
 
@@ -112,29 +96,7 @@ const Header: React.FC = () => {
     }
   }, []);
 
-  // 로그아웃
-  const handleLogout = async () => {
-    const deleteCookie = (name: string) => {
-      document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/; SameSite=Lax;`;
-    };
-
-    try {
-      await axiosInstance.delete('auth/logout', {
-        data: { email: user?.email },
-      });
-      navigate('/');
-
-      deleteCookie('refreshToken'); // 리프레시 토큰 쿠키 이름에 맞게 변경
-
-      setAuth({
-        accessToken: null,
-      });
-
-      setUser(null);
-    } catch (error) {
-      console.error(error); // 임시. 나중에 변경
-    }
-  };
+ 
 
   // 임시
   const InfoMenuItems = [
@@ -225,8 +187,8 @@ const Header: React.FC = () => {
               <Button
                 buttonStyle="grey"
                 buttonSize="sm"
-                onClick={() => handleLogout()}
-              >
+                onClick={logout.handleLogout} 
+                >
                 로그아웃
               </Button>
             ) : (
@@ -247,10 +209,6 @@ const Header: React.FC = () => {
                     onOpenRegistrationModal={() =>
                       handleRegistrationModal(true)
                     }
-                    onOpenFindingIdModal={() => handleFindingIdModal(true)}
-                    onOpenFindingPasswordModal={() =>
-                      handleFindingPasswordModal(true)
-                    }
                   />
                 }
               />
@@ -260,28 +218,6 @@ const Header: React.FC = () => {
                 onClose={() => handleRegistrationModal(false)}
                 component={
                   <BasicRegistration
-                    onClose={() => handleRegistrationModal(false)}
-                  />
-                }
-              />
-            )}
-            {/* 아이디 찾기 */}
-            {findingIdModalOpen && (
-              <SmallModal
-                onClose={() => handleFindingIdModal(false)}
-                component={
-                  <FindingId
-                    onClose={() => handleRegistrationModal(false)}
-                  />
-                }
-              />
-            )}
-            {/* 비밀번호 찾기 */}
-            {findingPasswordModalOpen && (
-              <SmallModal
-                onClose={() => handleFindingPasswordModal(false)}
-                component={
-                  <FindingPassword
                     onClose={() => handleRegistrationModal(false)}
                   />
                 }
