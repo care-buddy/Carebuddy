@@ -192,7 +192,7 @@ const Home: React.FC = () => {
                 postId={post._id}
                 title={post.title}
                 content={post.content}
-                uploadedDate={formatDate(String(post.createdAt))}
+                uploadedDate={formatDate(post.createdAt)}
                 nickname={post.userId ? post.userId.nickName : '알 수 없음'} // null 체크 추가
                 profileSrc={
                   post.userId && post.userId.profileImage

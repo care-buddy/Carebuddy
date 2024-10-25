@@ -58,8 +58,7 @@ const Comment: React.FC<CommentProps> = ({
     navigate(`/userpage/${userId}`);
   };
 
-  const imgSrc =
-    profileImg && profileImg.length > 0 ? profileImg[0] : personProfile;
+  const imgSrc = profileImg || personProfile;
 
   return (
     <StyledComment>

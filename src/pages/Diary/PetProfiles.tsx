@@ -103,7 +103,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
       setPetEditModalOpen(true);
     } catch (error) {
       setError(error as Error);
-      console.log(error);
+      console.error(error);
       alert(
         '불러오는 데 오류 발생 다시 시도해주세요 오류메시지를 다시 설정해주세요'
       );
@@ -128,7 +128,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
   };
 
   const deleteProfile = async (buddyId: string) => {
-    if (window.confirm('프로필 삭제 알림')) {
+    if (window.confirm(`프로필을 삭제하시겠습니까?`)) {
       try {
         setLoading(true);
 
@@ -146,7 +146,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
             deletedAt: new Date(),
           };
           await axiosInstance.put(`buddies/${buddyId}/d`);
-          await axiosInstance.put(`buddies/${buddyId}/d`);
+          // await axiosInstance.put(`buddies/${buddyId}/d`);
 
           const updatedProfiles = profiles.map((profile) =>
             profile._id === buddyId ? deletedProfile : profile
@@ -170,6 +170,7 @@ const PetProfiles: React.FC<IProfilesWrapperProps> = ({
         setError(error as Error);
       } finally {
         setLoading(false);
+        window.location.reload(); // 페이지 새로고침 추가
       }
     }
   };
