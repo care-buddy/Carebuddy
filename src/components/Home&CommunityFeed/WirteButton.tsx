@@ -32,12 +32,12 @@ const WriteButton: React.FC<WriteButtonProps> = ({ setIsWriteModalOpen }) => {
       const urlParts = currentUrl.split('/'); // URL 경로를 분할하여 마지막 부분(communityId)
       const communityId = urlParts[urlParts.length - 1];
 
-      const isCommunityIdIncluded = user?.communityId.some(
+      const isCommunityIdIncluded = user?.communityId?.some(
         (community) => community._id === communityId
       );
       
       if (!isCommunityIdIncluded) {
-        // 포함되어있지 않을 때
+        // 가입된 커뮤니티가 아닐 때
         if (
           confirm(
             '게시글 작성을 위해서는 커뮤니티에 가입하셔야합니다. 가입하시겠습니까?'
@@ -51,14 +51,12 @@ const WriteButton: React.FC<WriteButtonProps> = ({ setIsWriteModalOpen }) => {
           );
           if (response.status === 200) {
             await updateMe();
-            // 커뮤니티 가입 후 모달 열어두기
             setIsWriteModalOpen(true);
-            return; // 여기서 return을 통해 이후 코드를 실행하지 않도록 합니다.
+            return;
           }
         } else {
-          // 가입하지 않겠다고 했을 때 모달 닫기
           setIsWriteModalOpen(false);
-          return; // 여기서 return을 통해 이후 코드를 실행하지 않도록 합니다.
+          return; 
         }
       }
 

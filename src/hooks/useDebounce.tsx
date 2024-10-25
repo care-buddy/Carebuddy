@@ -9,7 +9,7 @@ function debounce(callback: (value: string) => void, delay: number) {
   };
 }
 
-// 커스텀훅
+// 훅
 const useDebounce = (
   delay: number,
   setStateFunction: (value: string) => void
