@@ -420,10 +420,15 @@ const Diary: React.FC = () => {
             )}
           </NameInTitle>
           <HorizontalLine />
-          <Button buttonStyle="square-green" onClick={handleOpenModal}>
-            <LuPencilLine />
-            <span> 다이어리 작성하기</span>
-          </Button>
+          {!isAllProfilesDeleted ? (
+            <Button buttonStyle="square-green" onClick={handleOpenModal}>
+              <LuPencilLine />
+              <span> 다이어리 작성하기</span>
+            </Button>
+          ) : (
+            <span />
+          )}
+
           {modalOpen && (
             <Modal
               onClose={handleCloseModal}
@@ -456,7 +461,13 @@ const Diary: React.FC = () => {
               ))
           ) : (
             <ReportWrapper className="noReport">
-              <div>기록이 없습니다 안내문구</div>
+              {!isAllProfilesDeleted ? (
+                <div>등록된 병원 기록이 없습니다.</div>
+              ) : (
+                <div>
+                  <p>등록된 반려동물 프로필이 없습니다. </p>
+                </div>
+              )}
             </ReportWrapper>
           )}
         </DiaryWrapper>
