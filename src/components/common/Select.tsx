@@ -66,7 +66,15 @@ const Select: React.FC<SelectProps> = ({
     disabled={disabled}
   >
     {options.map((option) => (
-      <option key={option.value} value={option.value}>
+      <option
+        // 옵션에 카테고리가 있으면, 커뮤니티용으로 key 값을 다르게 줘서 고유값 부여
+        key={
+          'category' in option
+            ? `cat-${option.category}-${option.value}`
+            : `val-${option.value}`
+        }
+        value={option.value}
+      >
         {option.label}
       </option>
     ))}
