@@ -5,4 +5,5 @@
 // export const API_URL = 'https://carebuddy.store/api/';
 // export const API_URL = 'http://carebuddy.store:443/api/';
 // export const API_URL = 'https://carebuddy.store:443/api/';
-export const API_URL = 'https://34.64.48.225:3001/api/';
+// export const API_URL = 'https://34.64.48.225:3001/api/';
+export const API_URL = 'https://port-0-back-m2swdvfbbfb61876.sel4.cloudtype.app/api/';
