@@ -97,7 +97,7 @@ const GlobalSearch: React.FC = () => {
         postId={post._id}
         title={post.title || '제목 없음'}
         content={post.content || '내용 없음'}
-        uploadedDate={formatDate(post.createdAt)}
+        uploadedDate={post.createdAt}
         nickname={post.userId?.nickName || '익명 사용자'}
         profileSrc={
           post.userId && post.userId.profileImage
@@ -119,7 +119,7 @@ const GlobalSearch: React.FC = () => {
           postId={post._id}
           title={post.title || '제목 없음'}
           content={post.content || '내용 없음'}
-          uploadedDate={formatDate(post.createdAt)}
+          uploadedDate={post.createdAt}
           nickname={post.userId?.nickName || '익명 사용자'}
           profileSrc={
             post.userId && post.userId.profileImage

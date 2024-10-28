@@ -16,18 +16,19 @@ import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
+
 interface LoginProps {
   handleLoginModal: () => void;
   onOpenRegistrationModal: () => void;
-  onOpenFindingIdModal: () => void;
-  onOpenFindingPasswordModal: () => void;
+  onOpenFindingIdModal?: () => void;
+  onOpenFindingPasswordModal?: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({
   handleLoginModal,
   onOpenRegistrationModal,
   onOpenFindingIdModal,
-  onOpenFindingPasswordModal
+  onOpenFindingPasswordModal,
 }) => {
   // const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
@@ -35,11 +36,12 @@ const Login: React.FC<LoginProps> = ({
     password: '',
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
-  const [auth, setAuth] = useRecoilState(authState);
+  const [, setAuth] = useRecoilState(authState);
   const [, setUser] = useRecoilState(userState);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const { handleSilentRefresh } = useLogin();
+
 
   // 로그인을 위한 아이디, 비밀번호 업데이트 핸들러
   const updateLoginInfo = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +63,7 @@ const Login: React.FC<LoginProps> = ({
       try {
         // 로그인 API 호출
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
-        console.log('로그인응답', loginResponse)
+        console.log('로그인응답', loginResponse);
 
         const { accessToken } = loginResponse.data; // accessToken 추출
 
@@ -80,23 +82,13 @@ const Login: React.FC<LoginProps> = ({
         // 모달 닫기 실행되어야함 (임시) - 나중에 추가
         handleLoginModal();
       } catch (error) {
-        alert('아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.')
+        alert(
+          '아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.'
+        );
       }
     } else {
       alert('아이디와 비밀번호를 입력해주세요');
     }
-  };
-
-  // 로그아웃 핸들러
-  const handleLogout = () => {
-    // Recoil 상태 초기화
-    setAuth({ accessToken: null }); // authState 초기화
-    setUser(null); // 유저 상태 초기화
-
-    // Axios 헤더에서 Authorization 제거
-    delete axios.defaults.headers.common.Authorization;
-
-    // 추가적으로 필요한 로그아웃 후 처리 로직을 여기에 추가 가능
   };
 
   // 상태가 업데이트되면 자동 로그인 연장 처리
@@ -107,22 +99,19 @@ const Login: React.FC<LoginProps> = ({
     handleSilentRefresh(isAuthenticated); // 상태가 업데이트된 후 자동 로그인 연장
   }, [isAuthenticated]); // auth 상태가 변경될 때마다 실행
 
-  // 임시
-  useEffect(() => {}, [auth]); // auth 상태가 변경될 때마다 실행
+  // // 페이지가 종료될 때 로그아웃 처리
+  // useEffect(() => {
+  //   const handleBeforeUnload = () => {
+  //     handleLogout(); // 로그아웃 처리
+  //   };
 
-  // 페이지가 종료될 때 로그아웃 처리
-  useEffect(() => {
-    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-      handleLogout(); // 로그아웃 처리
-    };
+  //   window.addEventListener('beforeunload', handleBeforeUnload);
 
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    // 컴포넌트 언마운트 시 리스너 제거
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, []);
+  //   // 컴포넌트 언마운트 시 리스너 제거
+  //   return () => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload);
+  //   };
+  // }, []);
 
   return (
     <Container>
@@ -176,11 +165,19 @@ const Login: React.FC<LoginProps> = ({
           회원가입
         </Button>
         <ButtonDivider>|</ButtonDivider>
-        <Button buttonStyle="black" buttonSize="sm" onClick={onOpenFindingIdModal}>
+        <Button
+          buttonStyle="black"
+          buttonSize="sm"
+          onClick={onOpenFindingIdModal}
+        >
           아이디 찾기
         </Button>
         <ButtonDivider>|</ButtonDivider>
-        <Button buttonStyle="black" buttonSize="sm" onClick={onOpenFindingPasswordModal}>
+        <Button
+          buttonStyle="black"
+          buttonSize="sm"
+          onClick={onOpenFindingPasswordModal}
+        >
           비밀번호 찾기
         </Button>
       </ButtonContainer>

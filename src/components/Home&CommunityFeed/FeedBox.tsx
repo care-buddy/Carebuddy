@@ -13,7 +13,7 @@ type FeedBoxProps = {
   content: string;
   profileSrc: string;
   nickname: string;
-  uploadedDate: string;
+  uploadedDate: Date;
   communityName?: string;
   communityCategory?: string;
   likeCount?: number;
