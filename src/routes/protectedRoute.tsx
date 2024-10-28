@@ -31,7 +31,6 @@ export default function ProtectedRoute({
           accessToken,
         });
       } catch (error) {
-        console.error('Silent refresh error:', error);
         setRedirect(true);
       } finally {
         setLoading(false);

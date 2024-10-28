@@ -1,41 +1,33 @@
-// 임시 - 남은 작업: , 그룹 멤버 조회 API(백엔드 완료 이후 작업) / 첫 화면 페이지네이션(커뮤니티별 게시글 조회 API 붙이고 작업)
-// 리팩토링할 수도 있는 부분: filteredPosts를 제거하고 필터링된 데이터를 바로 렌더링하는 방식 고려 가능. useMemo 사용해서 메모이제이션, posts 부분과 filterefPosts 함수로 만들어서 동적렌더링, 검색로직 커스텀 훅으로 분리
-
-import React, { useState, useEffect } from 'react';
-import { useSearchParams, useParams, useNavigate } from 'react-router-dom';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import type { CommunityData } from '@/types/index';
-
-import TopBar from '@/components/common/TopBar';
-import Loading from '@/components/common/Loading';
-import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
-import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
-import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
-import Search from '@/components/common/Search';
-import Modal from '@/components/common/Modal';
-import PostCreate from '@/pages/PostCreate/index';
-import LinkButton from '@/components/common/LinkButton';
-import NoPostsFound from '@/components/common/NoPostsFound';
-import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
-
-import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
+import { PostData, User } from '@/types';
 
 import DefaultProfile from '@/assets/person.png';
+import axiosInstance from '@/utils/axiosInstance';
+import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
+import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
+
+import loginModalState from '@/recoil/atoms/loginModalState';
+import userState from '@/recoil/atoms/userState';
 
 import usePostCreate from '@/hooks/usePostCreate';
 import useUpdateMe from '@/hooks/useUpdateMe';
 
-import formatDate from '@/utils/formatDate';
-import axiosInstance from '@/utils/axiosInstance';
-
-import loginModalState from '@/recoil/atoms/loginModalState';
-
-import { PostData, User } from '@/types';
-
-import userState from '@/recoil/atoms/userState';
-import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
+import FeedBox from '@/components/Home&CommunityFeed/FeedBox';
+import Modal from '@/components/common/Modal';
+import NoPostsFound from '@/components/common/NoPostsFound';
+import Loading from '@/components/common/Loading';
+import LinkButton from '@/components/common/LinkButton';
+import PostCreate from '@/pages/PostCreate/index';
+import Search from '@/components/common/Search';
+import TopBar from '@/components/common/TopBar';
+import CommunityElement from '@/components/Home&CommunityFeed/CommunityElement';
+import SidePanel from '@/components/Home&CommunityFeed/SidePanel';
+import WriteButton from '@/components/Home&CommunityFeed/WirteButton';
 
 const CommunityFeed: React.FC = () => {
   const [isWriteModalOpen, setIsWriteModalOpen] = useState(false); // 글 작성
@@ -113,7 +105,7 @@ const CommunityFeed: React.FC = () => {
 
   // 로그인 모달 열기
   const handleOpenLoginModal = async () => {
-    alert('로그인한 사용자만 이용할 수 있는 메뉴입니다.'); // 임시. 멘트 변경
+    alert('로그인한 사용자만 이용할 수 있는 메뉴입니다.'); 
     setLoginModalOpen(true);
   };
 
@@ -126,7 +118,13 @@ const CommunityFeed: React.FC = () => {
           `/posts/${communityId}/community`
         );
 
-        const postData: PostData[] = response.data.data.posts;
+        const postData: PostData[] = response.data.data.posts.map(
+          (post: PostData) => ({
+            ...post,
+            createdAt: new Date(post.createdAt),
+          })
+        );
+
         if (!Array.isArray(postData)) {
           setPosts([]); // 데이터가 배열이 아니면 빈 배열로 설정
           return;
@@ -201,7 +199,7 @@ const CommunityFeed: React.FC = () => {
         postId={post._id}
         title={post.title}
         content={post.content}
-        uploadedDate={formatDate(post.createdAt)}
+        uploadedDate={post.createdAt}
         nickname={post.userId?.nickName || 'Unknown User'}
         profileSrc={
           post.userId && post.userId.profileImage
@@ -222,7 +220,7 @@ const CommunityFeed: React.FC = () => {
           postId={post._id}
           title={post.title}
           content={post.content}
-          uploadedDate={formatDate(post.createdAt)}
+          uploadedDate={post.createdAt}
           nickname={post.userId?.nickName || 'Unknown User'}
           profileSrc={
             post.userId && post.userId.profileImage

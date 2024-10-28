@@ -73,7 +73,6 @@ const TextContainer = styled.div`
   transform: translateX(-50%); // 중앙 정렬 보정
   width: 30vw;
   pointer-events: none;
-  // 임시 - 반응형으로 글자 크기 추가해야함
 `;
 
 const Row = styled.div`

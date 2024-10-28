@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 
 import type { PostData, CommunityData } from '@/types/index';
-import formatDate from '@/utils/formatDate';
 
 import Modal from '@/components/common/Modal';
 import Select from '@/components/common/Select';
@@ -160,6 +159,7 @@ const Home: React.FC = () => {
                 selectSize="sm"
                 options={categoryOptions}
                 onChange={handleCategoryOptions}
+                // key={categoryOptions.values}
               />
               <Select
                 selectStyle="round"
@@ -192,7 +192,7 @@ const Home: React.FC = () => {
                 postId={post._id}
                 title={post.title}
                 content={post.content}
-                uploadedDate={formatDate(post.createdAt)}
+                uploadedDate={post.createdAt}
                 nickname={post.userId ? post.userId.nickName : '알 수 없음'} // null 체크 추가
                 profileSrc={
                   post.userId && post.userId.profileImage
