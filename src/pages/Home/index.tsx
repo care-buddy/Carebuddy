@@ -159,6 +159,7 @@ const Home: React.FC = () => {
                 selectSize="sm"
                 options={categoryOptions}
                 onChange={handleCategoryOptions}
+                // key={categoryOptions.values}
               />
               <Select
                 selectStyle="round"
