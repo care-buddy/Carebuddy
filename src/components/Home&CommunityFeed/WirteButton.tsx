@@ -13,6 +13,8 @@ import userState from '@/recoil/atoms/userState';
 
 import useUpdateMe from '@/hooks/useUpdateMe';
 
+import { LOCAL_HOMEPAGE, HOMEPAGE } from '@/constants/constants';
+
 interface WriteButtonProps {
   setIsWriteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
@@ -28,6 +30,16 @@ const WriteButton: React.FC<WriteButtonProps> = ({ setIsWriteModalOpen }) => {
 
   const handleWriteClick = async () => {
     try {
+      // 홈 주소 확인
+      const isHomePage =
+        (window.location.origin === LOCAL_HOMEPAGE ||
+          window.location.origin === HOMEPAGE) &&
+        window.location.pathname === '/';
+      if (isHomePage) {
+        setIsWriteModalOpen(true);
+        return;
+      }
+
       const currentUrl = window.location.href; // 현재 URL 가져오기
       const urlParts = currentUrl.split('/'); // URL 경로를 분할하여 마지막 부분(communityId)
       const communityId = urlParts[urlParts.length - 1];
@@ -35,7 +47,7 @@ const WriteButton: React.FC<WriteButtonProps> = ({ setIsWriteModalOpen }) => {
       const isCommunityIdIncluded = user?.communityId?.some(
         (community) => community._id === communityId
       );
-      
+
       if (!isCommunityIdIncluded) {
         // 가입된 커뮤니티가 아닐 때
         if (
@@ -56,7 +68,7 @@ const WriteButton: React.FC<WriteButtonProps> = ({ setIsWriteModalOpen }) => {
           }
         } else {
           setIsWriteModalOpen(false);
-          return; 
+          return;
         }
       }
 
