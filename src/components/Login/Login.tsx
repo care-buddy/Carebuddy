@@ -38,7 +38,7 @@ const Login: React.FC<LoginProps> = ({
   const [, setAuth] = useRecoilState(authState);
   const [, setUser] = useRecoilState(userState);
 
-  const [isLoading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const { handleSilentRefresh } = useLogin();
