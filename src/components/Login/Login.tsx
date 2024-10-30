@@ -70,13 +70,15 @@ const Login: React.FC<LoginProps> = ({
         // Recoil 상태에 accessToken 저장
         setAuth({ accessToken });
 
-        // 로그인 성공 후 사용자 정보 가져오기
-        await fetchUserInfo();
+        // 사용자 정보 요청 시 명시적으로 accessToken 포함
+        await fetchUserInfo(accessToken);
 
         // 모달 닫기
         handleLoginModal();
       } catch (error) {
-        alert('아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.');
+        alert(
+          '아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.'
+        );
         alert(error);
       } finally {
         setLoading(false);
@@ -87,10 +89,12 @@ const Login: React.FC<LoginProps> = ({
   };
 
   // me API 호출
-  const fetchUserInfo = async () => {
+  const fetchUserInfo = async (accessToken: string) => {
     try {
       const userResponse = await axiosInstance.get('me', {
-        headers: { Authorization: `Bearer ${axios.defaults.headers.common.Authorization}` },
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
       });
       setUser(userResponse.data.message);
     } catch (error) {
