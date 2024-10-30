@@ -12,7 +12,7 @@ import { LuEye, LuEyeOff } from 'react-icons/lu';
 
 import useLogin from '@/hooks/useLogin';
 import authState from '@/recoil/atoms/authState';
-import userState from '@/recoil/atoms/userState';
+// import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
@@ -37,10 +37,11 @@ const Login: React.FC<LoginProps> = ({
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [, setAuth] = useRecoilState(authState);
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [, setUser] = useRecoilState(userState);
+  // const [, setUser] = useRecoilState(userState);
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [isLoading, setLoading] = useState(true);
+  const [, setLoading] = useState(true);
+  // const [isLoading, setLoading] = useState(true);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const { handleSilentRefresh } = useLogin();
