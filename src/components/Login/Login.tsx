@@ -79,7 +79,6 @@ const Login: React.FC<LoginProps> = ({
         alert(
           '아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.'
         );
-        alert(error);
       } finally {
         setLoading(false);
       }
