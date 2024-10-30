@@ -12,7 +12,7 @@ import { LuEye, LuEyeOff } from 'react-icons/lu';
 
 import useLogin from '@/hooks/useLogin';
 import authState from '@/recoil/atoms/authState';
-// import userState from '@/recoil/atoms/userState';
+import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
@@ -36,12 +36,9 @@ const Login: React.FC<LoginProps> = ({
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [, setAuth] = useRecoilState(authState);
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  // const [, setUser] = useRecoilState(userState);
+  const [, setUser] = useRecoilState(userState);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [, setLoading] = useState(true);
-  // const [isLoading, setLoading] = useState(true);
+  const [isLoading, setLoading] = useState(true);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const { handleSilentRefresh } = useLogin();
@@ -59,42 +56,45 @@ const Login: React.FC<LoginProps> = ({
   const handleShowPassword = () => {
     setShowPassword((prevState) => !prevState);
   };
-
-  // 로그인 핸들러
+  // 로그인 요청 핸들러
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
-      setLoading(true); // 로딩 상태 시작
+      setLoading(true);
       try {
-        // 로그인 API 호출
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
         console.log('로그인응답', loginResponse);
 
-        const { accessToken } = loginResponse.data; // accessToken 추출
-
-        // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
+        const { accessToken } = loginResponse.data;
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-        // Recoil 상태(로그인 상태) 업데이트
+        // Recoil 상태에 accessToken 저장
         setAuth({ accessToken });
 
-        // // 유저 정보 업데이트를 위해 me API 호출
-        // const userResponse = await axiosInstance.get('me', {
-        //   headers: { Authorization: `Bearer ${accessToken}` },
-        // });
-        // setUser(userResponse.data.message);
+        // 로그인 성공 후 사용자 정보 가져오기
+        await fetchUserInfo();
 
         // 모달 닫기
         handleLoginModal();
       } catch (error) {
-        alert(
-          '아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.'
-        );
+        alert('아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.');
         alert(error);
       } finally {
-        setLoading(false); // 로딩 상태 종료
+        setLoading(false);
       }
     } else {
       alert('아이디와 비밀번호를 입력해주세요');
+    }
+  };
+
+  // me API 호출
+  const fetchUserInfo = async () => {
+    try {
+      const userResponse = await axiosInstance.get('me', {
+        headers: { Authorization: `Bearer ${axios.defaults.headers.common.Authorization}` },
+      });
+      setUser(userResponse.data.message);
+    } catch (error) {
+      console.error('사용자 정보 가져오기 실패:', error);
     }
   };
 
