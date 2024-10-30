@@ -2,6 +2,7 @@
 
 제작 기간 : 2024.07.01 ~ 2024.10.30
 
+
 ## 프로젝트 소개
 
 
@@ -71,7 +72,7 @@ npm install
 npm run dev
 ```
 
-**.env (완)**
+**.env**
 
 ```jsx
 MONGODB_PASSWORD=
@@ -93,7 +94,7 @@ AWS_SECRET_ACCESS_KEY
 AWS_S3_BUCKET_NAME=
 ```
 
-## 기술 스택(하는중)
+## 기술 스택
 
 **Front-End**
 <div>
@@ -128,10 +129,10 @@ AWS_S3_BUCKET_NAME=
 <img src="https://img.shields.io/badge/Figma-F24E1E?style=flat&logo=Figma&logoColor=white" />
 <img src="https://img.shields.io/badge/Postman-FF6C37?style=flat&logo=Postman&logoColor=white" />
 </div>
----
+
+
 
 ## 전체 기능
-
 
 | 사용자 관련 기능 | 로그인, 회원가입, 회원탈퇴, 회원정보 CRUD |
 | --- | --- |
