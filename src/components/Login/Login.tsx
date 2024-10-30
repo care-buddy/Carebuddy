@@ -16,7 +16,6 @@ import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
-
 interface LoginProps {
   handleLoginModal: () => void;
   onOpenRegistrationModal: () => void;
@@ -37,11 +36,14 @@ const Login: React.FC<LoginProps> = ({
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [, setAuth] = useRecoilState(authState);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [, setUser] = useRecoilState(userState);
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [isLoading, setLoading] = useState(true);
 
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const { handleSilentRefresh } = useLogin();
-
 
   // 로그인을 위한 아이디, 비밀번호 업데이트 핸들러
   const updateLoginInfo = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,6 +62,7 @@ const Login: React.FC<LoginProps> = ({
   // 로그인 핸들러
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
+      setLoading(true); // 로딩 상태 시작
       try {
         // 로그인 API 호출
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
@@ -73,18 +76,21 @@ const Login: React.FC<LoginProps> = ({
         // Recoil 상태(로그인 상태) 업데이트
         setAuth({ accessToken });
 
-        // 유저 정보 업데이트를 위해 me API 호출
-        const userResponse = await axiosInstance.get('me', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        setUser(userResponse.data.message);
+        // // 유저 정보 업데이트를 위해 me API 호출
+        // const userResponse = await axiosInstance.get('me', {
+        //   headers: { Authorization: `Bearer ${accessToken}` },
+        // });
+        // setUser(userResponse.data.message);
 
-        // 모달 닫기 실행되어야함 (임시) - 나중에 추가
+        // 모달 닫기
         handleLoginModal();
       } catch (error) {
         alert(
           '아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.'
         );
+        alert(error);
+      } finally {
+        setLoading(false); // 로딩 상태 종료
       }
     } else {
       alert('아이디와 비밀번호를 입력해주세요');
@@ -98,20 +104,6 @@ const Login: React.FC<LoginProps> = ({
     }
     handleSilentRefresh(isAuthenticated); // 상태가 업데이트된 후 자동 로그인 연장
   }, [isAuthenticated]); // auth 상태가 변경될 때마다 실행
-
-  // // 페이지가 종료될 때 로그아웃 처리
-  // useEffect(() => {
-  //   const handleBeforeUnload = () => {
-  //     handleLogout(); // 로그아웃 처리
-  //   };
-
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
-
-  //   // 컴포넌트 언마운트 시 리스너 제거
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload);
-  //   };
-  // }, []);
 
   return (
     <Container>
