@@ -1,8 +1,10 @@
+// 환경에 따른 API URL 및 홈페이지 URL 설정
+const isProduction = process.env.NODE_ENV === 'production';
 
-// 배포테스트&배포용 상수
-// export const API_URL = 'http://localhost:3001/api/';
-export const API_URL = 'https://port-0-back-m2swdvfbbfb61876.sel4.cloudtype.app/api/';
+export const API_URL = isProduction 
+  ? 'https://port-0-back-m2swdvfbbfb61876.sel4.cloudtype.app/api/' // 배포 환경용 API URL
+  : 'http://localhost:3001/api/'; // 로컬 개발 환경용 API URL
 
-// 홈페이지용 상수
-export const LOCAL_HOMEPAGE = 'http://localhost:5173';
-export const HOMEPAGE = 'https://carebuddy.vercel.app';
+export const HOMEPAGE = isProduction 
+  ? 'https://carebuddy.vercel.app' // 배포 환경용 홈페이지 URL
+  : 'http://localhost:5173'; // 로컬 개발 환경용 홈페이지 URL
