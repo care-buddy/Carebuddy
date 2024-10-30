@@ -13,7 +13,7 @@ import userState from '@/recoil/atoms/userState';
 
 import useUpdateMe from '@/hooks/useUpdateMe';
 
-import { LOCAL_HOMEPAGE, HOMEPAGE } from '@/constants/constants';
+import { HOMEPAGE } from '@/constants/constants';
 
 interface WriteButtonProps {
   setIsWriteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -32,9 +32,7 @@ const WriteButton: React.FC<WriteButtonProps> = ({ setIsWriteModalOpen }) => {
     try {
       // 홈 주소 확인
       const isHomePage =
-        (window.location.origin === LOCAL_HOMEPAGE ||
-          window.location.origin === HOMEPAGE) &&
-        window.location.pathname === '/';
+        window.location.origin === HOMEPAGE && window.location.pathname === '/';
       if (isHomePage) {
         setIsWriteModalOpen(true);
         return;
