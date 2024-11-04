@@ -10,6 +10,9 @@
 
 커뮤니티와 건강 다이어리를 통해 반려 동물의 건강을 관리하며 사랑하는 나의 가족과 오랫동안 행복한 시간을 보내세요.
 
+[프로젝트 소개 문서](https://drive.google.com/file/d/1FVLnqVvKNXyuykXMLpbXyErJeZIeKgEF/view?usp=sharing)
+
+
 ## 폴더 구조
 
 
