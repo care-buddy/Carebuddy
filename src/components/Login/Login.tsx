@@ -31,8 +31,8 @@ const Login: React.FC<LoginProps> = ({
 }) => {
   // const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
-    email: '',
-    password: '',
+    email: 'carebuddy2024@gmail.com',
+    password: 'Cbcb2024',
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [, setAuth] = useRecoilState(authState);
@@ -119,7 +119,7 @@ const Login: React.FC<LoginProps> = ({
         borderStyle="square"
         placeholder="아이디"
         onChange={updateLoginInfo}
-        value="carebuddy2024@gmail.com"
+        value={loginInfo.email}
         onClick={(e) => e.stopPropagation()}
       />
       <PasswordContainer>
@@ -130,8 +130,8 @@ const Login: React.FC<LoginProps> = ({
           inputPadding="sm"
           borderStyle="square"
           placeholder="비밀번호"
+          value={loginInfo.password}
           onChange={updateLoginInfo}
-          value="Cbcb2024"
         />
         <IconContainer>
           {showPassword && <LuEye onClick={handleShowPassword} />}
