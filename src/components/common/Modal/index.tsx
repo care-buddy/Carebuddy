@@ -58,8 +58,8 @@ const BigModal: React.FC<BigModalProps> = ({
 
   return (
     // 모달 외부 클릭 시, 모달을 닫음
-    <ModalBackground onClick={onClose}>
-      <ModalContent onClick={(e) => e.stopPropagation()}>
+    <ModalBackground onMouseDown={onClose}>
+      <ModalContent onMouseDown={(e) => e.stopPropagation()}>
         <ModalHeader>{title}</ModalHeader>
         <ModalBody>{Component}</ModalBody>
         <ModalFooter

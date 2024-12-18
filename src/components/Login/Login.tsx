@@ -119,6 +119,8 @@ const Login: React.FC<LoginProps> = ({
         borderStyle="square"
         placeholder="아이디"
         onChange={updateLoginInfo}
+        value="carebuddy2024@gmail.com"
+        onClick={(e) => e.stopPropagation()}
       />
       <PasswordContainer>
         <Input
@@ -129,6 +131,7 @@ const Login: React.FC<LoginProps> = ({
           borderStyle="square"
           placeholder="비밀번호"
           onChange={updateLoginInfo}
+          value="Cbcb2024"
         />
         <IconContainer>
           {showPassword && <LuEye onClick={handleShowPassword} />}
