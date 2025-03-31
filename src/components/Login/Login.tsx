@@ -16,7 +16,6 @@ import userState from '@/recoil/atoms/userState';
 
 import isAuthenticatedState from '@/recoil/selectors/authSelector';
 
-
 interface LoginProps {
   handleLoginModal: () => void;
   onOpenRegistrationModal: () => void;
@@ -32,16 +31,17 @@ const Login: React.FC<LoginProps> = ({
 }) => {
   // const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
-    email: '',
-    password: '',
+    email: 'carebuddy2024@gmail.com',
+    password: 'Cbcb2024',
   });
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [, setAuth] = useRecoilState(authState);
   const [, setUser] = useRecoilState(userState);
 
+  const [, setLoading] = useState(true);
+
   const isAuthenticated = useRecoilValue(isAuthenticatedState);
   const { handleSilentRefresh } = useLogin();
-
 
   // 로그인을 위한 아이디, 비밀번호 업데이트 핸들러
   const updateLoginInfo = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -56,38 +56,48 @@ const Login: React.FC<LoginProps> = ({
   const handleShowPassword = () => {
     setShowPassword((prevState) => !prevState);
   };
-
-  // 로그인 핸들러
+  // 로그인 요청 핸들러
   const handleLogin = async () => {
     if (loginInfo.email !== '' && loginInfo.password !== '') {
+      setLoading(true);
       try {
-        // 로그인 API 호출
         const loginResponse = await axiosInstance.post('auth/login', loginInfo);
         console.log('로그인응답', loginResponse);
 
-        const { accessToken } = loginResponse.data; // accessToken 추출
-
-        // API 요청하는 콜마다 헤더에 accessToken 담아 보내도록 설정
+        const { accessToken } = loginResponse.data;
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
 
-        // Recoil 상태(로그인 상태) 업데이트
+        // Recoil 상태에 accessToken 저장
         setAuth({ accessToken });
 
-        // 유저 정보 업데이트를 위해 me API 호출
-        const userResponse = await axiosInstance.get('me', {
-          headers: { Authorization: `Bearer ${accessToken}` },
-        });
-        setUser(userResponse.data.message);
+        // 사용자 정보 요청 시 명시적으로 accessToken 포함
+        await fetchUserInfo(accessToken);
 
-        // 모달 닫기 실행되어야함 (임시) - 나중에 추가
+        // 모달 닫기
         handleLoginModal();
       } catch (error) {
         alert(
           '아이디 또는 비밀번호가 잘못 되었습니다. 입력한 내용을 다시 확인해 주세요.'
         );
+      } finally {
+        setLoading(false);
       }
     } else {
       alert('아이디와 비밀번호를 입력해주세요');
+    }
+  };
+
+  // me API 호출
+  const fetchUserInfo = async (accessToken: string) => {
+    try {
+      const userResponse = await axiosInstance.get('me', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      setUser(userResponse.data.message);
+    } catch (error) {
+      console.error('사용자 정보 가져오기 실패:', error);
     }
   };
 
@@ -99,20 +109,6 @@ const Login: React.FC<LoginProps> = ({
     handleSilentRefresh(isAuthenticated); // 상태가 업데이트된 후 자동 로그인 연장
   }, [isAuthenticated]); // auth 상태가 변경될 때마다 실행
 
-  // // 페이지가 종료될 때 로그아웃 처리
-  // useEffect(() => {
-  //   const handleBeforeUnload = () => {
-  //     handleLogout(); // 로그아웃 처리
-  //   };
-
-  //   window.addEventListener('beforeunload', handleBeforeUnload);
-
-  //   // 컴포넌트 언마운트 시 리스너 제거
-  //   return () => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload);
-  //   };
-  // }, []);
-
   return (
     <Container>
       <LargeText>로그인</LargeText>
@@ -123,6 +119,8 @@ const Login: React.FC<LoginProps> = ({
         borderStyle="square"
         placeholder="아이디"
         onChange={updateLoginInfo}
+        value={loginInfo.email}
+        onClick={(e) => e.stopPropagation()}
       />
       <PasswordContainer>
         <Input
@@ -132,6 +130,7 @@ const Login: React.FC<LoginProps> = ({
           inputPadding="sm"
           borderStyle="square"
           placeholder="비밀번호"
+          value={loginInfo.password}
           onChange={updateLoginInfo}
         />
         <IconContainer>

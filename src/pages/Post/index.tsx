@@ -132,7 +132,7 @@ const Post: React.FC = () => {
           text: comment,
         });
         const newComment = response.data;
-        console.log('새 comment 데이터', newComment)
+        console.log('새 comment 데이터', newComment);
 
         setComments((prevComments) =>
           prevComments ? [...prevComments, newComment] : [newComment]
@@ -351,12 +351,12 @@ const Post: React.FC = () => {
               key={comment._id}
               commentId={comment._id}
               text={comment.text}
-              nickName={comment.userId.nickName}
+              nickName={comment.userId?.nickName}
               date={formatDateIncludeTime(comment.createdAt)}
               profileImg={comment.userId?.profileImage}
               onEdit={handleCommentEdit}
               onDelete={handleCommentDelete}
-            // userId={comment.userId?._id}
+              // userId={comment.userId?._id}
             />
           ))}
         </CommentContainer>

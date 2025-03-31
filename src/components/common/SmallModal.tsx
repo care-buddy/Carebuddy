@@ -34,9 +34,11 @@ const SmallModal: React.FC<SmallModalProps> = ({
   }, []);
 
   return (
-    <ModalBackground onClick={onClose}>
+    <ModalBackground onMouseDown={onClose}>
       <ModalContent
-        onClick={(e) => e.stopPropagation()}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+        }}
         modalPaddingSize={modalPaddingSize}
       >
         {component}

@@ -1,6 +1,11 @@
-// eslint-disable-next-line import/prefer-default-export
-// export const API_URL = 'http://localhost:3003/api/';
+// 환경에 따른 API URL 및 홈페이지 URL 설정
+const isProduction = process.env.NODE_ENV === 'production';
 
-// 배포테스트용 상수
-// eslint-disable-next-line import/prefer-default-export
-export const API_URL = 'https://34.64.48.225:3001/api/';
+export const API_URL = isProduction
+  ? 'https://back-theta-peach.vercel.app/api/'
+  : // ? 'https://port-0-back-m2swdvfbbfb61876.sel4.cloudtype.app/api/' // 배포 환경용 API URL
+    'http://localhost:3001/api/'; // 로컬 개발 환경용 API URL
+
+export const HOMEPAGE = isProduction
+  ? 'https://carebuddy.vercel.app' // 배포 환경용 홈페이지 URL
+  : 'http://localhost:5173'; // 로컬 개발 환경용 홈페이지 URL

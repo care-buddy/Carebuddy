@@ -1,5 +1,6 @@
+/* eslint-disable no-nested-ternary */
 import React, { useState, useEffect, useCallback } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 
 import type { PostData, CommunityData } from '@/types/index';
 
@@ -29,7 +30,7 @@ const Home: React.FC = () => {
   const [selectedPosts, setSelectedPosts] = useState<PostData[]>([]); // 필터링된 게시글
   const [category, setCategory] = useState<number | string>(-1); // 선택된 카테고리
   const [community, setCommunity] = useState<string>('community'); // 선택된 커뮤니티
-  const [, setIsLoading] = useState(false); // 데이터 로딩 상태
+  const [isLoading, setIsLoading] = useState(false); // 데이터 로딩 상태
   const [error, setError] = useState<Error | null>(null);
   const [recommendedCommunities, setRecommendedCommunities] = useState<
     CommunityData[] | null
@@ -184,7 +185,16 @@ const Home: React.FC = () => {
             )}
           </FeedOptionContainer>
           {selectedPosts.length === 0 ? (
-            <NoPostsFound>해당하는 게시글이 없습니다.</NoPostsFound>
+            isLoading ? (
+              // 로딩 상태일 때 표시
+              <FeedBoxContainer>
+                <LoadingIndicatorWrapper>
+                  <LoadingLogo />
+                </LoadingIndicatorWrapper>
+              </FeedBoxContainer>
+            ) : (
+              <NoPostsFound>해당하는 게시글이 없습니다.</NoPostsFound>
+            )
           ) : (
             selectedPosts.map((post) => (
               <FeedBox
@@ -279,4 +289,33 @@ const SelectContainer = styled.div`
 const P = styled.p`
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-ft-1);
+`;
+
+const spin = keyframes`
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+`;
+
+const LoadingIndicatorWrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 200px; // 적당한 높이로 설정
+  text-align: center;
+
+  & > p {
+    margin-top: 15px;
+    font-size: 14px;
+    color: var(--color-grey-2);
+  }
+`;
+
+const LoadingLogo = styled.div`
+  border: 8px solid #f3f3f3;
+  border-top: 8px solid #6d987a;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: ${spin} 1s linear infinite;
 `;
