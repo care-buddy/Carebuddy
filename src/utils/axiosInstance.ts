@@ -3,7 +3,7 @@ import { API_URL } from '@/constants/constants';
 
 const axiosInstance = axios.create({
   baseURL: API_URL,
-  timeout: 10000, // 5초가 짧은 듯 하여 10초로 변경
+  timeout: 30000, // vercel 콜드아웃 대비용 30초 설정(첫 진입 시 서버 웜업에 오래걸림)
   withCredentials: true, // refreshToken cookie를 주고받기 위해 설정
 });
 
