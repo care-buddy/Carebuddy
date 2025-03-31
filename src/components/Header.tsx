@@ -18,6 +18,7 @@ import loginModalState from '@/recoil/atoms/loginModalState';
 
 import { CommunityData } from '@/types';
 import useLogout from '@/hooks/useLogout';
+import media from '@/utils/media';
 
 const Header: React.FC = () => {
   const [dropdownVisible, setDropdownVisible] = useState(false);
@@ -232,6 +233,7 @@ const Wrapper = styled.header`
   height: 80px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1000;
+
   background-color: white;
 `;
 
@@ -239,6 +241,10 @@ const Content = styled.div`
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
   height: 100%;
+
+  ${media.tablet} {
+    grid-template-columns: 1fr 4fr 1fr;
+  }
 `;
 
 const Logo = styled(Link)`
@@ -251,13 +257,24 @@ const Logo = styled(Link)`
     max-height: 60px;
     max-width: 120px;
   }
+
+  ${media.mobile} {
+    img {
+      max-height: 50px;
+      max-width: 100px;
+    }
+    justify-content: center;
+  }
 `;
 
 const Menu = styled.nav`
   display: flex;
-  /* align-items: center; */
   justify-content: center;
-  gap: 5rem;
+  gap: 6rem;
+
+  ${media.mobile} {
+    gap: 3rem;
+  }
 `;
 
 const MenuItem = styled(NavLink)`
@@ -287,7 +304,12 @@ const MenuItem = styled(NavLink)`
 
 const NotificationWrapper = styled.div`
   display: flex;
-  /* position: relative; */
+  justify-content: center;
+  margin-right: auto;
+  ${media.mobile} {
+    justify-content: flex-end;
+    margin-right: 0.5rem;
+  }
 `;
 
 const fadeIn = keyframes`

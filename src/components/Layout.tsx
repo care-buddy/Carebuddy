@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import styled from 'styled-components';
+import media from '@/utils/media';
 import Header from './Header';
 import Footer from './Footer';
 
@@ -12,12 +13,18 @@ const Wrapper = styled.div`
 
 const OutletWrapper = styled.div`
   flex: 1;
-  padding-top: 180px; 
+  padding-top: 180px;
+  padding-left: 1rem;
+  padding-right: 1rem;
   width: 1024px;
   margin: 0 auto;
-  /* display: flex;
-  flex-direction: column;
-  align-items: center; */
+
+  ${media.tablet} {
+    width: 90%;
+  }
+  ${media.mobile} {
+    width: 100%;
+  }
 `;
 
 const Layout: React.FC = () => (
