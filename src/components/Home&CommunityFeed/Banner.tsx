@@ -4,6 +4,7 @@ import Typewriter from 'typewriter-effect';
 
 // 배너 요소 이미지
 import BannerElementImage from '@assets/bannerElementImage.png';
+import media from '@/utils/media';
 
 type TextProps = {
   fontSize?: string;
@@ -40,6 +41,7 @@ const Banner: React.FC = () => (
         color="var(--color-grey-1)"
         fontWeight="var(--font-weight-regular)"
         fontSize="var(--font-size-md-1)"
+        className="subText"
       >
         꾸준한 질병 기록으로 아이의 건강을 지키고, 아이의 행복을 위한 정보를
         나눠보아요.
@@ -52,9 +54,19 @@ export default Banner;
 
 const StyledBanner = styled.div`
   position: relative;
-  background-color: var(--color-green-sub-2); 
+  background-color: var(--color-green-sub-2);
   width: 100%;
   height: 100%;
+
+  ${media.mobile} {
+    > div * {
+      font-size: var(--font-size-lg-1);
+
+      &.subText {
+        font-size: var(--font-size-ft-1);
+      }
+    }
+  }
 `;
 
 const Image = styled.img`
@@ -64,6 +76,10 @@ const Image = styled.img`
   transform: translateX(-50%); // 중앙 정렬 보정
   width: 30vw;
   pointer-events: none;
+
+  ${media.mobile} {
+    left: 80%;
+  }
 `;
 
 const TextContainer = styled.div`
@@ -73,6 +89,11 @@ const TextContainer = styled.div`
   transform: translateX(-50%); // 중앙 정렬 보정
   width: 30vw;
   pointer-events: none;
+
+  ${media.mobile} {
+    left: 24%;
+    top: 39%;
+  }
 `;
 
 const Row = styled.div`

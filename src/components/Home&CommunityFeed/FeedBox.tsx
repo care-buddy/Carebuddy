@@ -6,6 +6,7 @@ import LikeAndCommentCount from '@components/Post/LikesAndCommentCount';
 import CommunityCategory from '@components/GlobalSearch/CommunityCategory';
 import formatDate from '@/utils/formatDate';
 import processedContentForFeedBox from '@/utils/processedContentForFeedBox';
+import media from '@/utils/media';
 
 type FeedBoxProps = {
   postId: string;
@@ -51,19 +52,17 @@ const FeedBox = React.forwardRef<HTMLDivElement, FeedBoxProps>(
             <LeftContainer>
               <Title>{title}</Title>
               {communityName && (
-                <>
+                <div>
                   <CommunityCategory>{communityName}</CommunityCategory>
                   <CommunityCategory>{communityCategory}</CommunityCategory>
-                </>
+                </div>
               )}
             </LeftContainer>
-            <LikeAndCommentCount
-              likeCount={likeCount}
-              commentCount={commentCount}
-            />
           </TitleContainer>
           <Content>
-            {isContentVisible ? processedContent : `${processedContent.slice(0, 100)}...`}
+            {isContentVisible
+              ? processedContent
+              : `${processedContent.slice(0, 100)}...`}
             <MoreSpan onClick={() => setContentVisible(!isContentVisible)}>
               {isContentVisible ? '접기' : '더보기'}
             </MoreSpan>
@@ -73,6 +72,10 @@ const FeedBox = React.forwardRef<HTMLDivElement, FeedBoxProps>(
             <p>{nickname}</p>
             <p>|</p>
             <p>{formattedDate}</p>
+            <LikeAndCommentCount
+              likeCount={likeCount}
+              commentCount={commentCount}
+            />
           </ProfileContainer>
         </Container>
       </StyledFeedBox>
@@ -112,8 +115,24 @@ const LeftContainer = styled.div`
   display: flex;
   align-items: center;
 
-  & > * {
-    margin-right: 4px;
+  > div {
+    display: flex;
+    align-items: center;
+
+    & > * {
+      margin-right: 4px;
+    }
+  }
+
+  ${media.onlyTablet} {
+    flex-direction: column;
+    align-items: flex-start;
+
+    > div {
+      display: flex;
+      align-items: center;
+      margin-top: 8px;
+    }
   }
 `;
 
@@ -128,6 +147,8 @@ const ProfileContainer = styled.div`
   p {
     margin: 0 4px;
   }
+
+  position: relative;
 `;
 
 const ProfileImg = styled.img`
@@ -140,6 +161,23 @@ const Title = styled.p`
   color: var(--color-green-main);
   font-size: var(--font-size-md-2);
   font-weight: var(--font-weight-bold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 8px;
+  transition: all 0.3s;
+
+  &:hover {
+    color: #567760;
+  }
+
+  ${media.tablet} {
+    max-width: 50ch;
+  }
+
+  ${media.mobile} {
+    font-size: var(--font-size-md-1);
+  }
 `;
 
 const Content = styled.pre`

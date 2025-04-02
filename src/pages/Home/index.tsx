@@ -22,6 +22,7 @@ import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 
 import DefaultProfile from '@/assets/person.png';
 import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
+import media from '@/utils/media';
 
 const Home: React.FC = () => {
   // 상태 정의
@@ -147,9 +148,9 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <Div>
+      <BannerDiv>
         <Banner />
-      </Div>
+      </BannerDiv>
       <ContentContainer>
         <FeedBoxContainer>
           <FeedOptionContainer>
@@ -229,6 +230,7 @@ const Home: React.FC = () => {
         <div>
           <SidePanel
             name="추천 커뮤니티"
+            className="homePanel"
             elementArray={recommendedCommunities?.map((community) => (
               <CommunityElement
                 key={community._id}
@@ -246,12 +248,16 @@ const Home: React.FC = () => {
 
 export default Home;
 
-const Div = styled.div`
+const BannerDiv = styled.div`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 55vh;
+
+  ${media.mobile} {
+    height: 45vh;
+  }
 `;
 
 const ContentContainer = styled.div`
@@ -260,6 +266,13 @@ const ContentContainer = styled.div`
   justify-content: space-between;
   width: 100%;
   margin-top: 37vh; /* Div의 높이와 일치시켜 Div 바로 아래에 위치하도록 설정 - 임시*/
+
+  transition: margin 0.3s;
+
+  ${media.mobile} {
+    grid-template-columns: 100% 0;
+    margin-top: 30vh;
+  }
 `;
 
 const FeedBoxContainer = styled.div`
