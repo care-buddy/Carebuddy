@@ -6,6 +6,7 @@ const sizes = {
 const media = {
   mobile: `@media (max-width: ${sizes.mobile}px)`,
   tablet: `@media (max-width: ${sizes.tablet}px)`,
+  onlyTablet: `@media (min-width: ${sizes.mobile + 1}px) and (max-width: ${sizes.tablet}px)`,
 };
 
 export default media;

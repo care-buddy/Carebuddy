@@ -3,6 +3,7 @@ import styled from 'styled-components';
 
 // 아이콘
 import { LuThumbsUp, LuMessageSquare } from 'react-icons/lu';
+import media from '@/utils/media';
 
 type LikeAndCommentCountProps = {
   likeCount?: number | undefined; // 임시 물음표
@@ -14,11 +15,11 @@ const LikeAndCommentCount: React.FC<LikeAndCommentCountProps> = ({
   likeCount,
   commentCount,
 }) => (
-  <StyledLikeAndCommentCount>
+  <StyledLikeAndCommentCount className="like">
     <LuThumbsUp />
-    <p>{likeCount}</p>
+    <p className="likeCount">{likeCount}</p>
     <LuMessageSquare />
-    <p>{commentCount}</p>
+    <p className="commentCount">{commentCount}</p>
   </StyledLikeAndCommentCount>
 );
 
@@ -27,21 +28,33 @@ export default LikeAndCommentCount;
 const StyledLikeAndCommentCount = styled.div`
   display: flex;
   flex-direction: row;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  width: 88px;
-  height: 28px;
+  width: 5rem;
+  height: 1.625rem;
   background-color: var(--color-beige-main);
   border-radius: 4px;
-  padding: 5px 13px;
+  padding: 4px 8px;
   color: var(--color-black);
+
+  position: absolute;
+  right: 0;
 
   p {
     font-size: var(--font-size-ft-1);
+    &.likeCount {
+      margin-right: 6px;
+    }
+    &.commentCount {
+      margin-right: 0;
+    }
   }
 
   svg {
-    width: 14px;
-    height: 14px;
+    height: var(--font-size-ft-1);
+    width: var(--font-size-ft-1);
+  }
+
+  ${media.tablet} {
   }
 `;
