@@ -60,10 +60,12 @@ const StyledBanner = styled.div`
 
   ${media.mobile} {
     > div * {
-      font-size: var(--font-size-lg-1);
+      font-size: var(--font-size-hd-2);
 
       &.subText {
-        font-size: var(--font-size-ft-1);
+        min-width: 300px;
+        font-size: var(--font-size-sm-1);
+        white-space: normal;
       }
     }
   }
@@ -87,12 +89,13 @@ const TextContainer = styled.div`
   top: 36%;
   left: 32%; // 부모 요소의 가로 중앙에 정렬
   transform: translateX(-50%); // 중앙 정렬 보정
-  width: 30vw;
+  width: 400px;
   pointer-events: none;
 
   ${media.mobile} {
     left: 24%;
     top: 39%;
+    width: 30vw;
   }
 `;
 

@@ -13,7 +13,7 @@ const Wrapper = styled.div`
 const TobBarWrapper = styled.div`
   background-color: #eeede5;
   position: absolute;
-  width: 100vw;
+  width: 100%;
   left: 0;
   top: 80px;
 `;

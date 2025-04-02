@@ -124,7 +124,7 @@ const LeftContainer = styled.div`
     }
   }
 
-  ${media.onlyTablet} {
+  ${media.tablet} {
     flex-direction: column;
     align-items: flex-start;
 
@@ -176,6 +176,7 @@ const Title = styled.p`
   }
 
   ${media.mobile} {
+    max-width: 34ch;
     font-size: var(--font-size-md-1);
   }
 `;

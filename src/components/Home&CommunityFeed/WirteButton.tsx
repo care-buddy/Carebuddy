@@ -14,6 +14,7 @@ import userState from '@/recoil/atoms/userState';
 import useUpdateMe from '@/hooks/useUpdateMe';
 
 import { HOMEPAGE } from '@/constants/constants';
+import media from '@/utils/media';
 
 interface WriteButtonProps {
   setIsWriteModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
@@ -111,10 +112,23 @@ export default WriteButton;
 const Container = styled.div`
   display: flex;
   align-items: center;
+  ${media.mobile} {
+    justify-content: flex-end;
+    margin-top: 8px;
+
+    > button {
+      padding: 8px 12px;
+      font-size: var(--font-size-ft-1);
+    }
+  }
 `;
 
 const P = styled.p`
   font-weight: var(--font-weight-medium);
   font-size: var(--font-size-ft-1);
   margin-right: 8px;
+
+  ${media.mobile} {
+    font-size: var(--font-size-sm-1);
+  }
 `;
