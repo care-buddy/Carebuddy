@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 
 import LikeAndCommentCount from '@components/Post/LikesAndCommentCount';
 import CommunityCategory from '@components/GlobalSearch/CommunityCategory';
+
 import formatDate from '@/utils/formatDate';
 import processedContentForFeedBox from '@/utils/processedContentForFeedBox';
 import media from '@/utils/media';

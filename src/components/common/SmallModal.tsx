@@ -1,3 +1,4 @@
+import media from '@/utils/media';
 import React, { useEffect } from 'react';
 import styled, { css } from 'styled-components';
 
@@ -82,4 +83,14 @@ const ModalContent = styled.div.withConfig({
 
   ${(props) =>
     props.modalPaddingSize && modalPaddingSizes[props.modalPaddingSize]}
+
+  ${media.tablet} {
+    width: 80%;
+    max-width: 600px;
+  }
+
+  ${media.mobile} {
+    width: 90%;
+    max-width: 400px;
+  }
 `;

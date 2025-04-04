@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
 import React, { useState, useEffect, useCallback } from 'react';
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 import type { PostData, CommunityData } from '@/types/index';
 
@@ -23,6 +23,7 @@ import pickRandomItemFromArray from '@/utils/pickRandomItemFromArray';
 import DefaultProfile from '@/assets/person.png';
 import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
 import media from '@/utils/media';
+import SkeletonFeedBox from '@/components/Home&CommunityFeed/SkeletonFeedBox';
 
 const Home: React.FC = () => {
   // 상태 정의
@@ -185,7 +186,7 @@ const Home: React.FC = () => {
               />
             )}
           </FeedOptionContainer>
-          {selectedPosts.length === 0 ? (
+          {/* {selectedPosts.length === 0 ? (
             isLoading ? (
               // 로딩 상태일 때 표시
               <FeedBoxContainer>
@@ -196,6 +197,16 @@ const Home: React.FC = () => {
             ) : (
               <NoPostsFound>해당하는 게시글이 없습니다.</NoPostsFound>
             )
+          ) : ( */}
+          {isLoading ? (
+            // 스켈레톤 ui 5개
+            Array.from({ length: 5 }).map((_, idx: number) => (
+              // 고유값이 없으니 비활성
+              // eslint-disable-next-line react/no-array-index-key
+              <SkeletonFeedBox key={idx} />
+            ))
+          ) : selectedPosts.length === 0 ? (
+            <NoPostsFound>해당하는 게시글이 없습니다.</NoPostsFound>
           ) : (
             selectedPosts.map((post) => (
               <FeedBox
@@ -317,31 +328,31 @@ const P = styled.p`
   font-size: var(--font-size-ft-1);
 `;
 
-const spin = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
+// const spin = keyframes`
+//   0% { transform: rotate(0deg); }
+//   100% { transform: rotate(360deg); }
+// `;
 
-const LoadingIndicatorWrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px; // 적당한 높이로 설정
-  text-align: center;
+// const LoadingIndicatorWrapper = styled.div`
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   height: 200px; // 적당한 높이로 설정
+//   text-align: center;
 
-  & > p {
-    margin-top: 15px;
-    font-size: 14px;
-    color: var(--color-grey-2);
-  }
-`;
+//   & > p {
+//     margin-top: 15px;
+//     font-size: 14px;
+//     color: var(--color-grey-2);
+//   }
+// `;
 
-const LoadingLogo = styled.div`
-  border: 8px solid #f3f3f3;
-  border-top: 8px solid #6d987a;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  animation: ${spin} 1s linear infinite;
-`;
+// const LoadingLogo = styled.div`
+//   border: 8px solid #f3f3f3;
+//   border-top: 8px solid #6d987a;
+//   border-radius: 50%;
+//   width: 50px;
+//   height: 50px;
+//   animation: ${spin} 1s linear infinite;
+// `;

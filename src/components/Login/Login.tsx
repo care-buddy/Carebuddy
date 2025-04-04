@@ -19,15 +19,15 @@ import isAuthenticatedState from '@/recoil/selectors/authSelector';
 interface LoginProps {
   handleLoginModal: () => void;
   onOpenRegistrationModal: () => void;
-  onOpenFindingIdModal?: () => void;
-  onOpenFindingPasswordModal?: () => void;
+  // onOpenFindingIdModal?: () => void;
+  // onOpenFindingPasswordModal?: () => void;
 }
 
 const Login: React.FC<LoginProps> = ({
   handleLoginModal,
   onOpenRegistrationModal,
-  onOpenFindingIdModal,
-  onOpenFindingPasswordModal,
+  // onOpenFindingIdModal,
+  // onOpenFindingPasswordModal,
 }) => {
   // const [keepLogin, setKeepLogin] = useState<boolean>(false);
   const [loginInfo, setLoginInfo] = useState({
@@ -163,7 +163,8 @@ const Login: React.FC<LoginProps> = ({
         >
           회원가입
         </Button>
-        <ButtonDivider>|</ButtonDivider>
+        {/* 지우지말고 구현하기 */}
+        {/* <ButtonDivider>|</ButtonDivider>
         <Button
           buttonStyle="black"
           buttonSize="sm"
@@ -178,7 +179,7 @@ const Login: React.FC<LoginProps> = ({
           onClick={onOpenFindingPasswordModal}
         >
           비밀번호 찾기
-        </Button>
+        </Button> */}
       </ButtonContainer>
     </Container>
   );
@@ -262,9 +263,9 @@ const ButtonContainer = styled.div`
   display: flex;
 `;
 
-const ButtonDivider = styled.p`
-  color: var(--color-grey-2);
-  font-weight: var(--font-weight-regular);
-  background-color: transparent;
-  padding: 0 4px;
-`;
+// const ButtonDivider = styled.p`
+//   color: var(--color-grey-2);
+//   font-weight: var(--font-weight-regular);
+//   background-color: transparent;
+//   padding: 0 4px;
+// `;

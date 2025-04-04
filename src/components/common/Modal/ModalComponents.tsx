@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Button from '@components/common/Button';
+import media from '@/utils/media';
 
 // 모달 헤더: 타이틀을 포함
 const ModalHeaderContainer = styled.header`
@@ -30,8 +31,12 @@ const ModalHeader: React.FC<ModalHeaderProps> = ({ children }) => (
 
 // 모달 바디
 const ModalBodyContainer = styled.div`
-  font-size: 16px;
-  padding: 20px;
+  font-size: 1rem;
+  padding: 1.25rem;
+
+  ${media.mobile} {
+    padding: 1rem 0;
+  }
 `;
 
 interface ModalBodyProps {
@@ -45,16 +50,20 @@ const ModalBody: React.FC<ModalBodyProps> = ({ children }) => (
 // 모달 푸터: 제출, 취소 등 버튼을 포함
 const ModalFooterContainer = styled.div`
   display: flex;
-  justify-content: flex-start;
-  padding: 10px;
+  justify-content: flex-end;
+  padding: 10px 0;
   border-top: 1px solid var(--color-grey-2);
   width: 100%;
+
+  ${media.mobile} {
+    padding: 10px 0;
+  }
 `;
 
 const ButtonContainer = styled.div`
   padding: 10px 0 20px 0;
   > button {
-    margin-right: 10px;
+    margin-left: 10px;
   }
 `;
 

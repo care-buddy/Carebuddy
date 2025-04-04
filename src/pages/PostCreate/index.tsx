@@ -262,6 +262,7 @@ const Container = styled.div`
 
 const SelectWrapper = styled.div`
   margin-bottom: 15px;
+  display: flex;
 `;
 
 const InputWrapper = styled.div`

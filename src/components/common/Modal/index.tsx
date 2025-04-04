@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import media from '@/utils/media';
 import { ModalHeader, ModalBody, ModalFooter } from './ModalComponents';
 
 const ModalBackground = styled.div`
@@ -23,14 +24,23 @@ const ModalContent = styled.div`
   border-radius: 7px;
   border: 1px solid var(--color-grey2);
   border-top: 20px solid #6d987a;
-  padding: 20px 60px;
+  padding: 1.25rem 3.625rem;
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-  /* justify-content: center; */
   z-index: 10000;
   overflow-y: auto;
   overflow-x: hidden;
+
+  ${media.tablet} {
+    width: 80%;
+    max-width: 800px;
+  }
+
+  ${media.mobile} {
+    width: 90%;
+    max-width: 600px;
+    padding: 1.25rem 1.5rem;
+  }
 `;
 
 interface BigModalProps {
