@@ -235,6 +235,10 @@ const Wrapper = styled.header`
   z-index: 1000;
 
   background-color: white;
+
+  ${media.mobile} {
+    height: 90px;
+  }
 `;
 
 const Content = styled.div`
@@ -244,6 +248,9 @@ const Content = styled.div`
 
   ${media.tablet} {
     grid-template-columns: 1fr 4fr 1fr;
+  }
+  ${media.mobile} {
+    grid-template-columns: 4fr 1fr;
   }
 `;
 
@@ -259,11 +266,16 @@ const Logo = styled(Link)`
   }
 
   ${media.mobile} {
+    z-index: 1000;
     img {
-      max-height: 50px;
-      max-width: 100px;
+      max-height: 40px;
+      max-width: 80px;
     }
-    justify-content: center;
+    /* justify-content: center; */
+    /* display: none; */
+    position: absolute;
+    left: 0.5rem;
+    top: 0.5rem;
   }
 `;
 
@@ -273,7 +285,7 @@ const Menu = styled.nav`
   gap: 6rem;
 
   ${media.mobile} {
-    gap: 3rem;
+    gap: 1rem;
   }
 `;
 
@@ -289,6 +301,7 @@ const MenuItem = styled(NavLink)`
   transition:
     color 0.3s ease,
     padding-top 0.3s ease;
+
   &:hover {
     color: var(--color-green-main);
     padding-top: 48px;
@@ -299,6 +312,16 @@ const MenuItem = styled(NavLink)`
       color 0.3s ease,
       padding-top 0.3s ease;
     border-bottom: 3px solid var(--color-green-main);
+  }
+
+  ${media.mobile} {
+    font-size: var(--font-size-ft-1);
+    padding-top: 64px;
+
+    &:hover {
+      color: var(--color-green-main);
+      padding-top: 68px;
+    }
   }
 `;
 
@@ -337,6 +360,10 @@ const DropdownContainer = styled.div`
     display: block;
   }
   animation: ${fadeIn} 0.3s ease-in-out;
+
+  ${media.mobile} {
+    top: 90px;
+  }
 `;
 
 /* 임시 알림 구역: 수정필요! */
@@ -350,6 +377,11 @@ const NotificationIcon = styled.div`
     height: 22px;
     color: var(--color-black-main);
     cursor: pointer;
+
+    ${media.mobile} {
+      height: 18px;
+      width: 18px;
+    }
   }
   > button {
     position: absolute;
@@ -361,6 +393,10 @@ const NotificationIcon = styled.div`
   > svg + a,
   > div + a {
     margin-left: 1rem;
+  }
+
+  ${media.mobile} {
+    padding-top: 60px;
   }
 `;
 
@@ -381,6 +417,14 @@ const SearchWrapper = styled.div.withConfig({
 
   > * {
     margin: 0 4px;
+  }
+
+  ${media.mobile} {
+    svg {
+      height: 18px;
+      width: 18px;
+    }
+    padding-top: 56px;
   }
 `;
 

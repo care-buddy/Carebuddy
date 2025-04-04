@@ -253,10 +253,12 @@ const BannerDiv = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: 55vh;
+  /* height: 55vh; */
+  height: 400px;
 
   ${media.mobile} {
     height: 45vh;
+    height: 300px;
   }
 `;
 
@@ -265,13 +267,13 @@ const ContentContainer = styled.div`
   grid-template-columns: 70% 20%;
   justify-content: space-between;
   width: 100%;
-  margin-top: 37vh; /* Div의 높이와 일치시켜 Div 바로 아래에 위치하도록 설정 - 임시*/
+  margin-top: 250px;
 
   transition: margin 0.3s;
 
   ${media.mobile} {
     grid-template-columns: 100% 0;
-    margin-top: 30vh;
+    margin-top: 150px;
   }
 `;
 
@@ -287,6 +289,10 @@ const FeedOptionContainer = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-between;
+
+  ${media.mobile} {
+    flex-direction: column;
+  }
 `;
 
 const SelectContainer = styled.div`
@@ -296,6 +302,13 @@ const SelectContainer = styled.div`
 
   & > * {
     margin-right: 10px;
+  }
+
+  ${media.mobile} {
+    > select {
+      padding: 4px 8px;
+      max-width: 100px;
+    }
   }
 `;
 
