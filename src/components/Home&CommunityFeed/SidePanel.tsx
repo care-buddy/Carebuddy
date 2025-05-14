@@ -1,3 +1,4 @@
+/* eslint-disable react/no-array-index-key */
 import media from '@/utils/media';
 import React from 'react';
 import styled from 'styled-components';
@@ -16,10 +17,10 @@ const SidePanel: React.FC<SidePanelProps> = ({
   <StyledContainer className={className}>
     <P>{name}</P>
     {elementArray?.map((element, index) => (
-      <>
+      <React.Fragment key={index}>
         <PanelElement>{element}</PanelElement>
         {index === elementArray.length - 1 ? '' : <Hr />}
-      </>
+      </React.Fragment>
     ))}
   </StyledContainer>
 );
@@ -47,7 +48,7 @@ const StyledContainer = styled.div`
   }
 `;
 
-const P = styled.p`
+export const P = styled.p`
   font-weight: var(--font-weight-bold);
 `;
 
@@ -55,7 +56,7 @@ const PanelElement = styled.div`
   cursor: pointer;
 `;
 
-const Hr = styled.hr`
+export const Hr = styled.hr`
   border: 0;
   border-top: 1px solid var(--color-grey-2);
   margin: 8px 0;

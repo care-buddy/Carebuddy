@@ -24,6 +24,7 @@ import DefaultProfile from '@/assets/person.png';
 import sortedByCreatedAt from '@/utils/sortedByCreatedAt';
 import media from '@/utils/media';
 import SkeletonFeedBox from '@/components/Home&CommunityFeed/SkeletonFeedBox';
+import SkeletonSidePanel from '@/components/Home&CommunityFeed/SkeletonSidePanel';
 
 const Home: React.FC = () => {
   // 상태 정의
@@ -239,18 +240,23 @@ const Home: React.FC = () => {
           )}
         </FeedBoxContainer>
         <div>
-          <SidePanel
-            name="추천 커뮤니티"
-            className="homePanel"
-            elementArray={recommendedCommunities?.map((community) => (
-              <CommunityElement
-                key={community._id}
-                communityId={community._id}
-                name={community.community}
-                introduction={community.introduction}
-              />
-            ))}
-          />
+          {isLoading ? (
+            // 3개짜리 스켈레톤
+            <SkeletonSidePanel />
+          ) : (
+            <SidePanel
+              name="추천 커뮤니티"
+              className="homePanel"
+              elementArray={recommendedCommunities?.map((community) => (
+                <CommunityElement
+                  key={community._id}
+                  communityId={community._id}
+                  name={community.community}
+                  introduction={community.introduction}
+                />
+              ))}
+            />
+          )}
         </div>
       </ContentContainer>
     </>
